@@ -1,0 +1,828 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+header_name {.h} 
+code_name {.cxx}
+decl {\#include <FL/Fl_Native_File_Chooser.H>} {public global
+} 
+
+decl {\#include <FL/Fl_Menu_Button.H>} {public global
+} 
+
+decl {\#include <FL/fl_ask.H>} {public global
+} 
+
+decl {\#include <fstream>} {public global
+} 
+
+decl {\#include "InterfaceCCAPI.h"} {public global
+} 
+
+decl {\#include "rkWindow.h"} {public global
+} 
+
+decl {\#include "RangeTable.h"} {public global
+} 
+
+decl {\#include "ResultTable.h"} {public global
+} 
+
+decl {\#include "CodeTable.h"} {public global
+} 
+
+decl {\#include "ValueInput.h"} {public global
+} 
+
+decl {\#include "IPInput.h"} {public global
+} 
+
+decl {\#include "SearchOperationChoice.h"} {public global
+} 
+
+decl {\#include "Common.h"} {public global
+} 
+
+decl {\#define RANGE_SAVE 0} {public global
+} 
+
+decl {\#define RANGE_LOAD 1} {public global
+} 
+
+decl {\#define RANGE_CLEAR 2} {public global
+} 
+
+decl {\#define RANGE_FIND 3} {public global
+} 
+
+decl {\#define RANGE_CANCEL 4} {public global
+} 
+
+decl {\#define RANGE_DELETE 5} {public global
+} 
+
+decl {rkCheatUI* uiInstance = 0;} {private global
+} 
+
+decl {class InterfaceCCAPI;} {public global
+} 
+
+class rkCheatUI {open
+} {
+  Function {RangeButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {int type = (int)data;
+string fname;
+Fl_Native_File_Chooser fnfc;
+switch (type)
+{
+	case RANGE_SAVE:
+		fnfc.title("Save Ranges");
+		fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+		fnfc.filter("Range Files\\t*.rng");
+		fnfc.directory("/var/tmp");
+		switch ( fnfc.show() ) {
+		  case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+		  case  1: printf("CANCEL\\n");                      break;  // CANCEL
+		  default: 
+		  	fname = fnfc.filename();
+		  	if (fnfc.filter_value() == 0)
+		  	{
+				if (fname.find(".rng", fname.size()-4) == string::npos)
+					fname += ".rng";
+			}
+		  	printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_rangeTable->saveData(fname); break;  // FILE CHOSEN
+		}
+		break;
+	case RANGE_LOAD:
+		fnfc.title("Load Ranges");
+		fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+		fnfc.filter("Range Files\\t*.rng");
+		fnfc.directory("/var/tmp");
+		switch ( fnfc.show() ) {
+		  case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+		  case  1: printf("CANCEL\\n");                      break;  // CANCEL
+		  default: 
+		  	fname = fnfc.filename();
+		  	printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_rangeTable->loadData(fname); break;  // FILE CHOSEN
+		}	
+		break;
+  	case RANGE_CLEAR:
+  		uiInstance->clearRanges(true);
+		RangeTableCB(NULL, NULL);
+  		break;
+   	case RANGE_DELETE:
+   		uiInstance->deleteRange();
+   		RangeTableCB(NULL, NULL);
+   		break;
+		RangeTableCB(NULL, NULL);
+	case RANGE_FIND:
+		InterfaceCCAPI::findAddresses();
+		break;
+  	case RANGE_CANCEL:
+  		InterfaceCCAPI::cancelFindAddresses();
+  		break;		
+}} {}
+  }
+  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {if (uiInstance->ui_searchType->isFuzzy())
+	uiInstance->ui_valueInputGroup->deactivate();
+else
+	uiInstance->ui_valueInputGroup->activate();
+
+if (uiInstance->canStartScan()) //I have a value entered or fuzzy
+{
+	if (uiInstance->m_inProgress)
+	{
+		uiInstance->ui_buttonNextScan->activate();
+		uiInstance->ui_buttonNewScan->activate();
+	}
+	else
+	{
+		uiInstance->ui_buttonNewScan->activate();
+		uiInstance->ui_buttonNextScan->deactivate();		
+	}
+}
+else //i have no value entered and not fuzzy
+{
+	if (uiInstance->m_inProgress)
+	{
+		uiInstance->ui_buttonNextScan->deactivate();
+		uiInstance->ui_buttonNewScan->activate();
+	}
+	else
+	{
+		uiInstance->ui_buttonNewScan->deactivate();
+		uiInstance->ui_buttonNextScan->deactivate();		
+	}
+}} {}
+  }
+  Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {if (uiInstance->canStartScan()) //i have a value
+  {
+			  if (uiInstance->m_inProgress)
+			  {
+    			uiInstance->ui_buttonNewScan->activate();
+				uiInstance->ui_buttonNextScan->activate();
+			  }
+			  else
+			  {
+    			uiInstance->ui_buttonNewScan->activate();
+				uiInstance->ui_buttonNextScan->deactivate();
+			  }
+  }
+  else
+  {
+	  		  if (uiInstance->m_inProgress)
+			  {
+    			uiInstance->ui_buttonNewScan->activate();
+				uiInstance->ui_buttonNextScan->deactivate();
+			  }
+			  else
+			  {
+    			uiInstance->ui_buttonNewScan->deactivate();
+				uiInstance->ui_buttonNextScan->deactivate();
+			  }
+  }} {}
+  }
+  Function {SetHexCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {int value = (int)((Fl_Button*)w)->value();
+uiInstance->ui_valueInput->setHex(value == 1);} {}
+  }
+  Function {SetValueTypeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {int value = (int)((Fl_Menu_Button*)w)->mvalue()->user_data();
+uiInstance->ui_valueInput->setValueType(value);} {}
+  }
+  Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {InterfaceCCAPI::startNewSearch();} {}
+  }
+  Function {ContinueSearchCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {InterfaceCCAPI::continueSearch();} {}
+  }
+  Function {RangeInputCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {string v1 = uiInstance->ui_addRangeInput_Start->value();
+  	string v2 = uiInstance->ui_addRangeInput_End->value();
+	if (w == uiInstance->ui_addRangeButton) //we hit the add range button
+	{
+  		unsigned int loc1 = stoul(v1, nullptr, 16);
+  		unsigned int loc2 = stoul(v2, nullptr, 16);
+		uiInstance->ui_rangeTable->addEntry(loc1, loc2);
+	}
+	else
+	{
+  		if (v1.empty() || v2.empty())
+  		{
+  			if (v1.empty())
+  			{
+	  //			uiInstance->ui_addRangeInput_Start->color(fl_rgb_color(150,150,150));
+	  //			uiInstance->ui_addRangeInput_Start->value("00000000");
+  			}
+  			if (v2.empty())
+  			{
+	  //			uiInstance->ui_addRangeInput_End->color(fl_rgb_color(150,150,150));
+	  //			uiInstance->ui_addRangeInput_End->value("00000000");
+  			}
+  			uiInstance->ui_addRangeButton->deactivate();
+  			return;
+  		}
+  		unsigned int loc1 = stoul(v1, nullptr, 16);
+  		unsigned int loc2 = stoul(v2, nullptr, 16);
+  		if (loc2 <= loc1)
+  		{
+  			uiInstance->ui_addRangeButton->deactivate();
+  			return;
+  		}
+  		uiInstance->ui_addRangeButton->activate();
+	}} {}
+  }
+  Function {RangeTableCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {if (uiInstance->canStartScan())
+    		  uiInstance->ui_buttonNewScan->activate();
+    	  else
+    		  uiInstance->ui_buttonNewScan->deactivate();} {}
+  }
+  Function {ResultTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {int command = (int)data;
+string fname;
+Fl_Native_File_Chooser fnfc;
+vector<AddressItem> items;
+switch (command)
+{
+case RESULT_TABLE_ADD:
+  	items = uiInstance->ui_resultTable->getSelectedResults();
+	if (!items.empty())
+		uiInstance->ui_codeTable->addResults(items, InterfaceCCAPI::instance->getSearchValueType());
+  	break;
+case RESULT_TABLE_DELETE:
+  	uiInstance->ui_resultTable->deleteResults();
+	if (InterfaceCCAPI::instance)
+	{
+		unsigned long res = InterfaceCCAPI::instance->getNumberOfResults();
+		uiInstance->setNumberOfResultsString(to_string(res));
+	}
+  	break;
+    case RESULT_TABLE_REFRESH:
+  	uiInstance->ui_resultTable->refreshResults();    
+	break;
+}
+\#if 0
+	fnfc.title("Save Code Table");
+    	fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+    	fnfc.filter("Code Tables\\t*.ct");
+    	fnfc.directory("/var/tmp");
+    	switch ( fnfc.show() ) {
+    		case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+    		case  1: printf("CANCEL\\n");                      break;  // CANCEL
+    		default: 
+    		fname = fnfc.filename();
+    		if (fnfc.filter_value() == 0)
+    		{
+    			if (fname.find(".ct", fname.size()-3) == string::npos)
+    				fname += ".ct";
+    		}
+    		printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_codeTable->saveData(fname); break;  // FILE CHOSEN
+    	}
+    	break;
+    case CODE_TABLE_LOAD:
+    	fnfc.title("Load Code Table");
+    	fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+    	fnfc.filter("Code Tables\\t*.ct");
+    	fnfc.directory("/var/tmp");
+    	switch ( fnfc.show() ) {
+    		case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+    		case  1: printf("CANCEL\\n");                      break;  // CANCEL
+    		default: 
+    		fname = fnfc.filename();
+    		printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_codeTable->loadData(fname); break;  // FILE CHOSEN
+    	}	
+    	break;
+\#endif} {}
+  }
+  Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {int command = (int)data;
+  string fname;
+  Fl_Native_File_Chooser fnfc;
+  switch (command)
+  {
+	case CODE_TABLE_NEW:
+		uiInstance->ui_codeTable->newCode();
+		break;
+	case CODE_TABLE_DELETE:
+		uiInstance->ui_codeTable->deleteCodes();
+		break;
+  	case CODE_TABLE_SAVE:
+  		fnfc.title("Save Code Table");
+  		fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+  		fnfc.filter("Code Tables\\t*.ct");
+  		fnfc.directory("/var/tmp");
+  		switch ( fnfc.show() ) {
+  		  case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+  		  case  1: printf("CANCEL\\n");                      break;  // CANCEL
+  		  default: 
+  		  	fname = fnfc.filename();
+  		  	if (fnfc.filter_value() == 0)
+  		  	{
+  				if (fname.find(".ct", fname.size()-3) == string::npos)
+  					fname += ".ct";
+  			}
+  		  	printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_codeTable->saveData(fname); break;  // FILE CHOSEN
+  		}
+  		break;
+  	case CODE_TABLE_LOAD:
+  		fnfc.title("Load Code Table");
+  		fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+  		fnfc.filter("Code Tables\\t*.ct");
+  		fnfc.directory("/var/tmp");
+  		switch ( fnfc.show() ) {
+  		  case -1: printf("ERROR: %s\\n", fnfc.errmsg());    break;  // ERROR
+  		  case  1: printf("CANCEL\\n");                      break;  // CANCEL
+  		  default: 
+  		  	fname = fnfc.filename();
+  		  	printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_codeTable->loadData(fname); break;  // FILE CHOSEN
+  		}	
+  		break;
+  }} {}
+  }
+  Function {ConnectButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {if (InterfaceCCAPI::instance)
+      {
+    	  if ( ((Fl_Button*)w)->value() == 0 ) //disconnect
+    	  {
+      		InterfaceCCAPI::instance->disconnect();
+      		uiInstance->setConnectStatus(INTERFACE_DISCONNECT);
+      	  }
+    	  else
+  	  {
+  		string ip = uiInstance->ui_ipInput->getIP();
+  		uiInstance->ui_ipInput->deactivate();
+    		InterfaceCCAPI::instance->connect(ip);
+			uiInstance->setConnectStatus(INTERFACE_CONNECTING);
+  	  }
+      }} {}
+  }
+  Function {CanConnectCB(Fl_Widget *w, void *data)} {return_type {static void}
+  } {
+    code {bool valid = data;
+  if (valid && uiInstance)
+	  uiInstance->ui_connectButton->activate();
+  else if (!valid && uiInstance)
+	  uiInstance->ui_connectButton->deactivate();} {}
+  }
+  Function {rkCheatUI()} {open
+  } {
+    code {uiInstance = this;
+m_interface = 0;
+m_inProgress = false;} {}
+    Fl_Window mainWindow {
+      label ryCheat open
+      xywh {49 119 1358 827} type Double align 80
+      code0 {\#include <iostream>}
+      code1 {using namespace std;}
+      class rkWindow visible
+    } {
+      Fl_Group searchGroup {
+        label Search
+        xywh {10 70 380 274} box BORDER_BOX color 47
+      } {
+        Fl_Choice ui_searchType {
+          label {Search Type:}
+          callback SearchTypeChangeCB
+          xywh {104 96 281 23} down_box BORDER_BOX when 1
+          class SearchOperationChoice
+        } {}
+        Fl_Choice ui_valueType {
+          label {Value Type:}
+          callback SetValueTypeCB
+          xywh {95 166 113 23} down_box BORDER_BOX
+        } {
+          MenuItem {} {
+            label {1 Byte}
+            user_data SEARCH_VALUE_TYPE_1BYTE
+            xywh {0 0 30 20}
+          }
+          MenuItem {} {
+            label {2 Bytes}
+            user_data SEARCH_VALUE_TYPE_2BYTE
+            xywh {0 0 30 20}
+          }
+          MenuItem {} {
+            label {4 Bytes}
+            user_data SEARCH_VALUE_TYPE_4BYTE
+            xywh {0 0 30 20}
+          }
+          MenuItem {} {
+            label Float
+            user_data SEARCH_VALUE_TYPE_FLOAT
+            xywh {0 0 30 20}
+          }
+        }
+        Fl_Button ui_buttonNewScan {
+          label {New Scan}
+          callback StartSearchButtonCB
+          xywh {40 231 80 24} deactivate
+        }
+        Fl_Button ui_buttonNextScan {
+          label {Next Scan}
+          callback ContinueSearchCB
+          xywh {170 230 80 24} deactivate
+        }
+        Fl_Group ui_valueInputGroup {
+          xywh {15 119 259 41} align 4
+        } {
+          Fl_Input ui_valueInput {
+            label {Value:}
+            callback SearchValueChangeCB
+            xywh {60 131 135 24} when 1
+            class ValueInput
+          }
+          Fl_Check_Button ui_isHex {
+            label Hex
+            callback SetHexCB
+            xywh {210 140 64 15} down_box DOWN_BOX
+          }
+        }
+      }
+      Fl_Group ui_resultGroup {
+        label Results open
+        xywh {785 70 560 274} box BORDER_BOX color 47
+      } {
+        Fl_Table ui_resultTable {open
+          xywh {790 99 423 240} selection_color 6
+          class ResultTable
+        } {}
+        Fl_Box ui_numOfResults {
+          xywh {920 77 140 16}
+        }
+        Fl_Box {} {
+          label {Number of Results:}
+          xywh {790 77 130 16}
+        }
+        Fl_Group ui_resultBtnGroup {open
+          xywh {1225 100 115 165}
+        } {
+          Fl_Button ui_ButtonAddResult {
+            label {Add Result}
+            user_data RESULT_TABLE_ADD
+            callback ResultTableButtonCB
+            xywh {1230 100 100 30}
+          }
+          Fl_Button ui_ButtonDeleteResult {
+            label {Delete Result}
+            user_data RESULT_TABLE_DELETE
+            callback ResultTableButtonCB
+            xywh {1230 140 100 30}
+          }
+          Fl_Button ui_ButtonRefreshResult {
+            label Refresh
+            user_data RESULT_TABLE_REFRESH
+            callback ResultTableButtonCB
+            xywh {1230 180 100 30}
+          }
+        }
+      }
+      Fl_Group ui_rangeGroup {
+        label Range open
+        xywh {410 70 355 275} box BORDER_BOX color 47
+      } {
+        Fl_Table ui_rangeTable {
+          callback RangeTableCB open
+          xywh {418 75 223 215} box THIN_UP_FRAME selection_color 6
+          class RangeTable
+        } {}
+        Fl_Button ui_buttonFindRanges {
+          label {Find Ranges}
+          user_data RANGE_FIND
+          callback RangeButtonCB
+          xywh {652 96 100 30}
+        }
+        Fl_Button ui_buttonSaveRanges {
+          label {Save Ranges}
+          user_data RANGE_SAVE
+          callback RangeButtonCB
+          xywh {652 136 100 30}
+        }
+        Fl_Button ui_buttonLoadRanges {
+          label {Load Ranges}
+          user_data RANGE_LOAD
+          callback RangeButtonCB
+          xywh {652 176 100 30}
+        }
+        Fl_Button ui_buttonClearRanges {
+          label {Clear Ranges}
+          user_data RANGE_CLEAR
+          callback RangeButtonCB
+          xywh {652 216 100 30}
+        }
+        Fl_Group ui_addRangeGrp {open
+          xywh {410 295 350 50} color 47
+        } {
+          Fl_Input ui_addRangeInput_Start {
+            callback RangeInputCB
+            xywh {420 308 100 24} when 1
+            code0 {ui_addRangeInput_Start->setHex(true);}
+            code1 {ui_addRangeInput_Start->maximum_size(8);}
+            class ValueInput
+          }
+          Fl_Input ui_addRangeInput_End {
+            callback RangeInputCB
+            xywh {540 308 100 24} when 1
+            code0 {ui_addRangeInput_End->setHex(true);}
+            code1 {ui_addRangeInput_End->maximum_size(8);}
+            class ValueInput
+          }
+          Fl_Button ui_addRangeButton {
+            label {Add Range}
+            callback RangeInputCB
+            xywh {652 305 100 30}
+            code0 {ui_addRangeButton->deactivate();}
+          }
+        }
+        Fl_Button ui_buttonDeleteRange {
+          label {Delete Range}
+          user_data RANGE_DELETE
+          callback RangeButtonCB
+          xywh {652 255 100 30}
+        }
+      }
+      Fl_Group ui_statusbar {open
+        xywh {1 775 1364 35} box BORDER_BOX
+        code0 {ui_statusbar->size(mainWindow->w()-12, 35);}
+        code1 {ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);}
+      } {
+        Fl_Progress ui_opProgress {
+          xywh {10 782 1220 20}
+          code0 {ui_opProgress->minimum(0.0f);}
+          code1 {ui_opProgress->maximum(1.0f);}
+        }
+        Fl_Box ui_opStatus {
+          label Ready
+          xywh {1225 784 135 16}
+        }
+      }
+      Fl_Group ui_codeGroup {
+        label Codes open
+        xywh {10 395 1335 360} box BORDER_BOX color 47
+      } {
+        Fl_Table ui_codeTable {open
+          xywh {15 425 1190 330} color 47 selection_color 6 labeltype NO_LABEL
+          class CodeTable
+        } {}
+        Fl_Button ui_ButtonNewCode {
+          label {New Code}
+          user_data CODE_TABLE_NEW
+          callback CodeTableButtonCB
+          xywh {1230 465 100 30}
+        }
+        Fl_Button ui_ButtonDeleteCode {
+          label {Delete Code}
+          user_data CODE_TABLE_DELETE
+          callback CodeTableButtonCB
+          xywh {1230 511 100 30}
+        }
+        Fl_Button ui_ButtonSaveCodes {
+          label {Save Codes}
+          user_data CODE_TABLE_SAVE
+          callback CodeTableButtonCB
+          xywh {1230 558 100 30}
+        }
+        Fl_Button ui_ButtonLoadCodes {
+          label {Load Codes}
+          user_data CODE_TABLE_LOAD
+          callback CodeTableButtonCB
+          xywh {1230 605 100 30}
+        }
+      }
+      Fl_Light_Button ui_connectButton {
+        label Connect
+        callback ConnectButtonCB
+        xywh {20 20 100 30} deactivate
+      }
+      Fl_Group ui_ipInput {
+        callback CanConnectCB open selected
+        xywh {135 20 255 30} when 1
+        code0 {readIP();}
+        class IPInput
+      } {}
+    }
+  }
+  Function {setInterface(InterfaceCCAPI *iface)} {} {
+    code {m_interface = iface;} {}
+  }
+  decl {InterfaceCCAPI *m_interface;} {private local
+  }
+  Function {clearRanges(bool reInit=false)} {} {
+    code {ui_rangeTable->clear();
+if (reInit)
+	ui_rangeTable->addEntry(0, 0xFFFFFFFF);
+	ui_rangeTable->clearSelection();} {}
+  }
+  Function {deleteRange()} {} {
+    code {for (int i=ui_rangeTable->rows()-1; i>=0; i--)
+	{
+		if (ui_rangeTable->row_selected(i))
+		{
+			ui_rangeTable->deleteEntry(i);
+		}
+	}
+	ui_rangeTable->clearSelection();} {}
+  }
+  Function {addRange(unsigned long begin, unsigned long end)} {} {
+    code {ui_rangeTable->addEntry(begin, end);} {}
+  }
+  Function {setRangeProgress(float percent, string status, bool done)} {return_type void
+  } {
+    code {static char stat[50];
+static char pc[20];
+ui_opProgress->value(percent);
+sprintf(pc, "%.1f%%", percent*100);
+ui_opProgress->label(pc);
+strncpy(stat, status.c_str(), 50);
+ui_opStatus->label(stat);} {}
+  }
+  Function {findRangeStarted()} {return_type void
+  } {
+    code {searchGroup->deactivate();
+ui_buttonSaveRanges->deactivate();
+ui_buttonLoadRanges->deactivate();
+ui_buttonClearRanges->deactivate();
+ui_buttonDeleteRange->deactivate();
+ui_addRangeGrp->deactivate();
+ui_buttonFindRanges->label("Cancel");
+ui_buttonFindRanges->user_data((void*)(RANGE_CANCEL));} {}
+  }
+  Function {findRangeStopped()} {return_type void
+  } {
+    code {searchGroup->activate();
+ui_buttonSaveRanges->activate();
+ui_buttonLoadRanges->activate();
+ui_buttonClearRanges->activate();
+ui_buttonDeleteRange->activate();
+ui_addRangeGrp->activate();
+ui_buttonFindRanges->label("Find Ranges");
+ui_buttonFindRanges->user_data((void*)(RANGE_FIND));} {}
+  }
+  Function {canStartScan()} {return_type bool
+  } {
+    code {if (ui_rangeTable->hasSelection())
+	{
+		if (ui_searchType->isFuzzy())//I don't care about the value
+			return true;
+		if (!string(ui_valueInput->value()).empty())
+			return true;
+	}
+	return false;} {}
+  }
+  Function {searchStarted()} {return_type void
+  } {
+    code {ui_rangeGroup->deactivate();
+ui_searchType->deactivate();
+ui_valueInputGroup->deactivate();
+ui_valueType->deactivate();
+ui_buttonNextScan->deactivate();
+ui_buttonNewScan->label("Cancel");
+ui_buttonNewScan->activate();
+ui_resultTable->setResultType((char)ui_valueType->mvalue()->user_data());} {}
+  }
+  Function {searchStopped(char how)} {return_type void
+  } {
+    code {if (how == SEARCH_STOPPED_PROPER)
+{
+	ui_rangeGroup->deactivate();
+	ui_valueType->deactivate();
+	ui_buttonNextScan->activate();
+	ui_buttonNewScan->label("Reset Scan");
+	m_inProgress = true;
+}
+else
+{
+	ui_numOfResults->label("");
+	ui_rangeGroup->activate();
+	ui_valueType->activate();
+	ui_buttonNextScan->deactivate();
+	if (how == SEARCH_STOPPED_NO_RESULTS)
+		ui_buttonNewScan->label("Reset Scan");
+	else
+		ui_buttonNewScan->label("New Scan");
+	m_inProgress = false;		
+}
+ui_searchType->activate();
+ui_valueInputGroup->activate();
+ui_buttonNewScan->activate();
+SearchTypeChangeCB(0,0);} {}
+  }
+  Function {setSearchProgress(float percent, string status, bool done)} {return_type void
+  } {
+    code {static char stat[50];
+static char pc[20];
+ui_opProgress->value(percent);
+sprintf(pc, "%.1f%%", percent*100);
+ui_opProgress->label(pc);
+strncpy(stat, status.c_str(), 50);
+ui_opStatus->label(stat);} {}
+  }
+  Function {setNumberOfResultsString(string res)} {return_type void
+  } {
+    code {static char stat[50];
+strncpy(stat, res.c_str(), 50);
+ui_numOfResults->label(stat);} {}
+  }
+  decl {bool m_inProgress;} {public local
+  }
+  Function {setConnectStatus(char status)} {open return_type void
+  } {
+    code {static char stat[50];
+if (status == INTERFACE_CONNECT_FAIL)
+{
+sprintf(stat, "Cannot Connect!");
+ui_opStatus->labelcolor(FL_RED);
+ui_opStatus->label(stat);
+searchGroup->deactivate();
+ui_rangeGroup->deactivate();
+ui_resultGroup->deactivate();
+ui_codeGroup->deactivate();
+ui_connectButton->clear();
+ui_ipInput->activate();
+}
+else if (status == INTERFACE_CONNECT_SUCCESS)
+{
+sprintf(stat, "Ready");
+ui_opStatus->labelcolor(FL_BLACK);
+ui_opStatus->label(stat);
+searchGroup->activate();
+ui_rangeGroup->activate();
+ui_resultGroup->activate();
+ui_codeGroup->activate();
+ui_ipInput->deactivate();
+ui_connectButton->selection_color(FL_GREEN);
+ui_connectButton->damage(FL_DAMAGE_ALL);
+storeIP();
+}
+else if (status == INTERFACE_DISCONNECT)
+{
+sprintf(stat, "Disconnected");
+ui_opStatus->labelcolor(FL_BLACK);
+ui_opStatus->label(stat);
+searchGroup->deactivate();
+ui_rangeGroup->deactivate();
+ui_resultGroup->deactivate();
+ui_codeGroup->deactivate();
+ui_connectButton->clear();
+ui_ipInput->activate();
+ui_ipInput->checkValid();
+}
+else if (status == INTERFACE_CONNECTING)
+{
+sprintf(stat, "Connecting");
+ui_opStatus->labelcolor(FL_BLACK);
+ui_opStatus->label(stat);
+searchGroup->deactivate();
+ui_rangeGroup->deactivate();
+ui_resultGroup->deactivate();
+ui_codeGroup->deactivate();
+ui_ipInput->deactivate();
+ui_connectButton->selection_color(FL_YELLOW);
+ui_connectButton->damage(FL_DAMAGE_ALL);
+}} {}
+  }
+  Function {storeIP()} {return_type void
+  } {
+    code {char buf[255];
+if (GetCurrentDir(buf, 255) != 0) //we can store the IP
+{
+	string dir = buf;
+	ofstream ipFile;
+	ipFile.open (dir+"/"+"ip.cfg");
+	ipFile << ui_ipInput->getIP();
+	ipFile.close();
+}} {}
+  }
+  Function {readIP()} {open return_type void
+  } {
+    code {char buf[255];
+	if (GetCurrentDir(buf, 255) != 0) //we can store the IP
+	{
+		string dir = buf;
+		ifstream ipFile;
+		ipFile.open (dir+"/"+"ip.cfg");
+		if (ipFile)
+		{
+			string ip;
+			ipFile >> ip;
+			ui_ipInput->setIP(ip);
+			ipFile.close();
+		}
+	}} {}
+  }
+} 
+
+decl {extern rkCheatUI *uiInstance;} {public global
+} 
