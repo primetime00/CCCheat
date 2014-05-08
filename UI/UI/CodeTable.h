@@ -43,9 +43,14 @@ public:
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)
-		((CodeTable*)w)->onCellClicked(((Fl_Table*)w)->callback_row(), ((Fl_Table*)w)->callback_col());
+	  {
+		  if (Fl::event_clicks())
+			((CodeTable*)w)->onCellClicked(((Fl_Table*)w)->callback_row(), ((Fl_Table*)w)->callback_col());
+	  }
 	  else
+	  {
 		((CodeTable*)w)->onTableClicked();
+	  }
   }
   static void codeDescriptionChangedCB(Fl_Widget *w, void *item) { ((CodeTable *)w->parent()->parent())->onDescriptionChanged((rkCheat_Code*)item, ((Fl_Input*)w)->value()); }
   static void codeAddressChangedCB(Fl_Widget *w, void *item) { ((CodeTable *)w->parent()->parent())->onAddressChanged((rkCheat_Code*)item, ((ValueInput*)w)->getULValue()); }

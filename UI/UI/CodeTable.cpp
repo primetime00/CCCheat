@@ -321,10 +321,23 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 				switch (data[ROW]->type)
 				{
 				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%f", *(float*)&data[ROW]->value); break;
-				default: if (data[ROW]->sign) 
-							 sprintf(s,"%ld", data[ROW]->value); 
+				case SEARCH_VALUE_TYPE_1BYTE: 
+						if (data[ROW]->sign) 
+							 sprintf(s,"%ld", (char)data[ROW]->value); 
 						 else
-							 sprintf(s,"%lu", data[ROW]->value); 
+							 sprintf(s,"%lu", (unsigned char)data[ROW]->value); 
+						 break;					
+				case SEARCH_VALUE_TYPE_2BYTE: 
+						if (data[ROW]->sign) 
+							 sprintf(s,"%ld", (short)data[ROW]->value); 
+						 else
+							 sprintf(s,"%lu", (unsigned short)data[ROW]->value); 
+						 break;					
+				default:
+						if (data[ROW]->sign) 
+							 sprintf(s,"%ld", (long)data[ROW]->value); 
+						 else
+							 sprintf(s,"%lu", (unsigned long)data[ROW]->value); 
 						 break;
 				} break;
 			case TYPE_COL: 
@@ -538,7 +551,20 @@ void CodeTable::onCellClicked(int row, int col)
 			if (data[row]->type == SEARCH_VALUE_TYPE_FLOAT)
 				data[row]->widget->value_input->value(to_string(float_val).c_str());
 			else
-				data[row]->widget->value_input->value(to_string(int_val).c_str());
+			{
+				switch (data[row]->type)
+				{
+				case SEARCH_VALUE_TYPE_1BYTE:
+					data[row]->widget->value_input->value(data[row]->sign ? to_string((char)int_val).c_str() : to_string((unsigned char)int_val).c_str());
+					break;
+				case SEARCH_VALUE_TYPE_2BYTE:
+					data[row]->widget->value_input->value(data[row]->sign ? to_string((short)int_val).c_str() : to_string((unsigned short)int_val).c_str());
+					break;
+				default:
+					data[row]->widget->value_input->value(data[row]->sign ? to_string((long)int_val).c_str() : to_string((unsigned long)int_val).c_str());
+					break;
+				}
+			}
 		}
 		last_cell_widget = current_cell_widget;
 		break;

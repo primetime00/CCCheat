@@ -109,21 +109,21 @@ int MemoryOperator::processRead()
 				if ((*setIT)->type == SEARCH_VALUE_TYPE_2BYTE)
 				{
 					short tmp = BSWAP16(*(short*)&data[0]);
-					((short*)(*setIT)->memory)[0] = tmp;
+					((long long*)(*setIT)->memory)[0] = (long long)tmp;
 				}
 				else if ((*setIT)->type == SEARCH_VALUE_TYPE_4BYTE)
 				{
 					long tmp = BSWAP32(*(long*)&data[0]);
-					((long*)(*setIT)->memory)[0] = tmp;
+					((long long*)(*setIT)->memory)[0] = (long long)tmp;
 				}
 				else if ((*setIT)->type == SEARCH_VALUE_TYPE_FLOAT)
 				{
 					unsigned long tmp = BSWAP32(*(unsigned long*)&data[0]);
-					((float*)(*setIT)->memory)[0] = *(float*)&tmp;
+					((long long*)(*setIT)->memory)[0] = *(float*)&tmp;
 				}
 				else
 				{
-					(*setIT)->memory[0] = data[0];
+					((long long*)(*setIT)->memory)[0] = (long long)data[0];
 				}
 			}
 			if ((*setIT)->keep == true)
