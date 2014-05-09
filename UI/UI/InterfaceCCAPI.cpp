@@ -111,9 +111,10 @@ void InterfaceCCAPI::cancelFindAddresses()
 
 void InterfaceCCAPI::_findAddresses()
 {
+	string c_ip = m_ui->ui_ipInput->getIP();
 	m_ui->findRangeStarted();
 	m_ui->setRangeProgress(0.0f, "Initializing...", false);
-	ranger = new RangeMemory(PS3_IP, 0, 0x100000000);
+	ranger = new RangeMemory(c_ip, 0, 0x100000000);
 	m_launcher = thread(&InterfaceCCAPI::_launchFindAddress, this);
 	Fl::add_timeout(1.0, InterfaceCCAPI::findAddressProgress, ranger);
 	cout << "FINDING ADDRESSES!" << endl;
@@ -164,6 +165,7 @@ void InterfaceCCAPI::_startNewSearch()
 {
 	char searchType = (char)m_ui->ui_searchType->mvalue()->user_data();
 	char valueType = (char)m_ui->ui_valueType->mvalue()->user_data();
+	string c_ip = m_ui->ui_ipInput->getIP();
 	m_ui->ui_resultTable->clear();
 	rkCheat_RangeList rList = m_ui->ui_rangeTable->getSelectedRanges();
 	lastSearchType = SEARCH_TYPE_UNKNOWN;
@@ -171,7 +173,7 @@ void InterfaceCCAPI::_startNewSearch()
 	//add the ranges to the search list
 	for (rkCheat_RangeList::iterator it = rList.begin(); it != rList.end(); ++it)
 	{
-		SearchMemory *s = new SearchMemory(PS3_IP, it->first, it->second - it->first);
+		SearchMemory *s = new SearchMemory(c_ip, it->first, it->second - it->first);
 		searchList.push_back(s);
 
 		if (searchType == SEARCH_FUZZY_INIT)

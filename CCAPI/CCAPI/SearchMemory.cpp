@@ -30,7 +30,6 @@ void SearchMemory::calculateThreads()
 	else
 		m_threadCount = 1;
 
-	m_threadCount = 4;
 	for (int i=0; i<m_threadCount; i++)
 	{
 		m_threadResults.push_back(ResultList());
