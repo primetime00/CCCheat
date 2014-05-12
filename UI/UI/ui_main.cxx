@@ -325,7 +325,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1348, 817, "CCCheat");
+  { mainWindow = new rkWindow(1389, 817, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -348,6 +348,7 @@ rkCheatUI::rkCheatUI() {
         ui_searchType->labelfont(0);
         ui_searchType->labelsize(14);
         ui_searchType->labelcolor(FL_FOREGROUND_COLOR);
+        ui_searchType->textsize(12);
         ui_searchType->callback((Fl_Callback*)SearchTypeChangeCB);
         ui_searchType->align(Fl_Align(FL_ALIGN_LEFT));
         ui_searchType->when(FL_WHEN_CHANGED);
@@ -501,10 +502,10 @@ rkCheatUI::rkCheatUI() {
       ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);
       ui_statusbar->end();
     } // Fl_Group* ui_statusbar
-    { ui_codeGroup = new Fl_Group(10, 395, 1335, 360, "Codes");
+    { ui_codeGroup = new Fl_Group(114, 395, 1120, 360, "Codes");
       ui_codeGroup->box(FL_BORDER_BOX);
       ui_codeGroup->color(FL_DARK1);
-      { ui_codeTable = new CodeTable(15, 425, 1190, 330);
+      { ui_codeTable = new CodeTable(119, 425, 985, 325);
         ui_codeTable->box(FL_THIN_DOWN_FRAME);
         ui_codeTable->color(FL_DARK1);
         ui_codeTable->selection_color((Fl_Color)6);
@@ -516,16 +517,16 @@ rkCheatUI::rkCheatUI() {
         ui_codeTable->when(FL_WHEN_RELEASE);
         ui_codeTable->end();
       } // CodeTable* ui_codeTable
-      { ui_ButtonNewCode = new Fl_Button(1230, 465, 100, 30, "New Code");
+      { ui_ButtonNewCode = new Fl_Button(1124, 465, 100, 30, "New Code");
         ui_ButtonNewCode->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_NEW));
       } // Fl_Button* ui_ButtonNewCode
-      { ui_ButtonDeleteCode = new Fl_Button(1230, 511, 100, 30, "Delete Code");
+      { ui_ButtonDeleteCode = new Fl_Button(1124, 511, 100, 30, "Delete Code");
         ui_ButtonDeleteCode->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_DELETE));
       } // Fl_Button* ui_ButtonDeleteCode
-      { ui_ButtonSaveCodes = new Fl_Button(1230, 558, 100, 30, "Save Codes");
+      { ui_ButtonSaveCodes = new Fl_Button(1124, 558, 100, 30, "Save Codes");
         ui_ButtonSaveCodes->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_SAVE));
       } // Fl_Button* ui_ButtonSaveCodes
-      { ui_ButtonLoadCodes = new Fl_Button(1230, 605, 100, 30, "Load Codes");
+      { ui_ButtonLoadCodes = new Fl_Button(1124, 605, 100, 30, "Load Codes");
         ui_ButtonLoadCodes->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_LOAD));
       } // Fl_Button* ui_ButtonLoadCodes
       ui_codeGroup->end();

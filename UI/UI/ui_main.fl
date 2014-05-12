@@ -383,20 +383,20 @@ case RESULT_TABLE_DELETE:
 m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
-      label CCCheat open selected
-      xywh {54 124 1348 817} type Double align 80
+      label CCCheat open
+      xywh {54 124 1389 817} type Double align 80
       code0 {\#include <iostream>}
       code1 {using namespace std;}
       class rkWindow visible
     } {
       Fl_Group searchGroup {
-        label Search
+        label Search open
         xywh {10 70 380 274} box BORDER_BOX color 47
       } {
         Fl_Choice ui_searchType {
           label {Search Type:}
           callback SearchTypeChangeCB
-          xywh {104 96 281 23} down_box BORDER_BOX when 1
+          xywh {104 96 281 23} down_box BORDER_BOX when 1 textsize 12
           class SearchOperationChoice
         } {}
         Fl_Choice ui_valueType {
@@ -570,35 +570,35 @@ m_inProgress = false;} {}
       }
       Fl_Group ui_codeGroup {
         label Codes open
-        xywh {10 395 1335 360} box BORDER_BOX color 47
+        xywh {114 395 1120 360} box BORDER_BOX color 47
       } {
         Fl_Table ui_codeTable {open
-          xywh {15 425 1190 330} color 47 selection_color 6 labeltype NO_LABEL
+          xywh {119 425 985 325} color 47 selection_color 6 labeltype NO_LABEL
           class CodeTable
         } {}
         Fl_Button ui_ButtonNewCode {
           label {New Code}
           user_data CODE_TABLE_NEW
           callback CodeTableButtonCB
-          xywh {1230 465 100 30}
+          xywh {1124 465 100 30}
         }
         Fl_Button ui_ButtonDeleteCode {
           label {Delete Code}
           user_data CODE_TABLE_DELETE
           callback CodeTableButtonCB
-          xywh {1230 511 100 30}
+          xywh {1124 511 100 30}
         }
         Fl_Button ui_ButtonSaveCodes {
           label {Save Codes}
           user_data CODE_TABLE_SAVE
           callback CodeTableButtonCB
-          xywh {1230 558 100 30}
+          xywh {1124 558 100 30}
         }
         Fl_Button ui_ButtonLoadCodes {
           label {Load Codes}
           user_data CODE_TABLE_LOAD
           callback CodeTableButtonCB
-          xywh {1230 605 100 30}
+          xywh {1124 605 100 30}
         }
       }
       Fl_Light_Button ui_connectButton {
@@ -607,7 +607,7 @@ m_inProgress = false;} {}
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
-        callback CanConnectCB open
+        callback CanConnectCB open selected
         xywh {135 20 255 30} when 1
         code0 {readIP();}
         class IPInput
