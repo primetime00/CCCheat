@@ -383,8 +383,8 @@ case RESULT_TABLE_DELETE:
 m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
-      label ryCheat open
-      xywh {49 119 1358 827} type Double align 80
+      label CCCheat open selected
+      xywh {54 124 1348 817} type Double align 80
       code0 {\#include <iostream>}
       code1 {using namespace std;}
       class rkWindow visible
@@ -607,7 +607,7 @@ m_inProgress = false;} {}
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
-        callback CanConnectCB open selected
+        callback CanConnectCB open
         xywh {135 20 255 30} when 1
         code0 {readIP();}
         class IPInput

@@ -151,31 +151,33 @@ int MemoryOperator::processRead()
 int MemoryOperator::processWrite()
 {
 	unsigned int length;
+	char loc[20];
 	int res;
 	m_mutex.lock();
 	for (MemoryWriteItemList::iterator it = memoryWriteOperationList.begin(); it != memoryWriteOperationList.end();)
 	{
 		if (m_exit) { m_mutex.unlock(); return 1; }
 		length = getLength(it->second->type);
+		memcpy(loc, (char*)&it->second->value, 8);
 
 		if (it->second->type == SEARCH_VALUE_TYPE_2BYTE)
 		{
-			short tmp = BSWAP16(*(short*)&it->second->value);
+			short tmp = BSWAP16(*(short*)&loc);
 			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
 		}
 		else if (it->second->type == SEARCH_VALUE_TYPE_4BYTE)
 		{
-			long tmp = BSWAP32(*(long*)&it->second->value);
+			long tmp = BSWAP32(*(long*)&loc);
 			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
 		}
 		else if (it->second->type == SEARCH_VALUE_TYPE_FLOAT)
 		{
-			unsigned long tmp = BSWAP32(*(unsigned long*)&it->second->value);
+			unsigned long tmp = BSWAP32(*(unsigned long*)&loc);
 			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
 		}
 		else
 		{
-			res = m_ccapi->writeMemory(it->second->address, length, (char*)&it->second->value);
+			res = m_ccapi->writeMemory(it->second->address, length, loc);
 		}
 		if (it->second->freeze)
 			++it;

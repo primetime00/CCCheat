@@ -39,7 +39,7 @@ public:
   void newCode();
   void deleteCodes();
   void addResults(vector<AddressItem> &items, char type);
-  void setMemoryOperator(MemoryOperator *op) { m_operator = op; }
+  void setMemoryOperator(MemoryOperator *op);
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)

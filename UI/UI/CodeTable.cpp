@@ -466,7 +466,11 @@ void CodeTable::onValueChanged(rkCheat_Code *item, long long value)
 	if (item->value != value)
 	{
 		item->value = value;
-		item->setSign(Helpers::isSigned(item->type, value));
+		if (value < 0)
+			item->setSign(true);
+		else
+			item->setSign(false);
+		//item->setSign(Helpers::isSigned(item->type, value));
 		if (m_operator != 0)
 			m_operator->setWriteMemoryOperation(item->address, value, item->type, item->freeze);
 	}
@@ -653,3 +657,14 @@ void CodeTable::doDeactivate()
 		select_all_rows(0);
 }
 
+void CodeTable::setMemoryOperator(MemoryOperator *op)
+{ 
+	m_operator = op;
+	if (op != 0)
+	{
+		for (rkCheat_CodeList::iterator it = data.begin(); it != data.end(); ++it)
+		{
+			m_operator->setReadMemoryOperation((*it)->address, (*it)->type, (char*)&(*it)->value, true);
+		}
+	}
+}
