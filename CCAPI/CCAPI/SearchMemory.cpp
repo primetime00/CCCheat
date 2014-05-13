@@ -185,7 +185,14 @@ unsigned int SearchMemory::process()
 		m_status = "SEARCHMEMORY";
 	for (unsigned int i=0; i<m_threadList.size(); i++)
 	{
-		::this_thread::sleep_for(::chrono::milliseconds(100));
+		::this_thread::sleep_for(::chrono::milliseconds(50));
+		cancelLock.lock();
+		if (m_cancel)
+		{
+			cancelLock.unlock();
+			return TASK_ERROR_CANCEL;
+		}
+		cancelLock.unlock();
 		//if (i != m_threadList.size()-1)
 			m_threadList.at(i)->fire();
 	}
@@ -194,7 +201,9 @@ unsigned int SearchMemory::process()
 
 void SearchMemory::cancel() 
 {
+	cancelLock.lock();
 	m_cancel = true;
+	cancelLock.unlock();
 	cout << "CANCELED!" << endl;
 	for (unsigned int i=0; i<m_threadList.size(); i++)
 	{

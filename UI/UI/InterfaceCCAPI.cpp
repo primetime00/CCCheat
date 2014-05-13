@@ -247,6 +247,7 @@ void InterfaceCCAPI::_continueSearch()
 
 void InterfaceCCAPI::_resetSearch()
 {
+	Fl::remove_timeout(InterfaceCCAPI::searchProgress, searcher);
 	if (m_launcher.joinable())
 	{
 		m_launcher.join();
@@ -356,7 +357,6 @@ bool InterfaceCCAPI::_searchProgress(SearchMemory *search)
 	}
 	else if (status == "CANCEL")
 	{
-		Fl::remove_timeout(InterfaceCCAPI::searchProgress, search);
 		_resetSearch();
 		m_ui->setSearchProgress(0.0f, "Canceled", true);
 		return true;
@@ -386,7 +386,9 @@ void InterfaceCCAPI::_processSearchResults(SearchMemory *search)
 void InterfaceCCAPI::_cancelSearch() 
 {
 	if (searcher)
+	{
 		searcher->cancel();
+	}
 }
 
 bool InterfaceCCAPI::isSearchFinished()

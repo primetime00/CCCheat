@@ -81,6 +81,7 @@ int CCAPI::receiveData(void)
 	while (numOfBytes < 16)
 	{
 		int _numOfBytes = recv(sock, &dataBuffer[numOfBytes], bufferSize, 0);
+		if (_numOfBytes == -1) return -1;//now we really disconnected!
 		for (i=numOfBytes; i<numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
 		numOfBytes += _numOfBytes;
 	}
@@ -89,6 +90,7 @@ int CCAPI::receiveData(void)
 	while (numOfBytes < size)
 	{
 		int _numOfBytes = recv(sock, &dataBuffer[numOfBytes], bufferSize, 0);
+		if (_numOfBytes == -1) return -1;//now we really disconnected!
 		for (i=numOfBytes; i<numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
 		numOfBytes += _numOfBytes;
 	}
