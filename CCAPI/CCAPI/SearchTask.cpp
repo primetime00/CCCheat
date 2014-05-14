@@ -12,6 +12,7 @@ using namespace std;
 
 SearchTask::SearchTask(string ip, unsigned long long offset, unsigned long long length, unsigned int id, string name) : Task(id, name)
 {
+	char buf[255];
 	m_offset = offset;
 	m_length = length;
 	m_ip = ip;
@@ -19,6 +20,8 @@ SearchTask::SearchTask(string ip, unsigned long long offset, unsigned long long 
 	m_searchValueType = SEARCH_VALUE_TYPE_4BYTE;
 	m_compareType = SEARCH_FUZZY_NOTEQUAL;
 	m_connected = false;
+	GetCurrentDir(buf, 255);
+	m_dumpDir = string(buf) + "/";
 }
 
 SearchTask::~SearchTask()
@@ -213,7 +216,7 @@ int SearchTask::initialFuzzySearch() //THIS WILL GENERATE A DUMP FILE!
 	char *memData;
 	unsigned int length;
 	calculateReads(RANGE_INTERVAL, rounds, remains);
-	dumpFile.open(DUMP_DIR+m_dumpFile, ios::out | ios::binary | ios::trunc);
+	dumpFile.open(m_dumpDir+m_dumpFile, ios::out | ios::binary | ios::trunc);
 	dumpFile.write((char*)&resFileType, sizeof(unsigned char));
 	for (unsigned long long i=0; i<rounds; i++)
 	{
@@ -307,7 +310,7 @@ int SearchTask::initialValueSearch() //this will generate a result file
 }
 int SearchTask::continueFuzzySearch()
 {
-	ifstream resFile(DUMP_DIR+m_dumpFile, ios::in | ios::binary);
+	ifstream resFile(m_dumpDir+m_dumpFile, ios::in | ios::binary);
 	unsigned char resFileType;
 	int res;
 	if (resFile)
@@ -369,7 +372,7 @@ int SearchTask::fuzzySearchDumpFile(ifstream &resFile)
 	resFile.close();
 	if (m_cancel)
 		return TASK_ERROR_CANCEL;
-	remove(string(DUMP_DIR+m_dumpFile).c_str());
+	remove(string(m_dumpDir+m_dumpFile).c_str());
 	m_taskState = Task::COMPLETE;
 	progressCallback(this, m_length, m_length);
 	return TASK_ERROR_NONE;

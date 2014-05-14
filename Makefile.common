@@ -4,7 +4,7 @@ FLTK_DIR := $(TOP_DIR)/../../fltk/fltk
 TARGET := CCCheat
 
 INCLUDES := -I. -I$(CCAPI_DIR) -I$(FLTK_DIR)
-LIBS := -L$(TOP_DIR)/FLTK -L$(CCAPI_DIR)/CCAPI/lib -lccapi -lfltk -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl
+LIBS := -L$(TOP_DIR)/FLTK -L$(CCAPI_DIR)/CCAPI/lib -lccapi -lfltk -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl -lpthread
 
 CC = g++
 DEBUG = -g
