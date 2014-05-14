@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #include "Helpers.h"
 #include "ChunkFuzzySearch.h"
 #include "ChunkValueSearch.h"

@@ -1,5 +1,6 @@
 #include "RangeMemory.h"
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 

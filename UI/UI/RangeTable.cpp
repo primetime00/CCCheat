@@ -118,7 +118,7 @@ fl_pop_clip();
 
 void RangeTable::saveData(string filename)
 {
-	fstream f = fstream(filename, ios_base::out | ios_base::trunc);
+	fstream f(filename, ios_base::out | ios_base::trunc);
 	for (rkCheat_RangeList::iterator it = data.begin(); it != data.end(); ++it)
 	{
 		f << it->first << " " << it->second << endl;
@@ -130,7 +130,7 @@ bool RangeTable::loadData(string filename)
 {
 	rkCheat_RangeList rList;
 	rkCheat_RangeItem rItem;
-	fstream f = fstream(filename, ios_base::in);
+	fstream f(filename, ios_base::in);
 	if (!f)
 		return false;
 	while (true) 

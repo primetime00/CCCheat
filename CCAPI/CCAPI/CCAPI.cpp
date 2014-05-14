@@ -2,8 +2,12 @@
 #include <iostream>
 #if defined(_WIN32) || defined(WIN32)
 #include <intrin.h>
+#define CLOSESOCKET(x) closesocket(x)
 #else
 #include <byteswap.h>
+#include <unistd.h>
+#include <cstring>
+#define CLOSESOCKET(x) close(x)
 #endif
 
 using namespace std;
@@ -40,7 +44,7 @@ int CCAPI::connect(void)
 		cout << "\nSocket Connection FAILED!" << endl;
 		if (sock) 
 		{
-			closesocket(sock);
+			CLOSESOCKET(sock);
 			return -1;
 		}
 	}
@@ -55,7 +59,7 @@ int CCAPI::disconnect(void)
 	attached = false;
 	if (sock) 
 	{
-		closesocket(sock);
+		CLOSESOCKET(sock);
 		return 0;
 	}
 	return -1;

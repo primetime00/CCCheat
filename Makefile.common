@@ -1,0 +1,16 @@
+CCAPI_DIR := $(TOP_DIR)/CCAPI
+UI_DIR := $(TOP_DIR)/UI
+FLTK_DIR := $(TOP_DIR)/../../fltk/fltk
+TARGET := CCCheat
+
+INCLUDES := -I. -I$(CCAPI_DIR) -I$(FLTK_DIR)
+LIBS := -L$(TOP_DIR)/FLTK -L$(CCAPI_DIR)/CCAPI/lib -lccapi -lfltk -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl
+
+CC = g++
+DEBUG = -g
+CFLAGS = -Wall -std=c++11 -c $(DEBUG) $(INCLUDES) -Wno-sign-compare -Wno-int-to-pointer-cast -Wno-parentheses -Wno-format
+#LFLAGS = -Wall $(DEBUG)
+#LFLAGS = -Wall $(DEBUG) $(LIBS)
+#INCLUDES = -I. -I../../CCAPI -I../../../../fltk/fltk
+#LIBS = -L../../FLTK -L../../CCAPI/CCAPI/lib -lccapi -lfltk -lGL -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl
+LFLAGS = -Wall $(DEBUG) $(LIBS)

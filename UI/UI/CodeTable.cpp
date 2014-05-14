@@ -101,7 +101,7 @@ void CodeTable::addEntry(string desc, unsigned long address, long long value, ch
 		type_choice->hide();
 		for (int i=0; rkCheatUI::menu_ui_valueType[i].text != 0; ++i)
 		{
-			if ( (char)rkCheatUI::menu_ui_valueType[i].user_data() == type )
+			if ( get_user_data(char, rkCheatUI::menu_ui_valueType[i].user_data()) == type )
 			{
 				type_choice->value(i);
 				break;
@@ -385,7 +385,7 @@ fl_pop_clip();
 
 void CodeTable::saveData(string filename)
 {
-	fstream f = fstream(filename, ios_base::out | ios_base::trunc | ios_base::binary);
+	fstream f(filename, ios_base::out | ios_base::trunc | ios_base::binary);
 	for (rkCheat_CodeList::iterator it = data.begin(); it != data.end(); ++it)
 	{
 		f << (*it)->description << "\n" << (*it)->address << " " << (*it)->value << " " << (*it)->type << " " << (*it)->freeze << "\n";
@@ -395,7 +395,7 @@ void CodeTable::saveData(string filename)
 
 bool CodeTable::loadData(string filename)
 {
-	fstream f = fstream(filename, ios_base::in | ios_base::binary);
+	fstream f(filename, ios_base::in | ios_base::binary);
 	if (!f)
 		return false;
 	clearTable();

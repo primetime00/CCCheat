@@ -1,6 +1,6 @@
 #include "InterfaceCCAPI.h"
-#include "CCAPI\Common.h"
-#include "FL\Fl.H"
+#include "CCAPI/Common.h"
+#include "FL/Fl.H"
 #include <sstream>
 
 InterfaceCCAPI *InterfaceCCAPI::instance = 0;
@@ -163,8 +163,8 @@ void InterfaceCCAPI::startNewSearch()
 }
 void InterfaceCCAPI::_startNewSearch()
 {
-	char searchType = (char)m_ui->ui_searchType->mvalue()->user_data();
-	char valueType = (char)m_ui->ui_valueType->mvalue()->user_data();
+	char searchType = get_user_data(char, m_ui->ui_searchType->mvalue()->user_data());
+	char valueType = get_user_data(char, m_ui->ui_valueType->mvalue()->user_data());
 	string c_ip = m_ui->ui_ipInput->getIP();
 	m_ui->ui_resultTable->clear();
 	rkCheat_RangeList rList = m_ui->ui_rangeTable->getSelectedRanges();
@@ -184,7 +184,7 @@ void InterfaceCCAPI::_startNewSearch()
 		else
 		{
 			s->setSearchType(SEARCH_TYPE_VALUE);
-			s->setSearchCompareType((char)m_ui->ui_searchType->mvalue()->user_data());
+			s->setSearchCompareType(get_user_data(char, m_ui->ui_searchType->mvalue()->user_data()));
 			s->setSearchValue(m_ui->ui_valueInput->getLLValue());
 		}
 		s->setSearchValueType(valueType);
@@ -229,7 +229,7 @@ void InterfaceCCAPI::_continueSearch()
 		}
 		s->setSearchValue(m_ui->ui_valueInput->getLLValue());
 		s->setSearchType(m_ui->ui_searchType->isFuzzy() ? SEARCH_TYPE_FUZZY: SEARCH_TYPE_VALUE);
-		s->setSearchCompareType((char)m_ui->ui_searchType->mvalue()->user_data());
+		s->setSearchCompareType(get_user_data(char, m_ui->ui_searchType->mvalue()->user_data()));
 		if (numResults > 0 || s->isDump())
 			s->resetStatus();
 	}

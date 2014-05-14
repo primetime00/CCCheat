@@ -69,7 +69,7 @@ class rkCheatUI {open
 } {
   Function {RangeButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int type = (int)data;
+    code {int type = *(int*)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 switch (type)
@@ -192,7 +192,7 @@ uiInstance->ui_valueInput->setHex(value == 1);} {}
   }
   Function {SetValueTypeCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int value = (int)((Fl_Menu_Button*)w)->mvalue()->user_data();
+    code {int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
 uiInstance->ui_valueInput->setValueType(value);} {}
   }
   Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
@@ -249,7 +249,7 @@ uiInstance->ui_valueInput->setValueType(value);} {}
   }
   Function {ResultTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = (int)data;
+    code {int command = *(int*)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 vector<AddressItem> items;
@@ -307,7 +307,7 @@ case RESULT_TABLE_DELETE:
   }
   Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = (int)data;
+    code {int command = *(int*)data;
   string fname;
   Fl_Native_File_Chooser fnfc;
   switch (command)
@@ -690,7 +690,7 @@ ui_valueType->deactivate();
 ui_buttonNextScan->deactivate();
 ui_buttonNewScan->label("Cancel");
 ui_buttonNewScan->activate();
-ui_resultTable->setResultType((char)ui_valueType->mvalue()->user_data());} {}
+ui_resultTable->setResultType(get_user_data(char, ui_valueType->mvalue()->user_data()));} {}
   }
   Function {searchStopped(char how)} {return_type void
   } {

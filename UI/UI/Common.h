@@ -18,6 +18,8 @@
 #define SEARCH_STOPPED_RESET 0x02
 #define SEARCH_STOPPED_NO_RESULTS 0x03
 
+#define get_user_data(type, data) (type)((unsigned long)data)
+
 using namespace std;
 
 struct WidgetField
@@ -30,7 +32,8 @@ struct WidgetField
 	WidgetField(Fl_Input *d, ValueInput *a, ValueInput *v, Fl_Choice *c, Fl_Check_Button *f) { description = d; address_input = a; value_input = v; freeze = f; type = c; }
 	WidgetField() { freeze = 0; type = 0; value_input = 0; description = 0;}
 	~WidgetField() {
-		delete value_input, address_input;
+		delete value_input; 
+		delete address_input;
 		delete freeze; delete type;
 		delete description;
 		address_input = 0;

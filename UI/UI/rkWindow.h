@@ -2,7 +2,7 @@
 #define _RKWINDOW_
 
 #include <vector>
-#include <FL\Fl_Double_Window.H>
+#include <FL/Fl_Double_Window.H>
 #include "IDeactivate.h"
 
 using namespace std;

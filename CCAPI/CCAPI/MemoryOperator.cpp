@@ -1,6 +1,6 @@
 #include "MemoryOperator.h"
 #include <iostream>
-
+#include <cstring>
 void MemoryOperator::start()
 {
 	m_thread = thread(&MemoryOperator::run, this);
