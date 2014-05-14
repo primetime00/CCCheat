@@ -69,7 +69,7 @@ class rkCheatUI {open
 } {
   Function {RangeButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int type = *(int*)data;
+    code {int type = (int)(unsigned long)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 switch (type)
@@ -249,7 +249,7 @@ uiInstance->ui_valueInput->setValueType(value);} {}
   }
   Function {ResultTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = *(int*)data;
+    code {int command = (int)(unsigned long)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 vector<AddressItem> items;
@@ -307,7 +307,7 @@ case RESULT_TABLE_DELETE:
   }
   Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = *(int*)data;
+    code {int command = (int)(unsigned long)data;
   string fname;
   Fl_Native_File_Chooser fnfc;
   switch (command)
