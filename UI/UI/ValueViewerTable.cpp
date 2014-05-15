@@ -130,7 +130,7 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 		if ((unsigned int)ROW < DEFAULT_ROWS)
 		{
 			unsigned long tmpLong = BSWAP32(*(unsigned long*)(&m_memory[ROW]));
-			unsigned long tmpShort = BSWAP16(*(unsigned short*)(&m_memory[ROW]));
+			unsigned short tmpShort = BSWAP16(*(unsigned short*)(&m_memory[ROW]));
 			switch(COL)
 			{
 			case ADDRESS_COL: sprintf(s,"0x%08X",m_startAddress+ROW); break;
@@ -141,21 +141,21 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 					sprintf(s,"%f", *(float*)(&tmpLong) ); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
 					if (m_signed)
-						sprintf(s,"%ld", (char)m_memory[ROW]); 
+						sprintf(s,"%hd", (char)m_memory[ROW]); 
 					else
-						sprintf(s,"%lu", (unsigned char)m_memory[ROW]); 
+						sprintf(s,"%hu", (unsigned char)m_memory[ROW]); 
 					break;					
 				case SEARCH_VALUE_TYPE_2BYTE:
 					if (m_signed) 
-						 sprintf(s,"%ld", (short) tmpShort); 
+						 sprintf(s,"%hd", (short) tmpShort); 
 					 else
-						 sprintf(s,"%lu", (unsigned short) tmpShort); 
+						 sprintf(s,"%hu", (unsigned short) tmpShort); 
 					 break;					
 				default:
 					if (m_signed) 
-						sprintf(s,"%ld", (long) tmpLong); 
+						sprintf(s,"%d", (long) tmpLong); 
 					else
-						sprintf(s,"%lu", (unsigned long) tmpLong); 
+						sprintf(s,"%u", (unsigned long) tmpLong); 
 					break;
 				} break;
 			case HEX_COL: 
