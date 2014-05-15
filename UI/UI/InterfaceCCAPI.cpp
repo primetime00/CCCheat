@@ -35,6 +35,8 @@ void InterfaceCCAPI::_connectCheck()
 			uiInstance->setConnectStatus(INTERFACE_CONNECT_SUCCESS);
 			uiInstance->ui_codeTable->setMemoryOperator(memoryOperator);
 			uiInstance->ui_resultTable->setMemoryOperator(memoryOperator);
+			uiInstance->m_valueTable->setMemoryOperator(memoryOperator);
+			uiInstance->m_valueTable->setCodeTable(uiInstance->ui_codeTable);
 		}
 	}
 }
@@ -43,6 +45,8 @@ void InterfaceCCAPI::disconnect()
 {
 	uiInstance->ui_codeTable->setMemoryOperator(0);
 	uiInstance->ui_resultTable->setMemoryOperator(0);
+	uiInstance->m_valueTable->setMemoryOperator(0);
+	uiInstance->m_valueTable->setCodeTable(0);
 	if (memoryOperator != 0)
 	{
 		delete memoryOperator;

@@ -22,6 +22,9 @@
 
 using namespace std;
 
+class rkCheatUI;
+extern rkCheatUI *uiInstance;
+
 struct WidgetField
 {
 	Fl_Input *description;
@@ -93,6 +96,17 @@ struct rkCheat_Code
 	}
 	void setSign(bool s) { sign = s; }
 };
+
+struct ResultRow {
+	AddressItem *item;
+	unsigned long section;
+	unsigned long thread;
+	unsigned long searchID;
+	ResultRow(AddressItem *i, unsigned long s, unsigned long t, unsigned long sid) { item = i; section = s; thread = t; searchID = sid;}
+};
+
+typedef vector<ResultRow> Results;
+
 
 #ifdef _WIN32
 	#include <direct.h>

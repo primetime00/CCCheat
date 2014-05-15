@@ -40,12 +40,15 @@ public:
   void deleteCodes();
   void addResults(vector<AddressItem> &items, char type);
   void setMemoryOperator(MemoryOperator *op);
+  void setViewer(Fl_Callback *cb) { viewer = cb; }
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)
 	  {
 		  if (Fl::event_clicks())
-			((CodeTable*)w)->onCellClicked(((Fl_Table*)w)->callback_row(), ((Fl_Table*)w)->callback_col());
+			((CodeTable*)w)->onCellDoubleClicked(((Fl_Table*)w)->callback_row(), ((Fl_Table*)w)->callback_col());
+		  else if (Fl::event_button() == FL_RIGHT_MOUSE)
+			  ((CodeTable*)w)->onCellRightClicked(((Fl_Table*)w)->callback_row(), ((Fl_Table*)w)->callback_col());
 	  }
 	  else
 	  {
@@ -80,7 +83,8 @@ private:
   void onValueChanged(rkCheat_Code *data, long long value);
   void onCodeTypeChanged(rkCheat_Code *data, int value);
   void onCodeFreezeChanged(rkCheat_Code *data, int value);
-  void onCellClicked(int row, int col);
+  void onCellDoubleClicked(int row, int col);
+  void onCellRightClicked(int row, int col);
   void onTableClicked();
 
   void doDeactivate();
@@ -88,6 +92,7 @@ private:
 
   vector<int> getSelectedRows();
   MemoryOperator *m_operator;
+  Fl_Callback *viewer;
 
   
 

@@ -27,6 +27,7 @@ public:
 
 	void setReadMemoryOperation(unsigned long address, char type, char *memory, bool keep);
 	void setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze);
+	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
 	void removeMemoryOperation(char command, unsigned long address);
 
 private:
@@ -34,6 +35,7 @@ private:
 	void run();
 	void process();
 	int processRead();
+	int processChunkRead();
 	int processWrite();
 
 	unsigned int getLength(char type) { if (type == SEARCH_VALUE_TYPE_1BYTE) return 1; if (type == SEARCH_VALUE_TYPE_2BYTE) return 2; return 4; }
@@ -44,6 +46,7 @@ private:
 	shared_ptr<CCAPI> m_ccapi;
 	string m_ip;
 	MemoryReadItemList memoryReadOperationList;
+	MemoryChunkReadItemList memoryChunkReadOperationList;
 	MemoryWriteItemList memoryWriteOperationList;
 	bool m_exit;
 	string m_status;

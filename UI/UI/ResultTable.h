@@ -16,15 +16,6 @@
 
 using namespace std;
 
-struct ResultRow {
-	AddressItem *item;
-	unsigned long section;
-	unsigned long thread;
-	unsigned long searchID;
-	ResultRow(AddressItem *i, unsigned long s, unsigned long t, unsigned long sid) { item = i; section = s; thread = t; searchID = sid;}
-};
-
-typedef vector<ResultRow> Results;
 
 class ResultTable : public Fl_Table_Row {
 public:

@@ -11,8 +11,29 @@ Fl_Menu_Item rkCheatUI::menu_ui_valueType[] = {
  {0,0,0,0,0,0,0,0,0}
 };
 
+void rkCheatUI::cb_m_viewerTypeChoice_i(Fl_Choice* o, void* v) {
+  ((ValueViewerWindow*)v)->TypeChangedCB(o);
+}
+void rkCheatUI::cb_m_viewerTypeChoice(Fl_Choice* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_viewerTypeChoice_i(o,v);
+}
+
+void rkCheatUI::cb_m_viewerSignedButton_i(Fl_Check_Button* o, void* v) {
+  ((ValueViewerWindow*)v)->SignedChangedCB(o);
+}
+void rkCheatUI::cb_m_viewerSignedButton(Fl_Check_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_viewerSignedButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_valueAddCodeButton_i(Fl_Button* o, void* v) {
+  ((ValueViewerWindow*)v)->AddCodeCB(o);
+}
+void rkCheatUI::cb_m_valueAddCodeButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_valueAddCodeButton_i(o,v);
+}
+
 void rkCheatUI::RangeButtonCB(Fl_Widget *w, void *data) {
-  int type = (int)data;
+  int type = (int)(unsigned long)data;
   string fname;
   Fl_Native_File_Chooser fnfc;
   switch (type)
@@ -135,7 +156,7 @@ void rkCheatUI::SetHexCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::SetValueTypeCB(Fl_Widget *w, void *data) {
-  int value = (int)((Fl_Menu_Button*)w)->mvalue()->user_data();
+  int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
   uiInstance->ui_valueInput->setValueType(value);
 }
 
@@ -192,7 +213,7 @@ void rkCheatUI::RangeTableCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::ResultTableButtonCB(Fl_Widget *w, void *data) {
-  int command = (int)data;
+  int command = (int)(unsigned long)data;
   string fname;
   Fl_Native_File_Chooser fnfc;
   vector<AddressItem> items;
@@ -250,7 +271,7 @@ void rkCheatUI::ResultTableButtonCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::CodeTableButtonCB(Fl_Widget *w, void *data) {
-  int command = (int)data;
+  int command = (int)(unsigned long)data;
     string fname;
     Fl_Native_File_Chooser fnfc;
     switch (command)
@@ -321,11 +342,16 @@ void rkCheatUI::CanConnectCB(Fl_Widget *w, void *data) {
   	  uiInstance->ui_connectButton->deactivate();
 }
 
+void rkCheatUI::ViewerCB(Fl_Widget *w, void *data) {
+  uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
+  uiInstance->m_valueviewer->show();
+}
+
 rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1389, 817, "CCCheat");
+  { mainWindow = new rkWindow(1369, 797, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -515,6 +541,7 @@ rkCheatUI::rkCheatUI() {
         ui_codeTable->labelcolor(FL_FOREGROUND_COLOR);
         ui_codeTable->align(Fl_Align(FL_ALIGN_TOP));
         ui_codeTable->when(FL_WHEN_RELEASE);
+        ui_codeTable->setViewer(ViewerCB);
         ui_codeTable->end();
       } // CodeTable* ui_codeTable
       { ui_ButtonNewCode = new Fl_Button(1124, 465, 100, 30, "New Code");
@@ -551,6 +578,44 @@ rkCheatUI::rkCheatUI() {
     } // IPInput* ui_ipInput
     mainWindow->end();
   } // rkWindow* mainWindow
+  { m_valueviewer = new ValueViewerWindow(546, 715, "Value Viewer");
+    m_valueviewer->box(FL_FLAT_BOX);
+    m_valueviewer->color(FL_BACKGROUND_COLOR);
+    m_valueviewer->selection_color(FL_BACKGROUND_COLOR);
+    m_valueviewer->labeltype(FL_NO_LABEL);
+    m_valueviewer->labelfont(0);
+    m_valueviewer->labelsize(14);
+    m_valueviewer->labelcolor(FL_FOREGROUND_COLOR);
+    m_valueviewer->user_data((void*)(this));
+    m_valueviewer->align(Fl_Align(FL_ALIGN_TOP));
+    m_valueviewer->when(FL_WHEN_RELEASE);
+    { m_valueTable = new ValueViewerTable(0, 60, 495, 625);
+      m_valueTable->box(FL_THIN_DOWN_FRAME);
+      m_valueTable->color(FL_BACKGROUND_COLOR);
+      m_valueTable->selection_color((Fl_Color)6);
+      m_valueTable->labeltype(FL_NORMAL_LABEL);
+      m_valueTable->labelfont(0);
+      m_valueTable->labelsize(14);
+      m_valueTable->labelcolor(FL_FOREGROUND_COLOR);
+      m_valueTable->align(Fl_Align(FL_ALIGN_TOP));
+      m_valueTable->when(FL_WHEN_RELEASE);
+      m_valueTable->end();
+    } // ValueViewerTable* m_valueTable
+    { m_viewerTypeChoice = new Fl_Choice(45, 15, 110, 25, "Type");
+      m_viewerTypeChoice->down_box(FL_BORDER_BOX);
+      m_viewerTypeChoice->callback((Fl_Callback*)cb_m_viewerTypeChoice);
+      m_viewerTypeChoice->when(FL_WHEN_CHANGED);
+      m_viewerTypeChoice->menu(menu_ui_valueType);
+    } // Fl_Choice* m_viewerTypeChoice
+    { m_viewerSignedButton = new Fl_Check_Button(175, 15, 64, 20, "Signed");
+      m_viewerSignedButton->down_box(FL_DOWN_BOX);
+      m_viewerSignedButton->callback((Fl_Callback*)cb_m_viewerSignedButton);
+    } // Fl_Check_Button* m_viewerSignedButton
+    { m_valueAddCodeButton = new Fl_Button(395, 15, 100, 30, "Add Code");
+      m_valueAddCodeButton->callback((Fl_Callback*)cb_m_valueAddCodeButton);
+    } // Fl_Button* m_valueAddCodeButton
+    m_valueviewer->end();
+  } // ValueViewerWindow* m_valueviewer
 }
 
 void rkCheatUI::setInterface(InterfaceCCAPI *iface) {
@@ -630,7 +695,7 @@ void rkCheatUI::searchStarted() {
   ui_buttonNextScan->deactivate();
   ui_buttonNewScan->label("Cancel");
   ui_buttonNewScan->activate();
-  ui_resultTable->setResultType((char)ui_valueType->mvalue()->user_data());
+  ui_resultTable->setResultType(get_user_data(char, ui_valueType->mvalue()->user_data()));
 }
 
 void rkCheatUI::searchStopped(char how) {

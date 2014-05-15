@@ -16,6 +16,8 @@
 #include "IPInput.h"
 #include "SearchOperationChoice.h"
 #include "Common.h"
+#include "ValueViewerWindow.h"
+#include "ValueViewerTable.h"
 #define RANGE_SAVE 0
 #define RANGE_LOAD 1
 #define RANGE_CLEAR 2
@@ -23,8 +25,6 @@
 #define RANGE_CANCEL 4
 #define RANGE_DELETE 5
 class InterfaceCCAPI;
-#include <iostream>
-using namespace std;
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Button.H>
@@ -48,6 +48,7 @@ public:
   static void CodeTableButtonCB(Fl_Widget *w, void *data);
   static void ConnectButtonCB(Fl_Widget *w, void *data);
   static void CanConnectCB(Fl_Widget *w, void *data);
+  static void ViewerCB(Fl_Widget *w, void *data);
   rkCheatUI();
   rkWindow *mainWindow;
   Fl_Group *searchGroup;
@@ -88,6 +89,23 @@ public:
   Fl_Button *ui_ButtonLoadCodes;
   Fl_Light_Button *ui_connectButton;
   IPInput *ui_ipInput;
+  ValueViewerWindow *m_valueviewer;
+  ValueViewerTable *m_valueTable;
+  Fl_Choice *m_viewerTypeChoice;
+private:
+  inline void cb_m_viewerTypeChoice_i(Fl_Choice*, void*);
+  static void cb_m_viewerTypeChoice(Fl_Choice*, void*);
+public:
+  Fl_Check_Button *m_viewerSignedButton;
+private:
+  inline void cb_m_viewerSignedButton_i(Fl_Check_Button*, void*);
+  static void cb_m_viewerSignedButton(Fl_Check_Button*, void*);
+public:
+  Fl_Button *m_valueAddCodeButton;
+private:
+  inline void cb_m_valueAddCodeButton_i(Fl_Button*, void*);
+  static void cb_m_valueAddCodeButton(Fl_Button*, void*);
+public:
   void setInterface(InterfaceCCAPI *iface);
 private:
   InterfaceCCAPI *m_interface; 
@@ -108,5 +126,4 @@ public:
   void storeIP();
   void readIP();
 };
-extern rkCheatUI *uiInstance;
 #endif

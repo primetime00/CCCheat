@@ -41,6 +41,12 @@ decl {\#include "SearchOperationChoice.h"} {public global
 decl {\#include "Common.h"} {public global
 } 
 
+decl {\#include "ValueViewerWindow.h"} {public global
+} 
+
+decl {\#include "ValueViewerTable.h"} {public global
+} 
+
 decl {\#define RANGE_SAVE 0} {public global
 } 
 
@@ -377,6 +383,11 @@ case RESULT_TABLE_DELETE:
   else if (!valid && uiInstance)
 	  uiInstance->ui_connectButton->deactivate();} {}
   }
+  Function {ViewerCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  } {
+    code {uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
+uiInstance->m_valueviewer->show();} {}
+  }
   Function {rkCheatUI()} {open
   } {
     code {uiInstance = this;
@@ -384,9 +395,7 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat open
-      xywh {54 124 1389 817} type Double align 80
-      code0 {\#include <iostream>}
-      code1 {using namespace std;}
+      xywh {-68 530 1369 797} type Double align 80
       class rkWindow visible
     } {
       Fl_Group searchGroup {
@@ -574,6 +583,7 @@ m_inProgress = false;} {}
       } {
         Fl_Table ui_codeTable {open
           xywh {119 425 985 325} color 47 selection_color 6 labeltype NO_LABEL
+          code0 {ui_codeTable->setViewer(ViewerCB);}
           class CodeTable
         } {}
         Fl_Button ui_ButtonNewCode {
@@ -607,11 +617,37 @@ m_inProgress = false;} {}
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
-        callback CanConnectCB open selected
+        callback CanConnectCB open
         xywh {135 20 255 30} when 1
         code0 {readIP();}
         class IPInput
       } {}
+    }
+    Fl_Window m_valueviewer {
+      label {Value Viewer} open
+      xywh {636 161 546 715} type Double
+      class ValueViewerWindow visible
+    } {
+      Fl_Table m_valueTable {open
+        xywh {0 60 495 625} selection_color 6
+        class ValueViewerTable
+      } {}
+      Fl_Choice m_viewerTypeChoice {
+        label Type
+        callback {((ValueViewerWindow*)v)->TypeChangedCB(o)} open
+        xywh {45 15 110 25} down_box BORDER_BOX when 1
+        code0 {m_viewerTypeChoice->menu(menu_ui_valueType);}
+      } {}
+      Fl_Check_Button m_viewerSignedButton {
+        label Signed
+        callback {((ValueViewerWindow*)v)->SignedChangedCB(o)}
+        xywh {175 15 64 20} down_box DOWN_BOX
+      }
+      Fl_Button m_valueAddCodeButton {
+        label {Add Code}
+        callback {((ValueViewerWindow*)v)->AddCodeCB(o)} selected
+        xywh {395 15 100 30}
+      }
     }
   }
   Function {setInterface(InterfaceCCAPI *iface)} {} {
@@ -822,7 +858,4 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
 		}
 	}} {}
   }
-} 
-
-decl {extern rkCheatUI *uiInstance;} {public global
 } 

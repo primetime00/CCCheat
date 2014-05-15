@@ -36,6 +36,8 @@ CodeTable::CodeTable(int X, int Y, int W, int H, const char *l) : Fl_Table_Row(X
 	col_resize(1);
 	w(400+250+110+110+110+3);
 
+	viewer = 0;
+
 	type(SELECT_MULTI);
 	end();
 	callback(tableClickedCB);
@@ -455,6 +457,7 @@ void CodeTable::onAddressChanged(rkCheat_Code *item, unsigned long value)
 	}
 	item->address = value;
 	item->freeze = false;
+	item->widget->freeze->value(0);
 	if (m_operator != 0)
 	{
 		m_operator->setReadMemoryOperation(item->address, item->type, (char*)&item->value, true);
@@ -510,7 +513,7 @@ void CodeTable::onCodeFreezeChanged(rkCheat_Code *item, int value)
 	}
 }
 
-void CodeTable::onCellClicked(int row, int col)
+void CodeTable::onCellDoubleClicked(int row, int col)
 {
 	long long int_val; 
 	if (data[row]->sign)
@@ -593,6 +596,22 @@ void CodeTable::onCellClicked(int row, int col)
 		break;
 	}
 }
+
+void CodeTable::onCellRightClicked(int row, int col)
+{
+	const Fl_Menu_Item *m = 0;
+	if (col == ADDRESS_COL)
+	{
+		Fl_Menu_Item rclick_menu[] = {
+			{ "View Nearby...",   0, viewer,  (void*)this },
+            { 0 }
+            };
+            m = rclick_menu->popup(Fl::event_x(), Fl::event_y(), 0, 0, 0);
+			//if ( m ) m->do_callback(0, m->user_data());
+            if ( m ) m->do_callback(0, data[row].get());
+	}
+}
+
 
 void CodeTable::onTableClicked()
 {
