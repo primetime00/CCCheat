@@ -164,7 +164,7 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 				case SEARCH_VALUE_TYPE_FLOAT: 
 					sprintf(s,"%X", tmpLong); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
-						 sprintf(s,"%X", m_memory[ROW]); 
+						 sprintf(s,"%X", (unsigned char)m_memory[ROW]); 
 						 break;					
 				case SEARCH_VALUE_TYPE_2BYTE: 
 						 sprintf(s,"%X", tmpShort); 
