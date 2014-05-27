@@ -18,6 +18,7 @@
 #include "Common.h"
 #include "ValueViewerWindow.h"
 #include "ValueViewerTable.h"
+#include "InfoWindow.h"
 #define RANGE_SAVE 0
 #define RANGE_LOAD 1
 #define RANGE_CLEAR 2
@@ -89,6 +90,12 @@ public:
   Fl_Button *ui_ButtonLoadCodes;
   Fl_Light_Button *ui_connectButton;
   IPInput *ui_ipInput;
+  Fl_Box *ui_versionText;
+  Fl_Button *ui_infoButton;
+private:
+  inline void cb_ui_infoButton_i(Fl_Button*, void*);
+  static void cb_ui_infoButton(Fl_Button*, void*);
+public:
   ValueViewerWindow *m_valueviewer;
   ValueViewerTable *m_valueTable;
   Fl_Choice *m_viewerTypeChoice;
@@ -106,6 +113,7 @@ private:
   inline void cb_m_valueAddCodeButton_i(Fl_Button*, void*);
   static void cb_m_valueAddCodeButton(Fl_Button*, void*);
 public:
+  InfoWindow *m_infoWindow;
   void setInterface(InterfaceCCAPI *iface);
 private:
   InterfaceCCAPI *m_interface; 
@@ -125,5 +133,6 @@ public:
   void setConnectStatus(char status);
   void storeIP();
   void readIP();
+  void setVersion(string ver);
 };
 #endif

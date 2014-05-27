@@ -47,6 +47,9 @@ decl {\#include "ValueViewerWindow.h"} {public global
 decl {\#include "ValueViewerTable.h"} {public global
 } 
 
+decl {\#include "InfoWindow.h"} {public global
+} 
+
 decl {\#define RANGE_SAVE 0} {public global
 } 
 
@@ -395,7 +398,7 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat open
-      xywh {-68 530 1369 797} type Double align 80
+      xywh {140 182 1359 841} type Double align 80
       class rkWindow visible
     } {
       Fl_Group searchGroup {
@@ -613,7 +616,7 @@ m_inProgress = false;} {}
       }
       Fl_Light_Button ui_connectButton {
         label Connect
-        callback ConnectButtonCB
+        callback ConnectButtonCB selected
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
@@ -622,11 +625,19 @@ m_inProgress = false;} {}
         code0 {readIP();}
         class IPInput
       } {}
+      Fl_Box ui_versionText {
+        label Version
+        xywh {1239 25 106 16} align 20
+      }
+      Fl_Button ui_infoButton {
+        callback {uiInstance->m_infoWindow->show();}
+        image {../../../../../../Downloads/imeem.png} xywh {1204 18 32 32} align 512
+      }
     }
     Fl_Window m_valueviewer {
-      label {Value Viewer} open
-      xywh {636 161 546 715} type Double
-      class ValueViewerWindow visible
+      label {Value Viewer}
+      xywh {-32000 -32000 546 715} type Double hide
+      class ValueViewerWindow
     } {
       Fl_Table m_valueTable {open
         xywh {0 60 495 625} selection_color 6
@@ -645,10 +656,15 @@ m_inProgress = false;} {}
       }
       Fl_Button m_valueAddCodeButton {
         label {Add Code}
-        callback {((ValueViewerWindow*)v)->AddCodeCB(o)} selected
+        callback {((ValueViewerWindow*)v)->AddCodeCB(o)}
         xywh {395 15 100 30}
       }
     }
+    Fl_Window m_infoWindow {
+      label {CCCheat Information} open
+      xywh {39 66 476 336} type Double hide
+      class InfoWindow
+    } {}
   }
   Function {setInterface(InterfaceCCAPI *iface)} {} {
     code {m_interface = iface;} {}
@@ -773,7 +789,7 @@ ui_numOfResults->label(stat);} {}
   }
   decl {bool m_inProgress;} {public local
   }
-  Function {setConnectStatus(char status)} {open return_type void
+  Function {setConnectStatus(char status)} {return_type void
   } {
     code {static char stat[50];
 if (status == INTERFACE_CONNECT_FAIL)
@@ -814,6 +830,9 @@ ui_codeGroup->deactivate();
 ui_connectButton->clear();
 ui_ipInput->activate();
 ui_ipInput->checkValid();
+if (m_valueviewer->visible())
+	m_valueviewer->hide();
+
 }
 else if (status == INTERFACE_CONNECTING)
 {
@@ -841,7 +860,7 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
 	ipFile.close();
 }} {}
   }
-  Function {readIP()} {open return_type void
+  Function {readIP()} {return_type void
   } {
     code {char buf[255];
 	if (GetCurrentDir(buf, 255) != 0) //we can store the IP
@@ -857,5 +876,11 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
 			ipFile.close();
 		}
 	}} {}
+  }
+  Function {setVersion(string ver)} {return_type void
+  } {
+    code {static char ui_version[70];
+sprintf(ui_version, "Version: %s", ver.c_str());
+ui_versionText->label(ui_version);} {}
   }
 } 

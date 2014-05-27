@@ -31,6 +31,7 @@ public:
   void setCodeTable(CodeTable *t) { m_codeTable = t; }
   void setType(char type) { m_selectedType = type; }
   void setAddress(unsigned long address) { m_focusAddress = address; }
+  unsigned long getAddress() { return m_focusAddress; }
   void setSigned(bool s) { m_signed = s; }
 
   static void tableClickedCB(Fl_Widget *w, void *data) {

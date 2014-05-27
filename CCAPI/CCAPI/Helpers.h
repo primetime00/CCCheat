@@ -87,6 +87,7 @@ public:
 				return *(long*)&value;
 			break;
 		}
+		return 0;
 	}
 };
 

@@ -21,6 +21,8 @@ void ValueViewerWindow::AddCodeCB(Fl_Widget *w)
 void ValueViewerWindow::setCodeData(rkCheat_Code *item)
 {
 	uiInstance->m_viewerTypeChoice->value(item->type);
+	if (visible() && uiInstance->m_valueTable->getAddress() != item->address)
+		hide();
 	uiInstance->m_valueTable->setAddress(item->address);
 	uiInstance->m_valueTable->setType(item->type);
 }
