@@ -83,6 +83,10 @@
       <AdditionalLibraryDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk\lib;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\UI\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>fltk.lib;CCAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)\..\bin";
+copy "$(TargetPath)" "$(SolutionDir)\..\bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CodeTable.cpp" />
