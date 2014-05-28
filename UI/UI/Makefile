@@ -1,5 +1,5 @@
 include ../../Makefile.common
-OBJS = CodeTable.o IPInput.o InterfaceCCAPI.o NumberInput.o RangeTable.o ResultTable.o SearchOperationChoice.o ValueInput.o ValueViewerTable.o ValueViewerWindow.o main.o rkWindow.o ui_main.o 
+OBJS = CodeTable.o IPInput.o InterfaceCCAPI.o NumberInput.o RangeTable.o ResultTable.o SearchOperationChoice.o ValueInput.o ValueViewerTable.o ValueViewerWindow.o InfoWindow.o main.o rkWindow.o ui_main.o 
 #INCLUDES = -I. -I../../CCAPI -I../../../../fltk/fltk
 #LIBS = -L../../FLTK -L../../CCAPI/CCAPI/lib -lccapi -lfltk -lGL -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl
 #LFLAGS = -Wall $(DEBUG) $(LIBS)
@@ -28,6 +28,8 @@ ValueViewerWindow.o :
 	$(CC) $(CFLAGS)  ValueViewerWindow.cpp
 ValueViewerTable.o :
 	$(CC) $(CFLAGS)  ValueViewerTable.cpp
+InfoWindow.o :
+	$(CC) $(CFLAGS)  InfoWindow.cpp
 main.o :
 	$(CC) $(CFLAGS)  main.cpp
 rkWindow.o :
