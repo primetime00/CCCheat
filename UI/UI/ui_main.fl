@@ -41,6 +41,15 @@ decl {\#include "SearchOperationChoice.h"} {public global
 decl {\#include "Common.h"} {public global
 } 
 
+decl {\#include "ValueViewerWindow.h"} {public global
+} 
+
+decl {\#include "ValueViewerTable.h"} {public global
+} 
+
+decl {\#include "InfoWindow.h"} {public global
+} 
+
 decl {\#define RANGE_SAVE 0} {public global
 } 
 
@@ -69,7 +78,7 @@ class rkCheatUI {open
 } {
   Function {RangeButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int type = (int)data;
+    code {int type = (int)(unsigned long)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 switch (type)
@@ -192,7 +201,7 @@ uiInstance->ui_valueInput->setHex(value == 1);} {}
   }
   Function {SetValueTypeCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int value = (int)((Fl_Menu_Button*)w)->mvalue()->user_data();
+    code {int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
 uiInstance->ui_valueInput->setValueType(value);} {}
   }
   Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
@@ -249,7 +258,7 @@ uiInstance->ui_valueInput->setValueType(value);} {}
   }
   Function {ResultTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = (int)data;
+    code {int command = (int)(unsigned long)data;
 string fname;
 Fl_Native_File_Chooser fnfc;
 vector<AddressItem> items;
@@ -307,7 +316,7 @@ case RESULT_TABLE_DELETE:
   }
   Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
-    code {int command = (int)data;
+    code {int command = (int)(unsigned long)data;
   string fname;
   Fl_Native_File_Chooser fnfc;
   switch (command)
@@ -377,6 +386,11 @@ case RESULT_TABLE_DELETE:
   else if (!valid && uiInstance)
 	  uiInstance->ui_connectButton->deactivate();} {}
   }
+  Function {ViewerCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  } {
+    code {uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
+uiInstance->m_valueviewer->show();} {}
+  }
   Function {rkCheatUI()} {open
   } {
     code {uiInstance = this;
@@ -384,9 +398,7 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat open
-      xywh {54 124 1389 817} type Double align 80
-      code0 {\#include <iostream>}
-      code1 {using namespace std;}
+      xywh {140 182 1359 841} type Double align 80
       class rkWindow visible
     } {
       Fl_Group searchGroup {
@@ -574,6 +586,7 @@ m_inProgress = false;} {}
       } {
         Fl_Table ui_codeTable {open
           xywh {119 425 985 325} color 47 selection_color 6 labeltype NO_LABEL
+          code0 {ui_codeTable->setViewer(ViewerCB);}
           class CodeTable
         } {}
         Fl_Button ui_ButtonNewCode {
@@ -603,16 +616,55 @@ m_inProgress = false;} {}
       }
       Fl_Light_Button ui_connectButton {
         label Connect
-        callback ConnectButtonCB
+        callback ConnectButtonCB selected
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
-        callback CanConnectCB open selected
+        callback CanConnectCB open
         xywh {135 20 255 30} when 1
         code0 {readIP();}
         class IPInput
       } {}
+      Fl_Box ui_versionText {
+        label Version
+        xywh {1239 25 106 16} align 20
+      }
+      Fl_Button ui_infoButton {
+        callback {uiInstance->m_infoWindow->show();}
+        image {../../../../../../Downloads/imeem.png} xywh {1204 18 32 32} align 512
+      }
     }
+    Fl_Window m_valueviewer {
+      label {Value Viewer}
+      xywh {-32000 -32000 546 715} type Double hide
+      class ValueViewerWindow
+    } {
+      Fl_Table m_valueTable {open
+        xywh {0 60 495 625} selection_color 6
+        class ValueViewerTable
+      } {}
+      Fl_Choice m_viewerTypeChoice {
+        label Type
+        callback {((ValueViewerWindow*)v)->TypeChangedCB(o)} open
+        xywh {45 15 110 25} down_box BORDER_BOX when 1
+        code0 {m_viewerTypeChoice->menu(menu_ui_valueType);}
+      } {}
+      Fl_Check_Button m_viewerSignedButton {
+        label Signed
+        callback {((ValueViewerWindow*)v)->SignedChangedCB(o)}
+        xywh {175 15 64 20} down_box DOWN_BOX
+      }
+      Fl_Button m_valueAddCodeButton {
+        label {Add Code}
+        callback {((ValueViewerWindow*)v)->AddCodeCB(o)}
+        xywh {395 15 100 30}
+      }
+    }
+    Fl_Window m_infoWindow {
+      label {CCCheat Information} open
+      xywh {39 66 476 336} type Double hide
+      class InfoWindow
+    } {}
   }
   Function {setInterface(InterfaceCCAPI *iface)} {} {
     code {m_interface = iface;} {}
@@ -690,7 +742,7 @@ ui_valueType->deactivate();
 ui_buttonNextScan->deactivate();
 ui_buttonNewScan->label("Cancel");
 ui_buttonNewScan->activate();
-ui_resultTable->setResultType((char)ui_valueType->mvalue()->user_data());} {}
+ui_resultTable->setResultType(get_user_data(char, ui_valueType->mvalue()->user_data()));} {}
   }
   Function {searchStopped(char how)} {return_type void
   } {
@@ -737,7 +789,7 @@ ui_numOfResults->label(stat);} {}
   }
   decl {bool m_inProgress;} {public local
   }
-  Function {setConnectStatus(char status)} {open return_type void
+  Function {setConnectStatus(char status)} {return_type void
   } {
     code {static char stat[50];
 if (status == INTERFACE_CONNECT_FAIL)
@@ -778,6 +830,9 @@ ui_codeGroup->deactivate();
 ui_connectButton->clear();
 ui_ipInput->activate();
 ui_ipInput->checkValid();
+if (m_valueviewer->visible())
+	m_valueviewer->hide();
+
 }
 else if (status == INTERFACE_CONNECTING)
 {
@@ -805,7 +860,7 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
 	ipFile.close();
 }} {}
   }
-  Function {readIP()} {open return_type void
+  Function {readIP()} {return_type void
   } {
     code {char buf[255];
 	if (GetCurrentDir(buf, 255) != 0) //we can store the IP
@@ -822,7 +877,10 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
 		}
 	}} {}
   }
-} 
-
-decl {extern rkCheatUI *uiInstance;} {public global
+  Function {setVersion(string ver)} {return_type void
+  } {
+    code {static char ui_version[70];
+sprintf(ui_version, "Version: %s", ver.c_str());
+ui_versionText->label(ui_version);} {}
+  }
 } 

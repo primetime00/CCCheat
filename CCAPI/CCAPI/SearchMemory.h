@@ -2,6 +2,7 @@
 #define _SEARCHMEMORY_
 
 #include "SearchTask.h"
+#include <mutex>
 
 using namespace std;
 
@@ -36,7 +37,6 @@ public:
 	unsigned long getNumberOfResults();
 	void reOrganizeResults();
 
-
 private:
 
 	void calculateThreads();
@@ -60,6 +60,7 @@ private:
 	bool m_cancel;
 	bool m_running;
 	bool m_reorganize;
+	mutex cancelLock;
 
 };
 #endif

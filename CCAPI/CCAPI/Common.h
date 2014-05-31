@@ -53,8 +53,9 @@ using namespace std;
 #define RESULT_FILE_TYPE_DUMP	0x00
 #define RESULT_FILE_TYPE_LIST	0x01
 
-#define MEMORY_COMMAND_READ		0x00
-#define MEMORY_COMMAND_WRITE	0x01
+#define MEMORY_COMMAND_READ			0x00
+#define MEMORY_COMMAND_WRITE		0x01
+#define MEMORY_COMMAND_READCHUNK	0x02
 
 
 struct AddressItem
@@ -82,6 +83,15 @@ struct MemoryReadItem{
 	bool keep;
 	MemoryReadItem(unsigned int a, char t, char *m, bool k) { address = a; type = t; memory = m; keep = k;}
 };
+
+struct MemoryChunkReadItem{
+	unsigned int address;
+	unsigned long length;
+	char *memory;
+	bool keep;
+	MemoryChunkReadItem(unsigned int a, unsigned long l, char *m, bool k) { address = a; length = l; memory = m; keep = k;}
+};
+
 struct MemoryWriteItem{
 	unsigned int address;
 	long long value;
@@ -92,8 +102,11 @@ struct MemoryWriteItem{
 
 typedef list<shared_ptr<MemoryReadItem>> MemoryReadSet;
 
+typedef list<shared_ptr<MemoryChunkReadItem>> MemoryChunkReadSet;
+
 
 typedef map<unsigned long, MemoryReadSet> MemoryReadItemList;
+typedef map<unsigned long, MemoryChunkReadSet> MemoryChunkReadItemList;
 typedef map<unsigned long, shared_ptr<MemoryWriteItem>> MemoryWriteItemList;
 
 #endif

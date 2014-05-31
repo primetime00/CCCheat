@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v110_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -72,20 +72,25 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_VARIADIC_MAX=6</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);_VARIADIC_MAX=6</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\CCAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk\lib;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\UI\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>fltk.lib;CCAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)\..\bin";
+copy "$(TargetPath)" "$(SolutionDir)\..\bin"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CodeTable.cpp" />
+    <ClCompile Include="InfoWindow.cpp" />
     <ClCompile Include="InterfaceCCAPI.cpp" />
     <ClCompile Include="IPInput.cpp" />
     <ClCompile Include="main.cpp" />
@@ -96,10 +101,13 @@
     <ClCompile Include="SearchOperationChoice.cpp" />
     <ClCompile Include="ui_main.cxx" />
     <ClCompile Include="ValueInput.cpp" />
+    <ClCompile Include="ValueViewerTable.cpp" />
+    <ClCompile Include="ValueViewerWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CodeTable.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="InfoWindow.h" />
     <ClInclude Include="InterfaceCCAPI.h" />
     <ClInclude Include="IPInput.h" />
     <ClInclude Include="NumberInput.h" />
@@ -110,6 +118,8 @@
     <ClInclude Include="SearchOperationChoice.h" />
     <ClInclude Include="ui_main.h" />
     <ClInclude Include="ValueInput.h" />
+    <ClInclude Include="ValueViewerTable.h" />
+    <ClInclude Include="ValueViewerWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

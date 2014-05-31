@@ -1,6 +1,6 @@
 #include "MemoryOperator.h"
 #include <iostream>
-
+#include <cstring>
 void MemoryOperator::start()
 {
 	m_thread = thread(&MemoryOperator::run, this);
@@ -33,6 +33,34 @@ void MemoryOperator::setReadMemoryOperation(unsigned long address, char type, ch
 	}
 	m_mutex.unlock();
 }
+
+void MemoryOperator::setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep)
+{
+	m_mutex.lock();
+	if (memoryChunkReadOperationList.count(start) > 0) //we already have it!
+	{
+		bool found = false;
+		for (MemoryChunkReadSet::iterator it = memoryChunkReadOperationList[start].begin(); it != memoryChunkReadOperationList[start].end(); ++it)
+		{
+			if ((*it)->memory == memory) //we have it!
+			{
+				found = true;
+				(*it)->keep |= keep;
+				break;
+			}
+		}
+		if (!found) //this is a new memory location
+		{
+			memoryChunkReadOperationList[start].push_back(make_shared<MemoryChunkReadItem>(start, size, memory, keep));
+		}
+	}
+	else
+	{
+		memoryChunkReadOperationList[start].push_back(make_shared<MemoryChunkReadItem>(start, size, memory, keep));
+	}
+	m_mutex.unlock();
+}
+
 void MemoryOperator::setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze)
 {
 	m_mutex.lock();
@@ -57,6 +85,9 @@ void MemoryOperator::removeMemoryOperation(char command, unsigned long address)
 	{
 	case MEMORY_COMMAND_WRITE:
 		memoryWriteOperationList.erase(address);
+		break;
+	case MEMORY_COMMAND_READCHUNK:
+		memoryChunkReadOperationList.erase(address);
 		break;
 	default:
 		memoryReadOperationList.erase(address);
@@ -88,6 +119,8 @@ void MemoryOperator::process()
 		if (processWrite() != 0)
 			continue;
 		if (processRead() != 0)
+			continue;
+		if (processChunkRead() != 0)
 			continue;
 	}
 }
@@ -147,6 +180,47 @@ int MemoryOperator::processRead()
 	m_mutex.unlock();
 	return 0;
 }
+
+int MemoryOperator::processChunkRead()
+{
+	unsigned int length;
+	char *data;
+	if (memoryChunkReadOperationList.size() == 0)
+		return 0;
+	m_mutex.lock();
+	for (MemoryChunkReadItemList::iterator it = memoryChunkReadOperationList.begin(); it != memoryChunkReadOperationList.end();)
+	{
+		if (m_exit) { m_mutex.unlock(); return 1; }
+		for (MemoryChunkReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
+		{
+			length = (*setIT)->length;
+			if (m_ccapi->readMemory((*setIT)->address, length) == 0)
+			{
+				data = m_ccapi->getData(length);
+				memcpy((*setIT)->memory, data, length);
+			}
+			if ((*setIT)->keep == true)
+			{
+				++setIT;
+			}
+			else
+			{
+				setIT = it->second.erase(setIT);
+			}
+		}
+		if (it->second.size() == 0)
+		{
+			it = memoryChunkReadOperationList.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	m_mutex.unlock();
+	return 0;
+}
+
 
 int MemoryOperator::processWrite()
 {

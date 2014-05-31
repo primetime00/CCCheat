@@ -1,5 +1,7 @@
 #include "CCAPI/Common.h"
+#include "Common.h"
 #include "SearchOperationChoice.h"
+#include <iostream>
 
 using namespace std;
 
@@ -21,7 +23,7 @@ SearchOperationChoice::SearchOperationChoice(int X, int Y, int W, int H, const c
 	Fl_Menu_Item *it = &items[0];
 	while (it->label() != 0)
 	{
-		menuMap[(int)it->user_data()] = it;
+		menuMap[get_user_data(int, it->user_data())] = it;
 		it++;
 	}
 	menu(items);
@@ -72,7 +74,7 @@ void SearchOperationChoice::firstFuzzy()
 
 bool SearchOperationChoice::isFuzzy()
 {
-	char v = (char)mvalue()->user_data();
+	char v = get_user_data(char, mvalue()->user_data());
 	if (v == SEARCH_FUZZY_INIT || v == SEARCH_FUZZY_LESS || v == SEARCH_FUZZY_GREATER || v == SEARCH_FUZZY_NOTEQUAL || v == SEARCH_FUZZY_EQUAL)
 		return true;
 	return false;
@@ -80,5 +82,5 @@ bool SearchOperationChoice::isFuzzy()
 
 char SearchOperationChoice::getValue()
 {
-	return (char)mvalue()->user_data();
+	return get_user_data(char, mvalue()->user_data());
 }

@@ -8,7 +8,14 @@
 #include "ChunkValueSearch.h"
 #include "ChunkFuzzySearch.h"
 
-#define DUMP_DIR	"C:/temp/"
+#ifdef _WIN32
+	#include <direct.h>
+    #define GetCurrentDir _getcwd
+#else
+	#include <unistd.h>
+    #define GetCurrentDir getcwd
+#endif
+
 
 using namespace std;
 
@@ -70,6 +77,7 @@ private:
 	void dumpDataToFile(ostream &dumpFile, unsigned long location, unsigned long length);
 
 	string m_dumpFile;
+	string m_dumpDir;
 	ResultList *m_results;
 	unsigned char m_searchType;
 	unsigned char m_compareType;

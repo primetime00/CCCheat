@@ -1,6 +1,6 @@
 #include "InterfaceCCAPI.h"
-#include "CCAPI\Common.h"
-#include "FL\Fl.H"
+#include "CCAPI/Common.h"
+#include "FL/Fl.H"
 #include <sstream>
 
 InterfaceCCAPI *InterfaceCCAPI::instance = 0;
@@ -35,6 +35,8 @@ void InterfaceCCAPI::_connectCheck()
 			uiInstance->setConnectStatus(INTERFACE_CONNECT_SUCCESS);
 			uiInstance->ui_codeTable->setMemoryOperator(memoryOperator);
 			uiInstance->ui_resultTable->setMemoryOperator(memoryOperator);
+			uiInstance->m_valueTable->setMemoryOperator(memoryOperator);
+			uiInstance->m_valueTable->setCodeTable(uiInstance->ui_codeTable);
 		}
 	}
 }
@@ -43,6 +45,8 @@ void InterfaceCCAPI::disconnect()
 {
 	uiInstance->ui_codeTable->setMemoryOperator(0);
 	uiInstance->ui_resultTable->setMemoryOperator(0);
+	uiInstance->m_valueTable->setMemoryOperator(0);
+	uiInstance->m_valueTable->setCodeTable(0);
 	if (memoryOperator != 0)
 	{
 		delete memoryOperator;
@@ -163,8 +167,8 @@ void InterfaceCCAPI::startNewSearch()
 }
 void InterfaceCCAPI::_startNewSearch()
 {
-	char searchType = (char)m_ui->ui_searchType->mvalue()->user_data();
-	char valueType = (char)m_ui->ui_valueType->mvalue()->user_data();
+	char searchType = get_user_data(char, m_ui->ui_searchType->mvalue()->user_data());
+	char valueType = get_user_data(char, m_ui->ui_valueType->mvalue()->user_data());
 	string c_ip = m_ui->ui_ipInput->getIP();
 	m_ui->ui_resultTable->clear();
 	rkCheat_RangeList rList = m_ui->ui_rangeTable->getSelectedRanges();
@@ -184,7 +188,7 @@ void InterfaceCCAPI::_startNewSearch()
 		else
 		{
 			s->setSearchType(SEARCH_TYPE_VALUE);
-			s->setSearchCompareType((char)m_ui->ui_searchType->mvalue()->user_data());
+			s->setSearchCompareType(get_user_data(char, m_ui->ui_searchType->mvalue()->user_data()));
 			s->setSearchValue(m_ui->ui_valueInput->getLLValue());
 		}
 		s->setSearchValueType(valueType);
@@ -229,7 +233,7 @@ void InterfaceCCAPI::_continueSearch()
 		}
 		s->setSearchValue(m_ui->ui_valueInput->getLLValue());
 		s->setSearchType(m_ui->ui_searchType->isFuzzy() ? SEARCH_TYPE_FUZZY: SEARCH_TYPE_VALUE);
-		s->setSearchCompareType((char)m_ui->ui_searchType->mvalue()->user_data());
+		s->setSearchCompareType(get_user_data(char, m_ui->ui_searchType->mvalue()->user_data()));
 		if (numResults > 0 || s->isDump())
 			s->resetStatus();
 	}
@@ -247,6 +251,7 @@ void InterfaceCCAPI::_continueSearch()
 
 void InterfaceCCAPI::_resetSearch()
 {
+	Fl::remove_timeout(InterfaceCCAPI::searchProgress, searcher);
 	if (m_launcher.joinable())
 	{
 		m_launcher.join();
@@ -356,7 +361,6 @@ bool InterfaceCCAPI::_searchProgress(SearchMemory *search)
 	}
 	else if (status == "CANCEL")
 	{
-		Fl::remove_timeout(InterfaceCCAPI::searchProgress, search);
 		_resetSearch();
 		m_ui->setSearchProgress(0.0f, "Canceled", true);
 		return true;
@@ -386,7 +390,9 @@ void InterfaceCCAPI::_processSearchResults(SearchMemory *search)
 void InterfaceCCAPI::_cancelSearch() 
 {
 	if (searcher)
+	{
 		searcher->cancel();
+	}
 }
 
 bool InterfaceCCAPI::isSearchFinished()

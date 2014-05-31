@@ -1,7 +1,13 @@
 #ifndef _CCAPI_
 #define _CCAPI_
 
+#if defined(_WIN32) || defined(WIN32)
 #include <winsock.h>
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#endif
 #include <string>
 #include <vector>
 #include "Common.h"
@@ -48,8 +54,10 @@ public:
 	static void startup() {
 		if (!initialized)
 		{
+#if defined(_WIN32) || defined(WIN32)
 			WSADATA wsaData;
 			WSAStartup(0x0202, &wsaData);
+#endif
 			initialized = true;
 		}
 	}
