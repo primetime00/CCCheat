@@ -3,7 +3,7 @@
 #include "InterfaceCCAPI.h"
 using namespace std;
 
-#define CCCHEAT_VERSION "1.0"
+
 
 void windowCallback(Fl_Widget*, void*) {
   if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape) 
