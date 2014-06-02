@@ -12,7 +12,7 @@ using namespace std;
 class RangeMemory
 {
 public:
-	RangeMemory(string ip, unsigned long long offset, unsigned long long length);
+	RangeMemory(string ip, int ccapiVersion, unsigned long long offset, unsigned long long length);
 	~RangeMemory() {}
 
 	unsigned int process();
@@ -38,6 +38,7 @@ private:
 	long long m_totals[MAX_THREADS];
 	vector<pair<long long, long long>> m_ranges;
 	vector<shared_ptr<RangeTask>> m_threadList;
+	int m_ccapiHostVersion;
 
 };
 #endif

@@ -13,13 +13,8 @@
 #include "Common.h"
 
 
-#define CCAPI_250
-
-#ifdef CCAPI_200
-	#define CCAPI_PORT 1977
-#else
-	#define CCAPI_PORT 1978
-#endif
+#define CCAPI_PORT_20 1977
+#define CCAPI_PORT_25 1978
 
 #define CCAPI_MAX_BYTE_REQUEST 0x10000
 #define CCAPI_DATA_BUFFER 0x15000
@@ -81,6 +76,7 @@ public:
 
 	bool isConnected() { return connected; }
 	bool isAttached() { return attached; }
+	void setHostVersion(int ver) { hostVersion = ver; }
 
 
 private:
@@ -115,6 +111,7 @@ private:
 	string processName;
 	bool connected;
 	bool attached;
+	int hostVersion;
 
 };
 

@@ -21,7 +21,7 @@ CCAPI::CCAPI(string ip)
 	ipAddress = ip;
 	attachedPID = 0;
 	destination.sin_family = AF_INET;
-	destination.sin_port = htons (CCAPI_PORT);
+	destination.sin_port = htons (CCAPI_PORT_25);
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock < 0)
 	{
@@ -38,6 +38,10 @@ int CCAPI::connect(void)
 	tv.tv_sec = 3;       /* Timeout in seconds */
 	//setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO,(char *)&tv,sizeof(struct timeval));
 	//setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval));
+	if (hostVersion == 20)
+		destination.sin_port = htons(CCAPI_PORT_20);
+	else
+		destination.sin_port = htons(CCAPI_PORT_25);
 	destination.sin_addr.s_addr = inet_addr(ipAddress.c_str());
 	if (::connect(sock,(struct sockaddr *)&destination,sizeof(destination))!=0)
 	{

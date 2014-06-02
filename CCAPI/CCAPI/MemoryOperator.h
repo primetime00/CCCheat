@@ -29,6 +29,7 @@ public:
 	void setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze);
 	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
 	void removeMemoryOperation(char command, unsigned long address);
+	void setHostCCAPIVersion(int ver) { m_ccapiHostVersion = ver; }
 
 private:
 	MemoryOperator() {}
@@ -51,6 +52,7 @@ private:
 	bool m_exit;
 	string m_status;
 	mutex m_mutex;
+	int m_ccapiHostVersion;
 
 
 

@@ -96,6 +96,10 @@ private:
   inline void cb_ui_infoButton_i(Fl_Button*, void*);
   static void cb_ui_infoButton(Fl_Button*, void*);
 public:
+  Fl_Choice *ui_ccapiChoice;
+  static Fl_Menu_Item menu_ui_ccapiChoice[];
+  static Fl_Menu_Item *ui_ccapiVersion25Item;
+  static Fl_Menu_Item *ui_ccapiVersion20Item;
   ValueViewerWindow *m_valueviewer;
   ValueViewerTable *m_valueTable;
   Fl_Choice *m_viewerTypeChoice;

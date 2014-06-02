@@ -153,6 +153,14 @@ static unsigned char idata_imeem[] =
 19,18,18,18,17,17,17,10,10,10,2,2,2};
 static Fl_RGB_Image image_imeem(idata_imeem, 32, 32, 3, 0);
 
+Fl_Menu_Item rkCheatUI::menu_ui_ccapiChoice[] = {
+ {"2.50", 0,  0, (void*)(25), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"2.00", 0,  0, (void*)(20), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
+Fl_Menu_Item* rkCheatUI::ui_ccapiVersion25Item = rkCheatUI::menu_ui_ccapiChoice + 0;
+Fl_Menu_Item* rkCheatUI::ui_ccapiVersion20Item = rkCheatUI::menu_ui_ccapiChoice + 1;
+
 void rkCheatUI::cb_m_viewerTypeChoice_i(Fl_Choice* o, void* v) {
   ((ValueViewerWindow*)v)->TypeChangedCB(o);
 }
@@ -493,7 +501,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1359, 841, "CCCheat");
+  { mainWindow = new rkWindow(1349, 831, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -726,6 +734,10 @@ rkCheatUI::rkCheatUI() {
       ui_infoButton->callback((Fl_Callback*)cb_ui_infoButton);
       ui_infoButton->align(Fl_Align(512));
     } // Fl_Button* ui_infoButton
+    { ui_ccapiChoice = new Fl_Choice(504, 24, 66, 21, "CCAPI Version:");
+      ui_ccapiChoice->down_box(FL_BORDER_BOX);
+      ui_ccapiChoice->menu(menu_ui_ccapiChoice);
+    } // Fl_Choice* ui_ccapiChoice
     mainWindow->end();
   } // rkWindow* mainWindow
   { m_valueviewer = new ValueViewerWindow(546, 715, "Value Viewer");
@@ -917,6 +929,7 @@ void rkCheatUI::setConnectStatus(char status) {
   ui_codeGroup->deactivate();
   ui_connectButton->clear();
   ui_ipInput->activate();
+  ui_ccapiChoice->activate();
   }
   else if (status == INTERFACE_CONNECT_SUCCESS)
   {
@@ -928,6 +941,7 @@ void rkCheatUI::setConnectStatus(char status) {
   ui_resultGroup->activate();
   ui_codeGroup->activate();
   ui_ipInput->deactivate();
+  ui_ccapiChoice->deactivate();
   ui_connectButton->selection_color(FL_GREEN);
   ui_connectButton->damage(FL_DAMAGE_ALL);
   storeIP();
@@ -943,6 +957,7 @@ void rkCheatUI::setConnectStatus(char status) {
   ui_codeGroup->deactivate();
   ui_connectButton->clear();
   ui_ipInput->activate();
+  ui_ccapiChoice->activate();
   ui_ipInput->checkValid();
   if (m_valueviewer->visible())
   	m_valueviewer->hide();
@@ -958,6 +973,7 @@ void rkCheatUI::setConnectStatus(char status) {
   ui_resultGroup->deactivate();
   ui_codeGroup->deactivate();
   ui_ipInput->deactivate();
+  ui_ccapiChoice->deactivate();
   ui_connectButton->selection_color(FL_YELLOW);
   ui_connectButton->damage(FL_DAMAGE_ALL);
   }

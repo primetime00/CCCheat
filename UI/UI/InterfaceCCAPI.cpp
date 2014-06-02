@@ -10,6 +10,8 @@ void InterfaceCCAPI::connect(string ip)
 {
 	m_ip = ip;
 	memoryOperator = new MemoryOperator(ip);
+	int ver = get_user_data(int, uiInstance->ui_ccapiChoice->mvalue()->user_data());
+	memoryOperator->setHostCCAPIVersion(ver);
 	memoryOperator->start();
 	Fl::add_timeout(0.2, InterfaceCCAPI::connectCheck);
 }
@@ -118,7 +120,8 @@ void InterfaceCCAPI::_findAddresses()
 	string c_ip = m_ui->ui_ipInput->getIP();
 	m_ui->findRangeStarted();
 	m_ui->setRangeProgress(0.0f, "Initializing...", false);
-	ranger = new RangeMemory(c_ip, 0, 0x100000000);
+	int ver = get_user_data(int, uiInstance->ui_ccapiChoice->mvalue()->user_data());
+	ranger = new RangeMemory(c_ip, ver, 0, 0x100000000);
 	m_launcher = thread(&InterfaceCCAPI::_launchFindAddress, this);
 	Fl::add_timeout(1.0, InterfaceCCAPI::findAddressProgress, ranger);
 	cout << "FINDING ADDRESSES!" << endl;
@@ -173,11 +176,12 @@ void InterfaceCCAPI::_startNewSearch()
 	m_ui->ui_resultTable->clear();
 	rkCheat_RangeList rList = m_ui->ui_rangeTable->getSelectedRanges();
 	lastSearchType = SEARCH_TYPE_UNKNOWN;
+	int ver = get_user_data(int, uiInstance->ui_ccapiChoice->mvalue()->user_data());
 	
 	//add the ranges to the search list
 	for (rkCheat_RangeList::iterator it = rList.begin(); it != rList.end(); ++it)
 	{
-		SearchMemory *s = new SearchMemory(c_ip, it->first, it->second - it->first);
+		SearchMemory *s = new SearchMemory(c_ip, ver, it->first, it->second - it->first);
 		searchList.push_back(s);
 
 		if (searchType == SEARCH_FUZZY_INIT)

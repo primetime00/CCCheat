@@ -4,7 +4,7 @@
 
 using namespace std;
 
-RangeMemory::RangeMemory(string ip, unsigned long long offset, unsigned long long length)
+RangeMemory::RangeMemory(string ip, int ccapiVersion, unsigned long long offset, unsigned long long length)
 {
 	m_ip = ip;
 	m_offset = offset;
@@ -12,6 +12,7 @@ RangeMemory::RangeMemory(string ip, unsigned long long offset, unsigned long lon
 	memset(m_totals, 0, sizeof(long long)*MAX_THREADS);
 	m_threadCount = 1;
 	m_error = RANGEMEMORY_ERROR_NONE;
+	m_ccapiHostVersion = ccapiVersion;
 
 }
 
@@ -133,6 +134,7 @@ unsigned int RangeMemory::process()
 		else
 			rangeTask = make_shared<RangeTask>(m_ip, m_offset+(i*minSize), minSize, i, name);
 		m_threadList.push_back(rangeTask);
+		rangeTask->setHostCCAPIVersion(m_ccapiHostVersion);
 		rangeTask->setCallback(bind(&RangeMemory::callBack, this, rangeTask.get(), placeholders::_2, placeholders::_3));
 		rangeTask->setErrorCallback(bind(&RangeMemory::getError, this));
 		rangeTask->start();
@@ -177,7 +179,7 @@ unsigned int RangeMemory::process()
 int sample_main()
 {
 	unsigned int status;
-	RangeMemory rm("127.0.0.1", 0, 0x100000000);
+	RangeMemory rm("127.0.0.1", 20, 0, 0x100000000);
 	status = rm.process();
 	switch (status)
 	{

@@ -21,6 +21,7 @@ void RangeTask::run()
 	unsigned long long currentLength = m_length;
 	m_status = "CONNECT";
 	m_ccapi = make_shared<CCAPI>(m_ip);
+	m_ccapi->setHostVersion(m_ccapiHostVersion);
 	if (m_ccapi->connect() == 0)
 	{
 		for (int i=0; i<10; i++)

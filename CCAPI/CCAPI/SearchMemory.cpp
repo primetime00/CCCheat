@@ -6,7 +6,7 @@
 
 using namespace std;
 
-SearchMemory::SearchMemory(string ip, unsigned long long offset, unsigned long long length)
+SearchMemory::SearchMemory(string ip, int ccapiVersion, unsigned long long offset, unsigned long long length)
 {
 	m_ip = ip;
 	m_offset = offset;
@@ -19,6 +19,7 @@ SearchMemory::SearchMemory(string ip, unsigned long long offset, unsigned long l
 	m_dump = false;
 	m_running = false;
 	m_reorganize = false;
+	m_ccapiHostVersion = ccapiVersion;
 }
 
 void SearchMemory::calculateThreads()
@@ -120,6 +121,7 @@ unsigned int SearchMemory::process()
 			}
 			else
 				searchTask = make_shared<SearchTask>(m_ip, m_offset+(i*minSize), minSize, i, name);
+			searchTask->setHostCCAPIVersion(m_ccapiHostVersion);
 			searchTask->setSearchType(m_searchType);
 			searchTask->setSearchValue(m_searchValue);
 			searchTask->setSearchValueType(m_searchValueType);

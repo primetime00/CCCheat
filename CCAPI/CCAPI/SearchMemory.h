@@ -11,7 +11,7 @@ typedef vector<pair<Task*, pair<unsigned long long, unsigned long long>>> Progre
 class SearchMemory
 {
 public:
-	SearchMemory(string ip, unsigned long long offset, unsigned long long length);
+	SearchMemory(string ip, int ccapiVersion, unsigned long long offset, unsigned long long length);
 	~SearchMemory() {}
 
 	unsigned int process();
@@ -61,6 +61,8 @@ private:
 	bool m_running;
 	bool m_reorganize;
 	mutex cancelLock;
+
+	int m_ccapiHostVersion;
 
 };
 #endif

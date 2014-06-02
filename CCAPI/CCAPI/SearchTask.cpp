@@ -58,6 +58,7 @@ void SearchTask::run()
 
 int SearchTask::connect(int loops)
 {
+	m_ccapi->setHostVersion(m_ccapiHostVersion);
 	if (m_ccapi->connect() == 0)
 	{
 		for (int i=0; i<loops; i++)

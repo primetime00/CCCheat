@@ -38,6 +38,7 @@ public:
 	string getStatus() { return m_status; }
 
 	unsigned int getError() { return m_error; }
+	void setHostCCAPIVersion(int ver) { m_ccapiHostVersion =ver; }
 
 	//void setCallback(taskCallback c) { m_callback = c; }
 
@@ -70,6 +71,7 @@ protected:
 
 
 	string m_status;
+	int m_ccapiHostVersion;
 
 private:
 	Task();

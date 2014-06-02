@@ -398,7 +398,7 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat open
-      xywh {140 182 1359 841} type Double align 80
+      xywh {145 187 1349 831} type Double align 80
       class rkWindow visible
     } {
       Fl_Group searchGroup {
@@ -616,7 +616,7 @@ m_inProgress = false;} {}
       }
       Fl_Light_Button ui_connectButton {
         label Connect
-        callback ConnectButtonCB selected
+        callback ConnectButtonCB
         xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
@@ -632,6 +632,21 @@ m_inProgress = false;} {}
       Fl_Button ui_infoButton {
         callback {uiInstance->m_infoWindow->show();}
         image {../../../../../../Downloads/imeem.png} xywh {1204 18 32 32} align 512
+      }
+      Fl_Choice ui_ccapiChoice {
+        label {CCAPI Version:} open
+        xywh {504 24 66 21} down_box BORDER_BOX
+      } {
+        MenuItem ui_ccapiVersion25Item {
+          label {2.50}
+          user_data 25
+          xywh {0 0 30 20}
+        }
+        MenuItem ui_ccapiVersion20Item {
+          label {2.00}
+          user_data 20 selected
+          xywh {0 0 30 20}
+        }
       }
     }
     Fl_Window m_valueviewer {
@@ -789,7 +804,7 @@ ui_numOfResults->label(stat);} {}
   }
   decl {bool m_inProgress;} {public local
   }
-  Function {setConnectStatus(char status)} {return_type void
+  Function {setConnectStatus(char status)} {open return_type void
   } {
     code {static char stat[50];
 if (status == INTERFACE_CONNECT_FAIL)
@@ -803,6 +818,7 @@ ui_resultGroup->deactivate();
 ui_codeGroup->deactivate();
 ui_connectButton->clear();
 ui_ipInput->activate();
+ui_ccapiChoice->activate();
 }
 else if (status == INTERFACE_CONNECT_SUCCESS)
 {
@@ -814,6 +830,7 @@ ui_rangeGroup->activate();
 ui_resultGroup->activate();
 ui_codeGroup->activate();
 ui_ipInput->deactivate();
+ui_ccapiChoice->deactivate();
 ui_connectButton->selection_color(FL_GREEN);
 ui_connectButton->damage(FL_DAMAGE_ALL);
 storeIP();
@@ -829,6 +846,7 @@ ui_resultGroup->deactivate();
 ui_codeGroup->deactivate();
 ui_connectButton->clear();
 ui_ipInput->activate();
+ui_ccapiChoice->activate();
 ui_ipInput->checkValid();
 if (m_valueviewer->visible())
 	m_valueviewer->hide();
@@ -844,6 +862,7 @@ ui_rangeGroup->deactivate();
 ui_resultGroup->deactivate();
 ui_codeGroup->deactivate();
 ui_ipInput->deactivate();
+ui_ccapiChoice->deactivate();
 ui_connectButton->selection_color(FL_YELLOW);
 ui_connectButton->damage(FL_DAMAGE_ALL);
 }} {}
