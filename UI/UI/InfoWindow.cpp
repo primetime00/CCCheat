@@ -1,3 +1,4 @@
+#include "Common.h"
 #include "InfoWindow.h"
 
 #include <FL/Fl_Text_Buffer.H>
@@ -6,7 +7,7 @@ using namespace std;
 #define INFO_MARGIN 10
 #define NL "\n"
 char InfoWindow::info[] = 
-	"CCCheat "CCCHEAT_VERSION" was written by Primetime00." NL
+	"CCCheat " CCCHEAT_VERSION " was written by Primetime00." NL
 	"This version may still have several bugs!" NL NL
 	"NOTE: Right click on an address in the code table to view nearby addresses." NL
 	"Special Thanks to:" NL

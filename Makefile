@@ -6,7 +6,8 @@ all: ccapi ui
 
 ui:
 	$(MAKE) -C UI
-	\cp $(UI_DIR)/UI/$(TARGET) ./
+	\mkdir -p bin
+	\mv $(UI_DIR)/UI/$(TARGET) ./bin
 
 ccapi:
 	$(MAKE) -C CCAPI

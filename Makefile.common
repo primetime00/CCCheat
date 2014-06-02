@@ -7,7 +7,7 @@ INCLUDES := -I. -I$(CCAPI_DIR) -I$(FLTK_DIR)
 LIBS := -L$(TOP_DIR)/FLTK -L$(CCAPI_DIR)/CCAPI/lib -lccapi -lfltk -lGLU -lXrandr -lXinerama -lXext -lX11 -lXft -lfontconfig -ldl -lpthread
 
 CC = g++
-DEBUG = -g
+DEBUG = -O3
 CFLAGS = -Wall -std=c++11 -c $(DEBUG) $(INCLUDES) -Wno-sign-compare -Wno-int-to-pointer-cast -Wno-parentheses -Wno-format
 #LFLAGS = -Wall $(DEBUG)
 #LFLAGS = -Wall $(DEBUG) $(LIBS)
