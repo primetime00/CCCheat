@@ -152,7 +152,7 @@ int MemoryOperator::processRead()
 				else if ((*setIT)->type == SEARCH_VALUE_TYPE_FLOAT)
 				{
 					unsigned long tmp = BSWAP32(*(unsigned long*)&data[0]);
-					((long long*)(*setIT)->memory)[0] = *(float*)&tmp;
+					((long long*)(*setIT)->memory)[0] = *(unsigned long*)&tmp;
 				}
 				else
 				{

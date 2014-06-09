@@ -93,6 +93,7 @@ void CodeTable::addEntry(string desc, unsigned long address, long long value, ch
 		value_input->setValueType(type);
 		value_input->callback((Fl_Callback*)codeValueChangedCB);
 		value_input->when(FL_WHEN_RELEASE);
+		value_input->setCodeType(true);
 		value_input->hide();
 
 		find_cell(Fl_Table::CONTEXT_TABLE, data.size(), TYPE_COL, x,y,w,h);
@@ -371,6 +372,20 @@ int CodeTable::handle(int evt)
 {
 	int res = 0;
 	when(FL_WHEN_NEVER);
+	if (evt == FL_KEYUP)
+	{
+		if (Fl::event_text() && Fl::event_text()[0] == 27)
+		{
+			current_cell_widget = 0;
+			if (current_cell_widget != last_cell_widget) //click on a new widget
+			{
+				if (last_cell_widget) last_cell_widget->hide();
+				take_focus();
+				this->window()->cursor(FL_CURSOR_DEFAULT);
+			}
+			last_cell_widget = current_cell_widget;
+		}
+	}
 	res = Fl_Table_Row::handle(evt);
 	return res;
 }

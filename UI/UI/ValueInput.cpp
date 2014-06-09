@@ -12,6 +12,8 @@ ValueInput::ValueInput(int x, int y, int w, int h, const char *l) : Fl_Input(x,y
 	setLiteral(true);
 	setHex(false);
 	setValueType(SEARCH_VALUE_TYPE_1BYTE);
+	setCodeType(false);
+	setValueType(VAL_TYPE_MISC);
 }
 
 
@@ -199,12 +201,23 @@ int ValueInput::handle(int e)
 			if (val.length() > maximum_size())
 				val.erase(val.begin()+maximum_size(), val.end());
 			value(val.c_str());
+			if (m_codeType)
+			{
+				do_callback();
+				return 1;
+
+			}
 			return 1;
-			//return(Fl_Input::handle(e));
 			break;
 		case FL_KEYUP:
 		case FL_KEYDOWN: {
 			val = Fl::event_text();
+			if (val[0] == 27) //escape key pressed
+			{
+				val = value();
+				value(val.c_str());
+				return(Fl_Input::handle(e));
+			}
 			if (val.empty())
 				return(Fl_Input::handle(e));
 			std::transform(val.begin(), val.end(), val.begin(), ::tolower);
