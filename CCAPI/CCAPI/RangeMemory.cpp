@@ -76,10 +76,10 @@ RangeList RangeMemory::getRanges()
 	{
 		m_ranges = m_threadList.at(0)->getIntervals();
 		int last = m_ranges.size()-1;
-		if (m_ranges.at(last).second == -1)
-				m_ranges.at(last).second = m_threadList.at(0)->getLastOffset();
-		if (m_ranges.at(last).first == -1)
-				m_ranges.at(0).first = m_threadList.at(0)->getFirstOffset();
+		if (m_ranges.at(last).second() == -1)
+				m_ranges.at(last).second(m_threadList.at(0)->getLastOffset());
+		if (m_ranges.at(last).first() == -1)
+				m_ranges.at(0).first(m_threadList.at(0)->getFirstOffset());
 		return m_ranges;
 	}
 	for (int i = m_threadList.size()-1; i>0; i--)
@@ -89,20 +89,22 @@ RangeList RangeMemory::getRanges()
 			continue;
 		for (int j = i-1; j>=0; j--)
 		{
-			RangeTask *prev = m_threadList.at(i-1).get();
+			RangeTask *prev = m_threadList.at(j).get();
 			if (prev->getIntervals().size() == 0)
 				continue;
 			int last = prev->getIntervals().size()-1;
-			if (prev->getIntervals().at(last).second == -1 && cur->getFirstOffset() == cur->getIntervals().at(0).first) //this is a continuation!
+			if (prev->getIntervals().at(last).second() == -1 && cur->getFirstOffset() == cur->getIntervals().at(0).first()) //this is a continuation!
 			{
-				prev->getIntervals().at(last).second = cur->getIntervals().at(0).second;
+				prev->setInterval(last, RangePair(prev->getIntervals().at(last).first(), cur->getIntervals().at(0).second()));
 				cur->getIntervals().erase(cur->getIntervals().begin());
 			}
-			else if (prev->getIntervals().at(last).second == -1)
+			else if (prev->getIntervals().at(last).second() == -1)
 			{
-				prev->getIntervals().at(last).second = cur->getFirstOffset();
+				prev->setInterval(last, RangePair(prev->getIntervals().at(last).first(), cur->getFirstOffset()));
 				//cur->getIntervals().erase(cur->getIntervals().begin());
 			}
+			else //do we even need to check anymore
+				break;
 		}
 	}
 	m_ranges.clear();
@@ -201,6 +203,6 @@ int sample_main()
 		if (rm.getStatus() == "DONE")
 			break;
 	}
-	vector<pair<long long, long long>> z = rm.getRanges();
+	//vector<pair<long long, long long>> z = rm.getRanges();
 	cout << "ALL DONE" << endl;
 }

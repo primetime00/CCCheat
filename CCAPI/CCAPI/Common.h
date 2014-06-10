@@ -73,7 +73,19 @@ typedef vector<AddressItem*> AddressListPtr;
 typedef map<unsigned long, AddressList> ResultList;
 typedef map<unsigned long, ResultList*> ThreadResultList;
 
-typedef pair<long long, long long> RangePair;
+//typedef pair<long long, long long> RangePair;
+struct RangePair
+{
+	unsigned long m_first, m_second;
+	RangePair(unsigned long first, unsigned long second) { set(first,second); }
+	RangePair() { set(-1,-1); }
+	void set(unsigned long first, unsigned long second) { m_first = first; m_second = second; }
+	unsigned long first() { return m_first; }
+	unsigned long second() { return m_second; }
+	void first(unsigned v) { m_first = v; }
+	void second(unsigned v) { m_second = v; }
+	RangePair operator=(RangePair &p) { m_first = p.m_first; m_second = p.m_second; return *this;}
+};
 typedef vector<RangePair> RangeList;
 
 struct MemoryReadItem{

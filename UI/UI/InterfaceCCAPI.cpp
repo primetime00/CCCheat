@@ -148,7 +148,7 @@ void InterfaceCCAPI::_processAddresses()
 	m_ui->clearRanges();
 	for ( RangeList::iterator it = ranges.begin(); it != ranges.end(); ++it)
 	{
-		m_ui->addRange(it->first, it->second);
+		m_ui->addRange(it->first(), it->second());
 	}
 }
 

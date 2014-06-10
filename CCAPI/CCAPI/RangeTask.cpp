@@ -16,7 +16,7 @@ RangeTask::RangeTask(string ip, unsigned long long offset, unsigned long long le
 
 void RangeTask::run()
 {
-	m_pair = make_pair(-1,-1);
+	m_pair = RangePair(-1,-1);//make_pair(-1,-1);
 	m_firstValidOffset = -1;
 	unsigned long long currentLength = m_length;
 	m_status = "CONNECT";
@@ -66,6 +66,7 @@ void RangeTask::run()
 		}
 	}
 	m_status = "FINDRANGE";
+
 	for (unsigned long long i=m_offset; i<m_offset+m_length; i+=RANGE_INTERVAL)
 	{
 		if (m_cancel)
@@ -75,7 +76,7 @@ void RangeTask::run()
 		{
 			if (!m_lastGoodCheck)
 			{
-				m_pair.first = i;
+				m_pair.first(i);
 				m_lastGoodCheck = true;
 			}
 		}
@@ -83,11 +84,11 @@ void RangeTask::run()
 		{
 			if (m_lastGoodCheck)
 			{
-				m_pair.second = i;
+				m_pair.second(i);
 				m_lastGoodCheck = false;
-				m_intervals.push_back(make_pair(m_pair.first, m_pair.second));
-				m_pair.first = -1;
-				m_pair.second = -1;
+				m_intervals.push_back(RangePair(m_pair.first(), m_pair.second()));
+				m_pair.first(-1);
+				m_pair.second(-1);
 			}
 		}
 		if (m_callback != nullptr)
@@ -95,6 +96,8 @@ void RangeTask::run()
 			m_callback(this, i-m_offset, m_length);
 		}
 	}
+	if (m_pair.first() != -1 && m_pair.second() == -1) //we have a continuing pair
+		m_intervals.push_back(RangePair(m_pair.first(), m_pair.second()));
 	if (m_callback != nullptr)
 	{
 		m_callback(this, m_length, m_length);

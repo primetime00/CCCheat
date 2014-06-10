@@ -36,7 +36,8 @@ private:
 
 	int m_threadCount;
 	long long m_totals[MAX_THREADS];
-	vector<pair<long long, long long>> m_ranges;
+	//vector<pair<long long, long long>> m_ranges;
+	vector<RangePair> m_ranges;
 	vector<shared_ptr<RangeTask>> m_threadList;
 	int m_ccapiHostVersion;
 
