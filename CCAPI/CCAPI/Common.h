@@ -84,7 +84,7 @@ struct RangePair
 	unsigned long second() { return m_second; }
 	void first(unsigned v) { m_first = v; }
 	void second(unsigned v) { m_second = v; }
-	RangePair operator=(RangePair &p) { m_first = p.m_first; m_second = p.m_second; return *this;}
+	RangePair& operator=(RangePair p) { m_first = p.m_first; m_second = p.m_second; return *this;}
 };
 typedef vector<RangePair> RangeList;
 

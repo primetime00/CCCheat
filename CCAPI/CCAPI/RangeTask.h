@@ -22,7 +22,7 @@ public:
 	void setErrorCallback(function<unsigned int(void)> cb) { m_errorCallback = cb; }
 	//vector<pair<long long, long long>> getIntervals() { return m_intervals; }
 	vector<RangePair> &getIntervals() { return m_intervals; }
-	void setInterval(int pos, RangePair &val) { m_intervals[pos] = val; }
+	void setInterval(int pos, const RangePair &val) { m_intervals[pos] = val; }
 	//pair<long long, long long> getCurrentPair() { return m_pair; }
 	RangePair getCurrentPair() { return m_pair; }
 

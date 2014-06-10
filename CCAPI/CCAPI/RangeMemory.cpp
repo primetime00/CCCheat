@@ -178,6 +178,7 @@ unsigned int RangeMemory::process()
 	return RANGEMEMORY_ERROR_NONE;
 }
 
+#if 0
 int sample_main()
 {
 	unsigned int status;
@@ -206,3 +207,4 @@ int sample_main()
 	//vector<pair<long long, long long>> z = rm.getRanges();
 	cout << "ALL DONE" << endl;
 }
+#endif
