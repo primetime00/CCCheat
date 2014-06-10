@@ -501,7 +501,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1349, 831, "CCCheat");
+  { mainWindow = new rkWindow(1419, 821, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -564,10 +564,10 @@ rkCheatUI::rkCheatUI() {
       } // Fl_Group* ui_valueInputGroup
       searchGroup->end();
     } // Fl_Group* searchGroup
-    { ui_resultGroup = new Fl_Group(785, 70, 560, 274, "Results");
+    { ui_resultGroup = new Fl_Group(805, 70, 560, 274, "Results");
       ui_resultGroup->box(FL_BORDER_BOX);
       ui_resultGroup->color(FL_DARK1);
-      { ui_resultTable = new ResultTable(790, 99, 423, 240);
+      { ui_resultTable = new ResultTable(810, 99, 423, 240);
         ui_resultTable->box(FL_THIN_DOWN_FRAME);
         ui_resultTable->color(FL_BACKGROUND_COLOR);
         ui_resultTable->selection_color((Fl_Color)6);
@@ -579,28 +579,28 @@ rkCheatUI::rkCheatUI() {
         ui_resultTable->when(FL_WHEN_RELEASE);
         ui_resultTable->end();
       } // ResultTable* ui_resultTable
-      { ui_numOfResults = new Fl_Box(920, 77, 140, 16);
+      { ui_numOfResults = new Fl_Box(940, 77, 140, 16);
       } // Fl_Box* ui_numOfResults
-      { new Fl_Box(790, 77, 130, 16, "Number of Results:");
+      { new Fl_Box(810, 77, 130, 16, "Number of Results:");
       } // Fl_Box* o
-      { ui_resultBtnGroup = new Fl_Group(1225, 100, 115, 165);
-        { ui_ButtonAddResult = new Fl_Button(1230, 100, 100, 30, "Add Result");
+      { ui_resultBtnGroup = new Fl_Group(1245, 100, 115, 165);
+        { ui_ButtonAddResult = new Fl_Button(1250, 100, 100, 30, "Add Result");
           ui_ButtonAddResult->callback((Fl_Callback*)ResultTableButtonCB, (void*)(RESULT_TABLE_ADD));
         } // Fl_Button* ui_ButtonAddResult
-        { ui_ButtonDeleteResult = new Fl_Button(1230, 140, 100, 30, "Delete Result");
+        { ui_ButtonDeleteResult = new Fl_Button(1250, 140, 100, 30, "Delete Result");
           ui_ButtonDeleteResult->callback((Fl_Callback*)ResultTableButtonCB, (void*)(RESULT_TABLE_DELETE));
         } // Fl_Button* ui_ButtonDeleteResult
-        { ui_ButtonRefreshResult = new Fl_Button(1230, 180, 100, 30, "Refresh");
+        { ui_ButtonRefreshResult = new Fl_Button(1250, 180, 100, 30, "Refresh");
           ui_ButtonRefreshResult->callback((Fl_Callback*)ResultTableButtonCB, (void*)(RESULT_TABLE_REFRESH));
         } // Fl_Button* ui_ButtonRefreshResult
         ui_resultBtnGroup->end();
       } // Fl_Group* ui_resultBtnGroup
       ui_resultGroup->end();
     } // Fl_Group* ui_resultGroup
-    { ui_rangeGroup = new Fl_Group(410, 70, 355, 275, "Range");
+    { ui_rangeGroup = new Fl_Group(410, 70, 375, 275, "Range");
       ui_rangeGroup->box(FL_BORDER_BOX);
       ui_rangeGroup->color(FL_DARK1);
-      { ui_rangeTable = new RangeTable(418, 75, 223, 215);
+      { ui_rangeTable = new RangeTable(418, 75, 242, 215);
         ui_rangeTable->box(FL_THIN_UP_FRAME);
         ui_rangeTable->color(FL_BACKGROUND_COLOR);
         ui_rangeTable->selection_color((Fl_Color)6);
@@ -613,19 +613,19 @@ rkCheatUI::rkCheatUI() {
         ui_rangeTable->when(FL_WHEN_RELEASE);
         ui_rangeTable->end();
       } // RangeTable* ui_rangeTable
-      { ui_buttonFindRanges = new Fl_Button(652, 96, 100, 30, "Find Ranges");
+      { ui_buttonFindRanges = new Fl_Button(672, 96, 100, 30, "Find Ranges");
         ui_buttonFindRanges->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_FIND));
       } // Fl_Button* ui_buttonFindRanges
-      { ui_buttonSaveRanges = new Fl_Button(652, 136, 100, 30, "Save Ranges");
+      { ui_buttonSaveRanges = new Fl_Button(672, 136, 100, 30, "Save Ranges");
         ui_buttonSaveRanges->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_SAVE));
       } // Fl_Button* ui_buttonSaveRanges
-      { ui_buttonLoadRanges = new Fl_Button(652, 176, 100, 30, "Load Ranges");
+      { ui_buttonLoadRanges = new Fl_Button(672, 176, 100, 30, "Load Ranges");
         ui_buttonLoadRanges->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_LOAD));
       } // Fl_Button* ui_buttonLoadRanges
-      { ui_buttonClearRanges = new Fl_Button(652, 216, 100, 30, "Clear Ranges");
+      { ui_buttonClearRanges = new Fl_Button(672, 216, 100, 30, "Clear Ranges");
         ui_buttonClearRanges->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_CLEAR));
       } // Fl_Button* ui_buttonClearRanges
-      { ui_addRangeGrp = new Fl_Group(410, 295, 350, 50);
+      { ui_addRangeGrp = new Fl_Group(410, 295, 367, 50);
         ui_addRangeGrp->color(FL_DARK1);
         { ui_addRangeInput_Start = new ValueInput(420, 308, 100, 24);
           ui_addRangeInput_Start->box(FL_DOWN_BOX);
@@ -655,13 +655,13 @@ rkCheatUI::rkCheatUI() {
           ui_addRangeInput_End->setHex(true);
           ui_addRangeInput_End->maximum_size(8);
         } // ValueInput* ui_addRangeInput_End
-        { ui_addRangeButton = new Fl_Button(652, 305, 100, 30, "Add Range");
+        { ui_addRangeButton = new Fl_Button(672, 305, 100, 30, "Add Range");
           ui_addRangeButton->callback((Fl_Callback*)RangeInputCB);
           ui_addRangeButton->deactivate();
         } // Fl_Button* ui_addRangeButton
         ui_addRangeGrp->end();
       } // Fl_Group* ui_addRangeGrp
-      { ui_buttonDeleteRange = new Fl_Button(652, 255, 100, 30, "Delete Range");
+      { ui_buttonDeleteRange = new Fl_Button(672, 255, 100, 30, "Delete Range");
         ui_buttonDeleteRange->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_DELETE));
       } // Fl_Button* ui_buttonDeleteRange
       ui_rangeGroup->end();
