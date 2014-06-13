@@ -67,6 +67,13 @@ struct AddressItem
 	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; return *this;}
 };
 
+struct DumpHeader
+{
+	unsigned long begin, end;
+	char misc;
+	DumpHeader(unsigned long b, unsigned long e, char m) { begin = b; end = e; misc = m; }
+};
+
 //typedef tuple<unsigned long, unsigned long, char> AddressItem;
 typedef vector<AddressItem> AddressList;
 typedef vector<AddressItem*> AddressListPtr;
