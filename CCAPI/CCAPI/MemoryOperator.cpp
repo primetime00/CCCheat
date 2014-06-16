@@ -77,6 +77,33 @@ void MemoryOperator::setWriteMemoryOperation(unsigned long address, long long va
 	m_mutex.unlock();
 }
 
+void MemoryOperator::setReadPointerOperation(unsigned long address, list <unsigned int> offsets, char *memory, bool keep)
+{
+	m_mutex.lock();
+	if (pointerReadOperationList.count(address) > 0) //we already have it!
+	{
+		bool found = false;
+		for (PointerReadSet::iterator it = pointerReadOperationList[address].begin(); it != pointerReadOperationList[address].end(); ++it)
+		{
+			if ((*it)->memory == memory) //we have it!
+			{
+				found = true;
+				(*it)->keep |= keep;
+				break;
+			}
+		}
+		if (!found) //this is a new memory location
+		{
+			pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(address, offsets, memory, keep));
+		}
+	}
+	else
+	{
+		pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(address, offsets, memory, keep));
+	}
+	m_mutex.unlock();
+}
+
 
 void MemoryOperator::removeMemoryOperation(char command, unsigned long address)
 {
@@ -121,6 +148,8 @@ void MemoryOperator::process()
 		if (processRead() != 0)
 			continue;
 		if (processChunkRead() != 0)
+			continue;
+		if (processPointers() != 0)
 			continue;
 	}
 }
@@ -180,6 +209,66 @@ int MemoryOperator::processRead()
 	m_mutex.unlock();
 	return 0;
 }
+
+
+unsigned int MemoryOperator::readPointer(unsigned int address, unsigned int offset)
+{
+	char *data;
+	unsigned int length;
+	if (m_ccapi->readMemory(address, 4) == 0)
+	{
+		data = m_ccapi->getData(length);
+		long tmp = BSWAP32(*(long*)&data[0]);
+		tmp += offset;
+		return tmp;
+	}
+	return 0;
+}
+int MemoryOperator::processPointers()
+{
+	unsigned int length;
+	unsigned int cAddress, cOffset;
+	char *data;
+	m_mutex.lock();
+	for (PointerReadItemList::iterator it = pointerReadOperationList.begin(); it != pointerReadOperationList.end();)
+	{
+		if (m_exit) { m_mutex.unlock(); return 1; }
+		for (PointerReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
+		{
+			list<unsigned int> copyOffset = (*setIT)->offsets;
+			cAddress = (*setIT)->address;
+			while (copyOffset.size() > 0)
+			{
+				cOffset = copyOffset.front();
+				cAddress = readPointer(cAddress, cOffset);
+				if (cAddress == 0)
+					break;
+				copyOffset.pop_front();
+			}
+
+			((long long*)(*setIT)->memory)[0] = (long long)cAddress;
+			if ((*setIT)->keep == true)
+			{
+				++setIT;
+			}
+			else
+			{
+				setIT = it->second.erase(setIT);
+			}
+		}
+		if (it->second.size() == 0)
+		{
+			it = pointerReadOperationList.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+	m_mutex.unlock();
+	return 0;
+}
+
 
 int MemoryOperator::processChunkRead()
 {

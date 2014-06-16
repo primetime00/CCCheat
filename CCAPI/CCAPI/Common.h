@@ -67,6 +67,14 @@ struct AddressItem
 	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; return *this;}
 };
 
+
+struct PointerItem
+{
+	unsigned long base;
+	list<unsigned int> offsets;
+	PointerItem(unsigned long b, list<unsigned int> ls) { base = b; offsets = ls; }
+};
+
 struct DumpHeader
 {
 	unsigned long begin, end;
@@ -111,6 +119,14 @@ struct MemoryChunkReadItem{
 	MemoryChunkReadItem(unsigned int a, unsigned long l, char *m, bool k) { address = a; length = l; memory = m; keep = k;}
 };
 
+struct PointerReadItem{
+	unsigned int address;
+	list<unsigned int> offsets;
+	char *memory;
+	bool keep;
+	PointerReadItem(unsigned int a, list<unsigned int> &o, char *m, bool k) { address = a; memory = m; keep = k; offsets = o;}
+};
+
 struct MemoryWriteItem{
 	unsigned int address;
 	long long value;
@@ -123,9 +139,12 @@ typedef list<shared_ptr<MemoryReadItem>> MemoryReadSet;
 
 typedef list<shared_ptr<MemoryChunkReadItem>> MemoryChunkReadSet;
 
+typedef list<shared_ptr<PointerReadItem>> PointerReadSet;
+
 
 typedef map<unsigned long, MemoryReadSet> MemoryReadItemList;
 typedef map<unsigned long, MemoryChunkReadSet> MemoryChunkReadItemList;
+typedef map<unsigned long, PointerReadSet> PointerReadItemList;
 typedef map<unsigned long, shared_ptr<MemoryWriteItem>> MemoryWriteItemList;
 
 #endif
