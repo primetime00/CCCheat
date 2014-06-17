@@ -1,5 +1,5 @@
 include ../../Makefile.common
-OBJS = CCAPI.o ChunkFuzzySearch.o ChunkValueSearch.o MemoryOperator.o RangeMemory.o RangeTask.o SearchMemory.o SearchTask.o Task.o
+OBJS = CCAPI.o ChunkFuzzySearch.o ChunkValueSearch.o MemoryOperator.o RangeMemory.o RangeTask.o SearchMemory.o SearchTask.o DumpMemory.o DumpTask.o Task.o
 
 libccapi.a : $(OBJS)
 	\mkdir -p ./lib
@@ -22,6 +22,10 @@ SearchMemory.o :
 	$(CC) $(CFLAGS) SearchMemory.cpp
 SearchTask.o :
 	$(CC) $(CFLAGS) SearchTask.cpp
+DumpMemory.o :
+	$(CC) $(CFLAGS) DumpMemory.cpp
+DumpTask.o :
+	$(CC) $(CFLAGS) DumpTask.cpp
 Task.o :
 	$(CC) $(CFLAGS) Task.cpp
 
