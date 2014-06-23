@@ -16,6 +16,7 @@ int main() {
 	rkCheatUI ui;
 	InterfaceCCAPI m_interface(&ccapi, &ui);
 	ui.mainWindow->callback(windowCallback);
+	ui.m_pointerScannerWindow->callback(windowCallback);
 	ui.setVersion(CCCHEAT_VERSION);
 	ui.setInterface(&m_interface);
 	ui.setConnectStatus(INTERFACE_DISCONNECT);

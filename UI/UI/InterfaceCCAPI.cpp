@@ -209,6 +209,44 @@ void InterfaceCCAPI::_startNewSearch()
 
 }
 
+void InterfaceCCAPI::cancelDumpMemory()
+{
+	InterfaceCCAPI::instance->_cancelDumpMemory();
+}
+void InterfaceCCAPI::_cancelDumpMemory()
+{
+	for (auto it = dumpList.begin(); it != dumpList.end(); ++it)
+	{
+		(*it)->cancel();
+	}
+}
+
+void InterfaceCCAPI::dumpMemory()
+{
+	InterfaceCCAPI::instance->_dumpMemory();
+}
+void InterfaceCCAPI::_dumpMemory()
+{
+	string c_ip = m_ui->ui_ipInput->getIP();
+	rkCheat_RangeList rList = m_ui->ui_rangeTable->getSelectedRanges();
+	int ver = get_user_data(int, uiInstance->ui_ccapiChoice->mvalue()->user_data());
+	
+	//add the ranges to the search list
+	dumpList.clear();
+	for (rkCheat_RangeList::iterator it = rList.begin(); it != rList.end(); ++it)
+	{
+		DumpMemoryItem s = make_shared<DumpMemory>(c_ip, ver, it->first, it->second - it->first);
+		dumpList.push_back(s);
+	}
+	
+	//launch the searching thread!
+	DumpMemoryItem s = getCurrentDump();
+	m_ui->m_pointerScannerWindow->setDumpProgress("", 0.0f);
+	Fl::add_timeout(1.0, InterfaceCCAPI::dumpProgress, s.get());
+	m_launcher = thread(&InterfaceCCAPI::_launchDump, this);
+}
+
+
 void InterfaceCCAPI::continueSearch()
 {
 	if (InterfaceCCAPI::instance)
@@ -305,11 +343,36 @@ SearchMemory *InterfaceCCAPI::getCurrentSearch()
 		currentSearchIndex = 0;
 	return s;
 }
+
+InterfaceCCAPI::DumpMemoryItem InterfaceCCAPI::getCurrentDump()
+{
+	DumpMemoryItem s;
+	for (vector<DumpMemoryItem>::iterator it = dumpList.begin(); it != dumpList.end(); ++it)
+	{
+		DumpMemoryItem m = *it;
+		if (m->getStatus() == "DONE")
+		{
+			//currentSearchIndex++;
+			continue;
+		}
+		s = m;
+		break;
+	}
+	return s;
+}
+
 void InterfaceCCAPI::_launchSearch()
 {
 	searcher = getCurrentSearch();
 	if (searcher != 0)
 		searcher->process();
+}
+
+void InterfaceCCAPI::_launchDump()
+{
+	DumpMemoryItem d = getCurrentDump();
+	if (d != 0)
+		d->process();
 }
 
 
@@ -372,6 +435,82 @@ bool InterfaceCCAPI::_searchProgress(SearchMemory *search)
 	Fl::repeat_timeout(1.0, InterfaceCCAPI::searchProgress, search);
 	return false;
 }
+
+InterfaceCCAPI::DumpMemoryItem InterfaceCCAPI::getDumpMemoryItem(DumpMemory *m)
+{
+	for (auto it = dumpList.begin(); it != dumpList.end(); ++it)
+	{
+		if (it->get() == m)
+			return *it;
+	}
+	return nullptr;
+}
+
+void InterfaceCCAPI::dumpProgress(void *dump)
+{
+	if (InterfaceCCAPI::instance)
+	{
+		InterfaceCCAPI::instance->_dumpProgress((DumpMemory *)dump);
+	}
+}
+
+bool InterfaceCCAPI::_dumpProgress(DumpMemory* dump)
+{
+	unsigned long numResults;
+	unsigned int i;
+	stringstream dumpString;
+	DumpMemoryItem s = getDumpMemoryItem(dump);
+	if (s == nullptr)
+		false;
+	string status = s->getStatus();
+	float progress = s->getProgress();
+	for (i=0; i<dumpList.size(); ++i)
+		if (dumpList[i] == s)
+			break;
+
+	if (dumpList.size() > 1)
+		dumpString << "Dumping Memory [" << i+1 <<"/"<<dumpList.size() << "]...";
+	else
+		dumpString << "Dumping Memory...";
+	m_ui->m_pointerScannerWindow->setDumpProgress(dumpString.str(), progress);
+	if (status == "DONE")
+	{
+		m_ui->m_pointerScannerWindow->setDumpProgress(dumpString.str(), 1.0f);
+		if (m_launcher.joinable())
+			m_launcher.join();
+		Fl::remove_timeout(InterfaceCCAPI::dumpProgress, s.get());
+		s = getCurrentDump();
+		if (s != nullptr) //start the next dump
+		{
+			Fl::add_timeout(1.0, InterfaceCCAPI::dumpProgress, s.get());
+			m_launcher = thread(&InterfaceCCAPI::_launchDump, this);
+			return false;
+		}
+		//all dumps are done!
+		DumpDataList dList;
+		for (i=0; i<dumpList.size(); ++i)
+		{
+			dList.push_back(dumpList[i]->consolideDump());
+			//delete dumpList[i];
+		}
+		dumpList.clear();
+		m_ui->m_pointerScannerWindow->setDumpList(dList);
+		Fl::add_timeout(0.5, PointerScannerWindow::StartScanning, m_ui->m_pointerScannerWindow);
+		if (m_launcher.joinable()) m_launcher.join();
+		return true;
+	}
+	else if (status == "CANCEL")
+	{
+		Fl::remove_timeout(InterfaceCCAPI::dumpProgress, s.get());
+		m_ui->m_pointerScannerWindow->setDumpProgress(dumpString.str(), 0.0f);
+		dumpList.clear();
+		if (m_launcher.joinable()) m_launcher.join();
+		return true;
+	}
+	Fl::repeat_timeout(1.0, InterfaceCCAPI::dumpProgress, s.get());
+	return false;
+}
+
 
 unsigned long InterfaceCCAPI::getNumberOfResults()
 {

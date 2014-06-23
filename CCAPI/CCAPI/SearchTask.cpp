@@ -313,7 +313,7 @@ int SearchTask::continueFuzzySearch()
 {
 	ifstream resFile(m_dumpDir+m_dumpFile, ios::in | ios::binary);
 	unsigned char resFileType;
-	int res;
+	int res = TASK_ERROR_NONE;
 	if (resFile)
 	{
 		resFile.read((char*)&resFileType, sizeof(unsigned char));

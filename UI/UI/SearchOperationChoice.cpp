@@ -15,6 +15,7 @@ Fl_Menu_Item SearchOperationChoice::items[] = {
 		{"INCREASED", 0,  0, (void*)(SEARCH_FUZZY_GREATER), 16, FL_NORMAL_LABEL, 0, 14, 0},
 		{"CHANGED", 0,  0, (void*)(SEARCH_FUZZY_NOTEQUAL), 16, FL_NORMAL_LABEL, 0, 14, 0},
 		{"UNCHANGED", 0,  0, (void*)(SEARCH_FUZZY_EQUAL), 16, FL_NORMAL_LABEL, 0, 14, 0},
+		{"POINTER", 0,  0, (void*)(SEARCH_POINTER), 16, FL_NORMAL_LABEL, 0, 14, 0},
 		{0,0,0,0,0,0,0,0,0}
 	};
 
@@ -47,6 +48,7 @@ void SearchOperationChoice::reset()
 	menuMap[SEARCH_FUZZY_GREATER]->hide();
 	menuMap[SEARCH_FUZZY_NOTEQUAL]->hide();
 	menuMap[SEARCH_FUZZY_EQUAL]->hide();
+	menuMap[SEARCH_POINTER]->show();
 	if (isFuzzy())
 		value(menuMap[SEARCH_FUZZY_INIT]);
 }
@@ -62,6 +64,7 @@ void SearchOperationChoice::firstValue()
 	menuMap[SEARCH_FUZZY_GREATER]->show();
 	menuMap[SEARCH_FUZZY_NOTEQUAL]->show();
 	menuMap[SEARCH_FUZZY_EQUAL]->show();
+	menuMap[SEARCH_POINTER]->hide();
 		if (isFuzzy() && getValue() == SEARCH_FUZZY_INIT)
 		value(menuMap[SEARCH_FUZZY_GREATER]);
 
@@ -76,6 +79,14 @@ bool SearchOperationChoice::isFuzzy()
 {
 	char v = get_user_data(char, mvalue()->user_data());
 	if (v == SEARCH_FUZZY_INIT || v == SEARCH_FUZZY_LESS || v == SEARCH_FUZZY_GREATER || v == SEARCH_FUZZY_NOTEQUAL || v == SEARCH_FUZZY_EQUAL)
+		return true;
+	return false;
+}
+
+bool SearchOperationChoice::isPointer()
+{
+	char v = get_user_data(char, mvalue()->user_data());
+	if (v == SEARCH_POINTER)
 		return true;
 	return false;
 }

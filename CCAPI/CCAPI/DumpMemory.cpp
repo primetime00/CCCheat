@@ -16,6 +16,7 @@ DumpMemory::DumpMemory(string ip, int ccapiVersion, unsigned long long offset, u
 	m_error = TASK_ERROR_NONE;
 	m_status = "INIT";
 	m_running = false;
+	m_cancel = false;
 	m_ccapiHostVersion = ccapiVersion;
 }
 
@@ -92,6 +93,11 @@ float DumpMemory::getProgress()
 unsigned int DumpMemory::process()
 {
 	shared_ptr<DumpTask> dumpTask;
+	if (m_cancel)
+	{
+		m_running = false;
+		return false;
+	}
 	m_status = "CONNECTING";
 	m_cancel = false;
 	m_running = true;
@@ -211,4 +217,24 @@ int DumpMemory::writeDump(string fname)
 		oFile.write(b, m_threadList.at(i)->getLength());
 	}
 	oFile.close();
+}
+
+DumpData DumpMemory::consolideDump()
+{
+	unsigned long totalSize = 0;
+	unsigned long pos=0;
+	for (int i = 0; i<m_threadCount; i++)
+		totalSize += m_threadList.at(i)->getLength();
+	DumpData dd = DumpData(new _DumpData);
+
+	dd->data = new char[totalSize];
+	for (int i = 0; i<m_threadCount; i++)
+	{
+		char *b = m_threadList.at(i)->getBuffer();
+		memcpy(&dd->data[pos], b, m_threadList.at(i)->getLength());
+		pos+=m_threadList.at(i)->getLength();
+	}
+	dd->header.begin=m_offset;
+	dd->header.end=m_offset+m_length;
+	return dd;
 }

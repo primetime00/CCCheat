@@ -17,6 +17,7 @@ public:
 	void firstValue();
 	void firstFuzzy();
 	bool isFuzzy();
+	bool isPointer();
 	char getValue();
 
 private:

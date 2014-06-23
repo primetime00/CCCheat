@@ -31,6 +31,8 @@ DumpTask::~DumpTask()
 void DumpTask::run()
 {
 	unsigned int res;
+	if (m_cancel)
+		return;
 	m_taskState = Task::WAIT;
 	res = connectAndAttach();
 	if (res == TASK_ERROR_NONE)

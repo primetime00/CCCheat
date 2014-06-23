@@ -50,6 +50,12 @@ decl {\#include "ValueViewerTable.h"} {public global
 decl {\#include "InfoWindow.h"} {public global
 } 
 
+decl {\#include "PointerScannerWindow.h"} {public global
+} 
+
+decl {\#include "PointerScannerTable.h"} {public global
+} 
+
 decl {\#define RANGE_SAVE 0} {public global
 } 
 
@@ -131,12 +137,28 @@ switch (type)
   		break;		
 }} {}
   }
-  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
     code {if (uiInstance->ui_searchType->isFuzzy())
+{
 	uiInstance->ui_valueInputGroup->deactivate();
-else
+	uiInstance->ui_valueType->activate();
+}
+else if (uiInstance->ui_searchType->isPointer())
+{
 	uiInstance->ui_valueInputGroup->activate();
+	uiInstance->ui_isHex->value(1);
+	uiInstance->ui_valueType->value(uiInstance->getMenuIndex(SEARCH_VALUE_TYPE_4BYTE));
+	int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
+	uiInstance->ui_valueInput->setValueType(value);
+	uiInstance->ui_valueInput->setHex(true);	
+	uiInstance->ui_valueType->deactivate();
+}
+else
+{
+	uiInstance->ui_valueInputGroup->activate();
+	uiInstance->ui_valueType->activate();
+}
 
 if (uiInstance->canStartScan()) //I have a value entered or fuzzy
 {
@@ -165,7 +187,7 @@ else //i have no value entered and not fuzzy
 	}
 }} {}
   }
-  Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
     code {if (uiInstance->canStartScan()) //i have a value
   {
@@ -204,9 +226,15 @@ uiInstance->ui_valueInput->setHex(value == 1);} {}
     code {int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
 uiInstance->ui_valueInput->setValueType(value);} {}
   }
-  Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
-    code {InterfaceCCAPI::startNewSearch();} {}
+    code {if (uiInstance->ui_searchType->isPointer())
+{
+	uiInstance->m_pointerScannerWindow->reset();
+	uiInstance->m_pointerScannerWindow->show();
+}
+else
+	InterfaceCCAPI::startNewSearch();} {}
   }
   Function {ContinueSearchCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
@@ -386,7 +414,7 @@ case RESULT_TABLE_DELETE:
   else if (!valid && uiInstance)
 	  uiInstance->ui_connectButton->deactivate();} {}
   }
-  Function {ViewerCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  Function {ViewerCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
     code {uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
 uiInstance->m_valueviewer->show();} {}
@@ -397,8 +425,8 @@ uiInstance->m_valueviewer->show();} {}
 m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
-      label CCCheat open
-      xywh {150 192 1419 821} type Double align 80
+      label CCCheat
+      xywh {143 114 1389 843} type Double align 80
       class rkWindow visible
     } {
       Fl_Group searchGroup {
@@ -502,7 +530,7 @@ m_inProgress = false;} {}
         }
       }
       Fl_Group ui_rangeGroup {
-        label Range open selected
+        label Range open
         xywh {410 70 375 275} box BORDER_BOX color 47
       } {
         Fl_Table ui_rangeTable {
@@ -617,7 +645,7 @@ m_inProgress = false;} {}
       Fl_Light_Button ui_connectButton {
         label Connect
         callback ConnectButtonCB
-        xywh {20 20 100 30} deactivate
+        xywh {20 20 100 30} type Toggle selection_color 95 align 20 deactivate
       }
       Fl_Group ui_ipInput {
         callback CanConnectCB open
@@ -650,17 +678,17 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_valueviewer {
-      label {Value Viewer}
-      xywh {-32000 -32000 546 715} type Double hide
+      label {Value Viewer} open
+      xywh {-32000 -32000 526 695} type Double hide
       class ValueViewerWindow
     } {
-      Fl_Table m_valueTable {open
+      Fl_Table m_valueTable {
         xywh {0 60 495 625} selection_color 6
         class ValueViewerTable
       } {}
       Fl_Choice m_viewerTypeChoice {
         label Type
-        callback {((ValueViewerWindow*)v)->TypeChangedCB(o)} open
+        callback {((ValueViewerWindow*)v)->TypeChangedCB(o)}
         xywh {45 15 110 25} down_box BORDER_BOX when 1
         code0 {m_viewerTypeChoice->menu(menu_ui_valueType);}
       } {}
@@ -676,10 +704,97 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_infoWindow {
-      label {CCCheat Information} open
+      label {CCCheat Information}
       xywh {39 66 476 336} type Double hide
       class InfoWindow
     } {}
+    Fl_Window m_pointerScannerWindow {
+      label {Pointer Scanner} open
+      xywh {168 223 557 534} type Double
+      class PointerScannerWindow modal visible
+    } {
+      Fl_Group m_psLoadNewGroup {open
+        xywh {23 60 520 365} hide
+      } {
+        Fl_Button m_psNewScanButton {
+          label {New Scan}
+          callback {((PointerScannerWindow*)o->parent()->parent())->NewScanCB(o)}
+          xywh {238 215 90 30}
+        }
+        Fl_Button m_psLoadScan {
+          label {Load Scan}
+          callback {((PointerScannerWindow*)o->parent()->parent())->LoadScanCB(o)}
+          xywh {238 270 90 30}
+        }
+        Fl_Button m_psCancelScan {
+          label Exit
+          callback {((PointerScannerWindow*)o->parent()->parent())->hide()}
+          xywh {238 325 90 30}
+        }
+        Fl_Box {} {
+          label {Would you like to start a new scan or load a previous pointer scan?}
+          xywh {70 157 425 38}
+        }
+      }
+      Fl_Group m_psNewGroup {open selected
+        xywh {10 10 550 515}
+      } {
+        Fl_Input m_psNewAddress {
+          label {Address To Scan:}
+          callback {((PointerScannerWindow*)o->parent()->parent())->AddressChangeCB(o);}
+          xywh {175 26 160 24} when 1
+          class ValueInput
+        }
+        Fl_Input m_psOffset {
+          label {Offset From Address:}
+          xywh {175 63 110 24}
+          class ValueInput
+        }
+        Fl_Spinner m_psNewDepthSpinner {
+          label {Max Scan Depth:}
+          xywh {175 101 50 24}
+        }
+        Fl_Button m_psNewStartButton {
+          label Start
+          callback {((PointerScannerWindow*)o->parent()->parent())->StartNewScanCB(o);}
+          xywh {395 25 85 25}
+        }
+        Fl_Table m_psNewScanTable {open
+          xywh {32 130 373 385}
+          class PointerScannerTable
+        } {}
+        Fl_Progress m_psNewDumpProgress {
+          label {Dumping Memory...}
+          xywh {255 100 275 20} hide
+        }
+        Fl_Group m_psScanStateLabelGroup {open
+          xywh {275 100 285 28}
+        } {
+          Fl_Box m_psScanningLabel {
+            label {Scanning...}
+            xywh {282 102 93 21} align 20
+          }
+          Fl_Box m_psScanningNumberLabel {
+            label number
+            xywh {457 102 73 21} align 20
+          }
+          Fl_Box m_psScanningResultsLabel {
+            label {Results:}
+            xywh {402 102 58 21} align 20
+          }
+        }
+        Fl_Button m_psNewCancelButton {
+          label Exit
+          callback {((PointerScannerWindow*)o->parent()->parent())->hide();}
+          xywh {395 60 85 25}
+        }
+        Fl_Button m_psAddPointerButton {
+          label {Add Pointer}
+          callback {((PointerScannerWindow*)o->parent()->parent())->hide();}
+          xywh {455 130 85 25}
+        }
+      }
+    }
   }
   Function {setInterface(InterfaceCCAPI *iface)} {} {
     code {m_interface = iface;} {}
@@ -786,6 +901,15 @@ ui_valueInputGroup->activate();
 ui_buttonNewScan->activate();
 SearchTypeChangeCB(0,0);} {}
   }
+  Function {getMenuIndex(char val)} {return_type int
+  } {
+    code {for (int i=0; menu_ui_valueType[i].text != 0; ++i)
+{
+	if (get_user_data(int, menu_ui_valueType[i].user_data_) == val)
+		return i;
+}
+return -1;} {}
+  }
   Function {setSearchProgress(float percent, string status, bool done)} {return_type void
   } {
     code {static char stat[50];
@@ -804,7 +928,7 @@ ui_numOfResults->label(stat);} {}
   }
   decl {bool m_inProgress;} {public local
   }
-  Function {setConnectStatus(char status)} {open return_type void
+  Function {setConnectStatus(char status)} {return_type void
   } {
     code {static char stat[50];
 if (status == INTERFACE_CONNECT_FAIL)

@@ -36,6 +36,10 @@ using namespace std;
 #define SEARCH_VALUE_TYPE_2BYTE		0x01
 #define SEARCH_VALUE_TYPE_4BYTE		0x02
 #define SEARCH_VALUE_TYPE_FLOAT		0x03
+#define SEARCH_VALUE_TYPE_PT_1BYTE	0x04
+#define SEARCH_VALUE_TYPE_PT_2BYTE	0x05
+#define SEARCH_VALUE_TYPE_PT_4BYTE	0x06
+#define SEARCH_VALUE_TYPE_PT_FLOAT	0x07
 
 #define SEARCH_STATE_INITIAL	0x00
 #define SEARCH_STATE_CONTINUE	0x01
@@ -49,6 +53,7 @@ using namespace std;
 #define SEARCH_VALUE_GREATER	0x06
 #define SEARCH_VALUE_LESS		0x07
 #define SEARCH_FUZZY_INIT		0x08
+#define SEARCH_POINTER			0x09
 
 #define RESULT_FILE_TYPE_DUMP	0x00
 #define RESULT_FILE_TYPE_LIST	0x01
@@ -68,19 +73,36 @@ struct AddressItem
 };
 
 
-struct PointerItem
+typedef list<unsigned int> PointerOffsets;
+struct PointerObj
 {
 	unsigned long base;
-	list<unsigned int> offsets;
-	PointerItem(unsigned long b, list<unsigned int> ls) { base = b; offsets = ls; }
+	PointerOffsets offsets;
+	unsigned long result;
+	PointerObj(unsigned long b, PointerOffsets ls) { base = b; offsets = ls; result = 0;}
 };
+typedef shared_ptr<PointerObj> PointerItem;
 
 struct DumpHeader
 {
 	unsigned long begin, end;
 	char misc;
 	DumpHeader(unsigned long b, unsigned long e, char m) { begin = b; end = e; misc = m; }
+	DumpHeader() { begin = 0; end = 0; misc = 0; }
+	DumpHeader &operator=(DumpHeader t) { begin = t.begin; end = t.end; misc = t.misc; return *this;}
 };
+
+struct _DumpData
+{
+	DumpHeader header;
+	char *data;
+	_DumpData() { data=0;}
+	_DumpData(DumpHeader h, char *d) { header = h, data = d;}
+	_DumpData(_DumpData &s) { data = s.data; header = s.header; }
+	~_DumpData() { if (data !=0) delete[] data; data=0; }
+};
+typedef shared_ptr<_DumpData> DumpData;
+typedef vector<DumpData> DumpDataList;
 
 //typedef tuple<unsigned long, unsigned long, char> AddressItem;
 typedef vector<AddressItem> AddressList;
@@ -126,6 +148,7 @@ struct PointerReadItem{
 	bool keep;
 	PointerReadItem(unsigned int a, list<unsigned int> &o, char *m, bool k) { address = a; memory = m; keep = k; offsets = o;}
 };
+
 
 struct MemoryWriteItem{
 	unsigned int address;

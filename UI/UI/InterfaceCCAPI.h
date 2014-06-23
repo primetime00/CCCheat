@@ -6,6 +6,7 @@
 #include "Common.h"
 #include "CCAPI/RangeMemory.h"
 #include "CCAPI/SearchMemory.h"
+#include "CCAPI/DumpMemory.h"
 #include "CCAPI/MemoryOperator.h"
 #include "ui_main.h"
 
@@ -24,6 +25,8 @@ class rkCheatUI;
 
 class InterfaceCCAPI {
 public:
+	typedef shared_ptr<DumpMemory> DumpMemoryItem;
+
 	InterfaceCCAPI(CCAPI *ccapi, rkCheatUI *ui) { m_ccapi = ccapi; m_ui = ui; instance = this; lastSearchType = SEARCH_TYPE_UNKNOWN; currentSearchIndex = 0; memoryOperator = 0; ranger = 0;}
 
 	static void findAddresses();
@@ -38,6 +41,9 @@ public:
 	static void searchProgress(void *);
 	bool _searchProgress(SearchMemory *);
 
+	static void dumpProgress(void *);
+	bool _dumpProgress(DumpMemory *);
+
 
 	void _launchFindAddress();
 	void _processAddresses();
@@ -48,8 +54,16 @@ public:
 	void _launchSearch();
 	void _processSearchResults(SearchMemory *);
 
+	void _launchDump();
+
 	static void startNewSearch();
 	void _startNewSearch();
+
+	static void dumpMemory();
+	void _dumpMemory();
+
+	static void cancelDumpMemory();
+	void _cancelDumpMemory();
 
 	static void continueSearch();
 	void _continueSearch();
@@ -74,7 +88,9 @@ public:
 	unsigned long getNumberOfResults();
 private:
 	bool isSearchFinished();
+	DumpMemoryItem getDumpMemoryItem(DumpMemory *);
 	SearchMemory *getCurrentSearch();
+	DumpMemoryItem getCurrentDump();
 
 	rkCheatUI *m_ui;
 	CCAPI *m_ccapi;
@@ -85,6 +101,9 @@ private:
 	MemoryOperator *memoryOperator;
 	
 	vector<SearchMemory*> searchList;
+
+
+	vector<DumpMemoryItem> dumpList;
 
 	rkCheat_Results searchResults;
 

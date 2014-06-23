@@ -182,6 +182,55 @@ void rkCheatUI::cb_m_valueAddCodeButton(Fl_Button* o, void* v) {
   ((rkCheatUI*)(o->parent()->user_data()))->cb_m_valueAddCodeButton_i(o,v);
 }
 
+void rkCheatUI::cb_m_psNewScanButton_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->NewScanCB(o);
+}
+void rkCheatUI::cb_m_psNewScanButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psNewScanButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_psLoadScan_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->LoadScanCB(o);
+}
+void rkCheatUI::cb_m_psLoadScan(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psLoadScan_i(o,v);
+}
+
+void rkCheatUI::cb_m_psCancelScan_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->hide();
+}
+void rkCheatUI::cb_m_psCancelScan(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psCancelScan_i(o,v);
+}
+
+void rkCheatUI::cb_m_psNewAddress_i(ValueInput* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->AddressChangeCB(o);
+}
+void rkCheatUI::cb_m_psNewAddress(ValueInput* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psNewAddress_i(o,v);
+}
+
+void rkCheatUI::cb_m_psNewStartButton_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->StartNewScanCB(o);
+}
+void rkCheatUI::cb_m_psNewStartButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psNewStartButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_psNewCancelButton_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->hide();
+}
+void rkCheatUI::cb_m_psNewCancelButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psNewCancelButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_psAddPointerButton_i(Fl_Button* o, void*) {
+  ((PointerScannerWindow*)o->parent()->parent())->hide();
+}
+void rkCheatUI::cb_m_psAddPointerButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psAddPointerButton_i(o,v);
+}
+
 void rkCheatUI::RangeButtonCB(Fl_Widget *w, void *data) {
   int type = (int)(unsigned long)data;
   string fname;
@@ -239,9 +288,25 @@ void rkCheatUI::RangeButtonCB(Fl_Widget *w, void *data) {
 
 void rkCheatUI::SearchTypeChangeCB(Fl_Widget *w, void *data) {
   if (uiInstance->ui_searchType->isFuzzy())
+  {
   	uiInstance->ui_valueInputGroup->deactivate();
-  else
+  	uiInstance->ui_valueType->activate();
+  }
+  else if (uiInstance->ui_searchType->isPointer())
+  {
   	uiInstance->ui_valueInputGroup->activate();
+  	uiInstance->ui_isHex->value(1);
+  	uiInstance->ui_valueType->value(uiInstance->getMenuIndex(SEARCH_VALUE_TYPE_4BYTE));
+  	int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
+  	uiInstance->ui_valueInput->setValueType(value);
+  	uiInstance->ui_valueInput->setHex(true);	
+  	uiInstance->ui_valueType->deactivate();
+  }
+  else
+  {
+  	uiInstance->ui_valueInputGroup->activate();
+  	uiInstance->ui_valueType->activate();
+  }
   
   if (uiInstance->canStartScan()) //I have a value entered or fuzzy
   {
@@ -311,7 +376,13 @@ void rkCheatUI::SetValueTypeCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::StartSearchButtonCB(Fl_Widget *w, void *data) {
-  InterfaceCCAPI::startNewSearch();
+  if (uiInstance->ui_searchType->isPointer())
+  {
+  	uiInstance->m_pointerScannerWindow->reset();
+  	uiInstance->m_pointerScannerWindow->show();
+  }
+  else
+  	InterfaceCCAPI::startNewSearch();
 }
 
 void rkCheatUI::ContinueSearchCB(Fl_Widget *w, void *data) {
@@ -501,7 +572,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1419, 821, "CCCheat");
+  { mainWindow = new rkWindow(1389, 843, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -709,7 +780,10 @@ rkCheatUI::rkCheatUI() {
       ui_codeGroup->end();
     } // Fl_Group* ui_codeGroup
     { ui_connectButton = new Fl_Light_Button(20, 20, 100, 30, "Connect");
+      ui_connectButton->type(1);
+      ui_connectButton->selection_color(FL_YELLOW);
       ui_connectButton->callback((Fl_Callback*)ConnectButtonCB);
+      ui_connectButton->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
       ui_connectButton->deactivate();
     } // Fl_Light_Button* ui_connectButton
     { ui_ipInput = new IPInput(135, 20, 255, 30);
@@ -740,7 +814,7 @@ rkCheatUI::rkCheatUI() {
     } // Fl_Choice* ui_ccapiChoice
     mainWindow->end();
   } // rkWindow* mainWindow
-  { m_valueviewer = new ValueViewerWindow(546, 715, "Value Viewer");
+  { m_valueviewer = new ValueViewerWindow(526, 695, "Value Viewer");
     m_valueviewer->box(FL_FLAT_BOX);
     m_valueviewer->color(FL_BACKGROUND_COLOR);
     m_valueviewer->selection_color(FL_BACKGROUND_COLOR);
@@ -791,6 +865,99 @@ rkCheatUI::rkCheatUI() {
     m_infoWindow->when(FL_WHEN_RELEASE);
     m_infoWindow->end();
   } // InfoWindow* m_infoWindow
+  { m_pointerScannerWindow = new PointerScannerWindow(557, 534, "Pointer Scanner");
+    m_pointerScannerWindow->box(FL_FLAT_BOX);
+    m_pointerScannerWindow->color(FL_BACKGROUND_COLOR);
+    m_pointerScannerWindow->selection_color(FL_BACKGROUND_COLOR);
+    m_pointerScannerWindow->labeltype(FL_NO_LABEL);
+    m_pointerScannerWindow->labelfont(0);
+    m_pointerScannerWindow->labelsize(14);
+    m_pointerScannerWindow->labelcolor(FL_FOREGROUND_COLOR);
+    m_pointerScannerWindow->user_data((void*)(this));
+    m_pointerScannerWindow->align(Fl_Align(FL_ALIGN_TOP));
+    m_pointerScannerWindow->when(FL_WHEN_RELEASE);
+    { m_psLoadNewGroup = new Fl_Group(23, 60, 520, 365);
+      m_psLoadNewGroup->hide();
+      { m_psNewScanButton = new Fl_Button(238, 215, 90, 30, "New Scan");
+        m_psNewScanButton->callback((Fl_Callback*)cb_m_psNewScanButton);
+      } // Fl_Button* m_psNewScanButton
+      { m_psLoadScan = new Fl_Button(238, 270, 90, 30, "Load Scan");
+        m_psLoadScan->callback((Fl_Callback*)cb_m_psLoadScan);
+      } // Fl_Button* m_psLoadScan
+      { m_psCancelScan = new Fl_Button(238, 325, 90, 30, "Exit");
+        m_psCancelScan->callback((Fl_Callback*)cb_m_psCancelScan);
+      } // Fl_Button* m_psCancelScan
+      { new Fl_Box(70, 157, 425, 38, "Would you like to start a new scan or load a previous pointer scan?");
+      } // Fl_Box* o
+      m_psLoadNewGroup->end();
+    } // Fl_Group* m_psLoadNewGroup
+    { m_psNewGroup = new Fl_Group(10, 10, 550, 515);
+      { m_psNewAddress = new ValueInput(175, 26, 160, 24, "Address To Scan:");
+        m_psNewAddress->box(FL_DOWN_BOX);
+        m_psNewAddress->color(FL_BACKGROUND2_COLOR);
+        m_psNewAddress->selection_color(FL_SELECTION_COLOR);
+        m_psNewAddress->labeltype(FL_NORMAL_LABEL);
+        m_psNewAddress->labelfont(0);
+        m_psNewAddress->labelsize(14);
+        m_psNewAddress->labelcolor(FL_FOREGROUND_COLOR);
+        m_psNewAddress->callback((Fl_Callback*)cb_m_psNewAddress);
+        m_psNewAddress->align(Fl_Align(FL_ALIGN_LEFT));
+        m_psNewAddress->when(FL_WHEN_CHANGED);
+      } // ValueInput* m_psNewAddress
+      { m_psOffset = new ValueInput(175, 63, 110, 24, "Offset From Address:");
+        m_psOffset->box(FL_DOWN_BOX);
+        m_psOffset->color(FL_BACKGROUND2_COLOR);
+        m_psOffset->selection_color(FL_SELECTION_COLOR);
+        m_psOffset->labeltype(FL_NORMAL_LABEL);
+        m_psOffset->labelfont(0);
+        m_psOffset->labelsize(14);
+        m_psOffset->labelcolor(FL_FOREGROUND_COLOR);
+        m_psOffset->align(Fl_Align(FL_ALIGN_LEFT));
+        m_psOffset->when(FL_WHEN_RELEASE);
+      } // ValueInput* m_psOffset
+      { m_psNewDepthSpinner = new Fl_Spinner(175, 101, 50, 24, "Max Scan Depth:");
+      } // Fl_Spinner* m_psNewDepthSpinner
+      { m_psNewStartButton = new Fl_Button(395, 25, 85, 25, "Start");
+        m_psNewStartButton->callback((Fl_Callback*)cb_m_psNewStartButton);
+      } // Fl_Button* m_psNewStartButton
+      { m_psNewScanTable = new PointerScannerTable(32, 130, 373, 385);
+        m_psNewScanTable->box(FL_THIN_DOWN_FRAME);
+        m_psNewScanTable->color(FL_BACKGROUND_COLOR);
+        m_psNewScanTable->selection_color(FL_BACKGROUND_COLOR);
+        m_psNewScanTable->labeltype(FL_NORMAL_LABEL);
+        m_psNewScanTable->labelfont(0);
+        m_psNewScanTable->labelsize(14);
+        m_psNewScanTable->labelcolor(FL_FOREGROUND_COLOR);
+        m_psNewScanTable->align(Fl_Align(FL_ALIGN_TOP));
+        m_psNewScanTable->when(FL_WHEN_RELEASE);
+        m_psNewScanTable->end();
+      } // PointerScannerTable* m_psNewScanTable
+      { m_psNewDumpProgress = new Fl_Progress(255, 100, 275, 20, "Dumping Memory...");
+        m_psNewDumpProgress->hide();
+      } // Fl_Progress* m_psNewDumpProgress
+      { m_psScanStateLabelGroup = new Fl_Group(275, 100, 285, 28);
+        { m_psScanningLabel = new Fl_Box(282, 102, 93, 21, "Scanning...");
+          m_psScanningLabel->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+        } // Fl_Box* m_psScanningLabel
+        { m_psScanningNumberLabel = new Fl_Box(457, 102, 73, 21, "number");
+          m_psScanningNumberLabel->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+        } // Fl_Box* m_psScanningNumberLabel
+        { m_psScanningResultsLabel = new Fl_Box(402, 102, 58, 21, "Results:");
+          m_psScanningResultsLabel->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+        } // Fl_Box* m_psScanningResultsLabel
+        m_psScanStateLabelGroup->end();
+      } // Fl_Group* m_psScanStateLabelGroup
+      { m_psNewCancelButton = new Fl_Button(395, 60, 85, 25, "Exit");
+        m_psNewCancelButton->callback((Fl_Callback*)cb_m_psNewCancelButton);
+      } // Fl_Button* m_psNewCancelButton
+      { m_psAddPointerButton = new Fl_Button(455, 130, 85, 25, "Add Pointer");
+        m_psAddPointerButton->callback((Fl_Callback*)cb_m_psAddPointerButton);
+      } // Fl_Button* m_psAddPointerButton
+      m_psNewGroup->end();
+    } // Fl_Group* m_psNewGroup
+    m_pointerScannerWindow->set_modal();
+    m_pointerScannerWindow->end();
+  } // PointerScannerWindow* m_pointerScannerWindow
 }
 
 void rkCheatUI::setInterface(InterfaceCCAPI *iface) {
@@ -898,6 +1065,15 @@ void rkCheatUI::searchStopped(char how) {
   ui_valueInputGroup->activate();
   ui_buttonNewScan->activate();
   SearchTypeChangeCB(0,0);
+}
+
+int rkCheatUI::getMenuIndex(char val) {
+  for (int i=0; menu_ui_valueType[i].text != 0; ++i)
+  {
+  	if (get_user_data(int, menu_ui_valueType[i].user_data_) == val)
+  		return i;
+  }
+  return -1;
 }
 
 void rkCheatUI::setSearchProgress(float percent, string status, bool done) {

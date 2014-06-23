@@ -619,7 +619,7 @@ void CodeTable::onCellRightClicked(int row, int col)
 	{
 		Fl_Menu_Item rclick_menu[] = {
 			{ "View Nearby...",   0, viewer,  (void*)this },
-//			{ "Pointer Scan",   1, viewer,  (void*)this },
+			{ "Pointer Scan",   1, viewer,  (void*)this },
             { 0 }
             };
             m = rclick_menu->popup(Fl::event_x(), Fl::event_y(), 0, 0, 0);

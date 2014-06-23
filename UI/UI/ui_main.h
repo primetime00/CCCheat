@@ -19,6 +19,8 @@
 #include "ValueViewerWindow.h"
 #include "ValueViewerTable.h"
 #include "InfoWindow.h"
+#include "PointerScannerWindow.h"
+#include "PointerScannerTable.h"
 #define RANGE_SAVE 0
 #define RANGE_LOAD 1
 #define RANGE_CLEAR 2
@@ -33,6 +35,7 @@ class InterfaceCCAPI;
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Light_Button.H>
+#include <FL/Fl_Spinner.H>
 
 class rkCheatUI {
 public:
@@ -118,6 +121,52 @@ private:
   static void cb_m_valueAddCodeButton(Fl_Button*, void*);
 public:
   InfoWindow *m_infoWindow;
+  PointerScannerWindow *m_pointerScannerWindow;
+  Fl_Group *m_psLoadNewGroup;
+  Fl_Button *m_psNewScanButton;
+private:
+  inline void cb_m_psNewScanButton_i(Fl_Button*, void*);
+  static void cb_m_psNewScanButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_psLoadScan;
+private:
+  inline void cb_m_psLoadScan_i(Fl_Button*, void*);
+  static void cb_m_psLoadScan(Fl_Button*, void*);
+public:
+  Fl_Button *m_psCancelScan;
+private:
+  inline void cb_m_psCancelScan_i(Fl_Button*, void*);
+  static void cb_m_psCancelScan(Fl_Button*, void*);
+public:
+  Fl_Group *m_psNewGroup;
+  ValueInput *m_psNewAddress;
+private:
+  inline void cb_m_psNewAddress_i(ValueInput*, void*);
+  static void cb_m_psNewAddress(ValueInput*, void*);
+public:
+  ValueInput *m_psOffset;
+  Fl_Spinner *m_psNewDepthSpinner;
+  Fl_Button *m_psNewStartButton;
+private:
+  inline void cb_m_psNewStartButton_i(Fl_Button*, void*);
+  static void cb_m_psNewStartButton(Fl_Button*, void*);
+public:
+  PointerScannerTable *m_psNewScanTable;
+  Fl_Progress *m_psNewDumpProgress;
+  Fl_Group *m_psScanStateLabelGroup;
+  Fl_Box *m_psScanningLabel;
+  Fl_Box *m_psScanningNumberLabel;
+  Fl_Box *m_psScanningResultsLabel;
+  Fl_Button *m_psNewCancelButton;
+private:
+  inline void cb_m_psNewCancelButton_i(Fl_Button*, void*);
+  static void cb_m_psNewCancelButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_psAddPointerButton;
+private:
+  inline void cb_m_psAddPointerButton_i(Fl_Button*, void*);
+  static void cb_m_psAddPointerButton(Fl_Button*, void*);
+public:
   void setInterface(InterfaceCCAPI *iface);
 private:
   InterfaceCCAPI *m_interface; 
@@ -131,6 +180,7 @@ public:
   bool canStartScan();
   void searchStarted();
   void searchStopped(char how);
+  int getMenuIndex(char val);
   void setSearchProgress(float percent, string status, bool done);
   void setNumberOfResultsString(string res);
   bool m_inProgress; 
