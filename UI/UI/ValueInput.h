@@ -26,6 +26,9 @@ public:
 	void setLiteral(bool v) { m_literal = v; }
 	void setValType(char type) { m_valType = type; }
 	char getValType() { return m_valType; }
+	void setValue(unsigned long ivalue);
+	void setValue(long long ivalue);
+	void setValue(float ivalue);
 
 private:
 	string convertHexToInt(string hex);

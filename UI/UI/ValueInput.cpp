@@ -297,6 +297,53 @@ long long ValueInput::getLLValue()
 	}
 }
 
+void ValueInput::setValue(unsigned long ivalue)
+{
+	string strVal;
+	if (m_hex)
+		strVal = convertIntToHex(to_string(ivalue));
+	else
+	{
+		if (m_type == SEARCH_VALUE_TYPE_PT_FLOAT)
+		{
+			setValue(*(float*) (&ivalue)[0]);
+			return;
+		}
+		strVal = to_string(ivalue);
+	}
+	
+	value(strVal.c_str());
+}
+
+void ValueInput::setValue(long long ivalue)
+{
+	string strVal;
+	if (m_hex)
+		strVal = convertIntToHex(to_string(ivalue));
+	else
+	{
+		if (m_type == SEARCH_VALUE_TYPE_PT_FLOAT)
+		{
+			setValue(*(float*) (&ivalue)[0]);
+			return;
+		}
+		strVal = to_string(ivalue);
+	}
+	
+	value(strVal.c_str());
+}
+
+void ValueInput::setValue(float ivalue)
+{
+	string strVal;
+	if (m_hex)
+		strVal = convertFloatToHex(to_string(ivalue));
+	else
+		strVal = to_string(ivalue);
+
+	value(strVal.c_str());
+}
+
 
 ValueInput::~ValueInput(void)
 {

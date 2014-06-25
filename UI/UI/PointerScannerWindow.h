@@ -6,6 +6,7 @@
 #include "DumpManager.h"
 #include "rkWindow.h"
 #include "Common.h"
+#include "CodeTable.h"
 #include "CCAPI/Common.h"
 #include "FL/Fl.H"
 
@@ -26,13 +27,17 @@ public:
 	{
 		reset();
 	}
-	PointerScannerWindow(int W, int H, const char *l=0) : rkWindow(W,H,l) {}
+	PointerScannerWindow(int W, int H, const char *l=0) : rkWindow(W,H,l) 
+	{
+		reset();
+	}
 
 	void reset();
 	void NewScanCB(Fl_Widget *w);
 	void LoadScanCB(Fl_Widget *w);
 	void AddressChangeCB(Fl_Widget *w);
 	void StartNewScanCB(Fl_Widget *w);
+	void AddPointerToListCB(Fl_Widget *w);
 
 	void progressTimeout();
 	static void progressTimeout(void *instance) { ((PointerScannerWindow*)instance)->progressTimeout(); }
@@ -49,6 +54,7 @@ public:
 
 	void show();
 	void hide();
+	void setCodeTable(CodeTable *t) { m_codeTable = t; }
 
 private:
 	void setScanState(char v);
@@ -62,6 +68,8 @@ private:
 	DumpDataList dumpList;
 	bool m_isLoading;
 	shared_ptr<DumpManager> dumpManager;
+
+	CodeTable *m_codeTable;
 
 };
 

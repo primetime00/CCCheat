@@ -26,6 +26,8 @@ public:
 	string getStatus() { return m_status; }
 
 	void setReadMemoryOperation(unsigned long address, char type, char *memory, bool keep);
+	void setReadPointerOperation(PointerItem pointer);
+
 	void setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze);
 	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
 	void removeMemoryOperation(char command, unsigned long address);
@@ -46,6 +48,7 @@ private:
 
 	unsigned int getLength(char type) { if (type == SEARCH_VALUE_TYPE_1BYTE) return 1; if (type == SEARCH_VALUE_TYPE_2BYTE) return 2; return 4; }
 	unsigned int readPointer(unsigned int address, unsigned int offset);
+	long long readAddress(unsigned long address, char type);
 
 	int connect();
 

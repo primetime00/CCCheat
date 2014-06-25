@@ -5,34 +5,6 @@
 
 using namespace std;
 
-#if 0
-void PointerScannerWindow::TypeChangedCB(Fl_Widget *w)
-{
-	char type = uiInstance->m_viewerTypeChoice->value();
-	uiInstance->m_valueTable->setType(type);
-}
-void PointerScannerWindow::SignedChangedCB(Fl_Widget *w)
-{
-	char sign = uiInstance->m_viewerSignedButton->value();
-	uiInstance->m_valueTable->setSigned(sign != 0);
-}
-
-void PointerScannerWindow::AddCodeCB(Fl_Widget *w)
-{
-	uiInstance->m_valueTable->addSelectedAddresses();
-}
-
-void PointerScannerWindow::setCodeData(rkCheat_Code *item)
-{
-	uiInstance->m_viewerTypeChoice->value(item->type);
-	if (visible() && uiInstance->m_valueTable->getAddress() != item->address)
-		hide();
-	uiInstance->m_valueTable->setAddress(item->address);
-	uiInstance->m_valueTable->setType(item->type);
-}
-
-#endif
-
 int PointerScannerWindow::doNewLoadDialog(bool load)
 {
 	string fname = "";
@@ -136,6 +108,17 @@ void PointerScannerWindow::StartNewScanCB(Fl_Widget *w)
 			setScanState(PS_STATE_CANCEL);
 		}
 	}
+}
+
+void PointerScannerWindow::AddPointerToListCB(Fl_Widget *w)
+{
+	PointerOffsets po;
+	po.push_back(1);
+	po.push_back(2);
+	PointerItem b = uiInstance->m_peWindow->popup(0x5000, po);
+	if (b == nullptr || m_codeTable == 0)
+		return;
+
 }
 
 void PointerScannerWindow::setScanState(char v) 
@@ -270,6 +253,7 @@ void PointerScannerWindow::reset()
 		uiInstance->m_psOffset->value("");
 		uiInstance->m_psNewDumpProgress->hide();
 		setScanState(PS_STATE_NEWLOAD);
+		m_codeTable = 0;
 }
 
 void PointerScannerWindow::show()

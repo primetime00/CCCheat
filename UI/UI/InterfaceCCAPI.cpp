@@ -36,6 +36,8 @@ void InterfaceCCAPI::_connectCheck()
 			Fl::remove_timeout(InterfaceCCAPI::connectCheck);
 			uiInstance->setConnectStatus(INTERFACE_CONNECT_SUCCESS);
 			uiInstance->ui_codeTable->setMemoryOperator(memoryOperator);
+			uiInstance->m_peWindow->setMemoryOperator(memoryOperator);
+			uiInstance->m_pointerScannerWindow->setCodeTable(uiInstance->ui_codeTable);
 			uiInstance->ui_resultTable->setMemoryOperator(memoryOperator);
 			uiInstance->m_valueTable->setMemoryOperator(memoryOperator);
 			uiInstance->m_valueTable->setCodeTable(uiInstance->ui_codeTable);
@@ -48,7 +50,9 @@ void InterfaceCCAPI::disconnect()
 	uiInstance->ui_codeTable->setMemoryOperator(0);
 	uiInstance->ui_resultTable->setMemoryOperator(0);
 	uiInstance->m_valueTable->setMemoryOperator(0);
+	uiInstance->m_peWindow->setMemoryOperator(0);
 	uiInstance->m_valueTable->setCodeTable(0);
+	uiInstance->m_pointerScannerWindow->setCodeTable(0);
 	if (memoryOperator != 0)
 	{
 		delete memoryOperator;

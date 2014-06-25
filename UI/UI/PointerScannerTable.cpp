@@ -113,16 +113,16 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
 		fl_color(FL_BLACK);
 		switch(COL)
 		{
-		case ADDRESS_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->base); break;
+		case ADDRESS_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->getBase()); break;
 		case OFFSET_COL:
 			str.clear();
-			for (PointerOffsets::const_iterator it=m_pointerList[ROW]->offsets.begin(); it != m_pointerList[ROW]->offsets.end(); ++it)
+			for (auto it=m_pointerList[ROW]->pointers.begin(); it != m_pointerList[ROW]->pointers.end(); ++it)
 			{
-				str << hex << *it << " ";
+				str << hex << it->offset << " ";
 			}
 			sprintf(s, "%s", str.str().c_str());
 			break;
-		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->offsets.size()); break;
+		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->pointers.size()); break;
 		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->result); break;
 		default: break;
 		}
@@ -283,7 +283,7 @@ void PointerScannerTable::addRow(unsigned long address, PointerOffsets offsets)
 	bool found = false;
 	for (auto it = m_pointerList.begin(); it != m_pointerList.end(); ++it)
 	{
-		if ((*it)->base == address)
+		if ((*it)->getBase() == address)
 		{
 			found = true;
 			break;

@@ -15,12 +15,15 @@
 #include "ValueInput.h"
 #include "IPInput.h"
 #include "SearchOperationChoice.h"
+#include "ValueTypeChoice.h"
 #include "Common.h"
 #include "ValueViewerWindow.h"
 #include "ValueViewerTable.h"
 #include "InfoWindow.h"
 #include "PointerScannerWindow.h"
 #include "PointerScannerTable.h"
+#include "AddressOffsetGroup.h"
+#include "PointerEditorWindow.h"
 #define RANGE_SAVE 0
 #define RANGE_LOAD 1
 #define RANGE_CLEAR 2
@@ -167,6 +170,44 @@ private:
   inline void cb_m_psAddPointerButton_i(Fl_Button*, void*);
   static void cb_m_psAddPointerButton(Fl_Button*, void*);
 public:
+  PointerEditorWindow *m_peWindow;
+  AddressOffsetGroup *m_peAddressSet0;
+  AddressOffsetGroup *m_peAddressSet1;
+  AddressOffsetGroup *m_peAddressSet2;
+  AddressOffsetGroup *m_peAddressSet3;
+  AddressOffsetGroup *m_peAddressSet4;
+  ValueInput *m_peResolvedAddress;
+  ValueTypeChoice *m_peValueType;
+private:
+  inline void cb_m_peValueType_i(ValueTypeChoice*, void*);
+  static void cb_m_peValueType(ValueTypeChoice*, void*);
+public:
+  Fl_Button *m_peRefreshButton;
+private:
+  inline void cb_m_peRefreshButton_i(Fl_Button*, void*);
+  static void cb_m_peRefreshButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_peOKButton;
+private:
+  inline void cb_m_peOKButton_i(Fl_Button*, void*);
+  static void cb_m_peOKButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_peCancelButton;
+private:
+  inline void cb_m_peCancelButton_i(Fl_Button*, void*);
+  static void cb_m_peCancelButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_peAddPointerButton;
+private:
+  inline void cb_m_peAddPointerButton_i(Fl_Button*, void*);
+  static void cb_m_peAddPointerButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_peDeletePointerButton;
+private:
+  inline void cb_m_peDeletePointerButton_i(Fl_Button*, void*);
+  static void cb_m_peDeletePointerButton(Fl_Button*, void*);
+public:
+  ValueInput *m_peResolvedValue;
   void setInterface(InterfaceCCAPI *iface);
 private:
   InterfaceCCAPI *m_interface; 
@@ -188,5 +229,6 @@ public:
   void storeIP();
   void readIP();
   void setVersion(string ver);
+#include "PointerScannerTable.h"
 };
 #endif

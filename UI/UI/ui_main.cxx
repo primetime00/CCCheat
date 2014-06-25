@@ -225,10 +225,52 @@ void rkCheatUI::cb_m_psNewCancelButton(Fl_Button* o, void* v) {
 }
 
 void rkCheatUI::cb_m_psAddPointerButton_i(Fl_Button* o, void*) {
-  ((PointerScannerWindow*)o->parent()->parent())->hide();
+  ((PointerScannerWindow*)o->parent()->parent())->AddPointerToListCB(o);
 }
 void rkCheatUI::cb_m_psAddPointerButton(Fl_Button* o, void* v) {
   ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_psAddPointerButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_peValueType_i(ValueTypeChoice* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnTypeChangedCB(o);
+}
+void rkCheatUI::cb_m_peValueType(ValueTypeChoice* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peValueType_i(o,v);
+}
+
+void rkCheatUI::cb_m_peRefreshButton_i(Fl_Button* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnRefreshCB(o);
+}
+void rkCheatUI::cb_m_peRefreshButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peRefreshButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_peOKButton_i(Fl_Button* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnOKCB(o);
+}
+void rkCheatUI::cb_m_peOKButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peOKButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_peCancelButton_i(Fl_Button* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnCancelCB(o);
+}
+void rkCheatUI::cb_m_peCancelButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peCancelButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_peAddPointerButton_i(Fl_Button* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnAddCB(o);
+}
+void rkCheatUI::cb_m_peAddPointerButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peAddPointerButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_peDeletePointerButton_i(Fl_Button* o, void*) {
+  ((PointerEditorWindow*)o->parent())->OnDeleteCB(o);
+}
+void rkCheatUI::cb_m_peDeletePointerButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peDeletePointerButton_i(o,v);
 }
 
 void rkCheatUI::RangeButtonCB(Fl_Widget *w, void *data) {
@@ -958,6 +1000,139 @@ rkCheatUI::rkCheatUI() {
     m_pointerScannerWindow->set_modal();
     m_pointerScannerWindow->end();
   } // PointerScannerWindow* m_pointerScannerWindow
+  { m_peWindow = new PointerEditorWindow(426, 476, "Pointer Editor");
+    m_peWindow->box(FL_FLAT_BOX);
+    m_peWindow->color(FL_BACKGROUND_COLOR);
+    m_peWindow->selection_color(FL_BACKGROUND_COLOR);
+    m_peWindow->labeltype(FL_NO_LABEL);
+    m_peWindow->labelfont(0);
+    m_peWindow->labelsize(14);
+    m_peWindow->labelcolor(FL_FOREGROUND_COLOR);
+    m_peWindow->user_data((void*)(this));
+    m_peWindow->align(Fl_Align(FL_ALIGN_TOP));
+    m_peWindow->when(FL_WHEN_RELEASE);
+    { m_peAddressSet0 = new AddressOffsetGroup(15, 14, 395, 37);
+      m_peAddressSet0->box(FL_BORDER_BOX);
+      m_peAddressSet0->color(FL_BACKGROUND_COLOR);
+      m_peAddressSet0->selection_color(FL_BACKGROUND_COLOR);
+      m_peAddressSet0->labeltype(FL_NORMAL_LABEL);
+      m_peAddressSet0->labelfont(0);
+      m_peAddressSet0->labelsize(14);
+      m_peAddressSet0->labelcolor(FL_FOREGROUND_COLOR);
+      m_peAddressSet0->align(Fl_Align(FL_ALIGN_TOP));
+      m_peAddressSet0->when(FL_WHEN_RELEASE);
+      m_peAddressSet0->end();
+    } // AddressOffsetGroup* m_peAddressSet0
+    { m_peAddressSet1 = new AddressOffsetGroup(15, 62, 395, 37);
+      m_peAddressSet1->box(FL_BORDER_BOX);
+      m_peAddressSet1->color(FL_BACKGROUND_COLOR);
+      m_peAddressSet1->selection_color(FL_BACKGROUND_COLOR);
+      m_peAddressSet1->labeltype(FL_NORMAL_LABEL);
+      m_peAddressSet1->labelfont(0);
+      m_peAddressSet1->labelsize(14);
+      m_peAddressSet1->labelcolor(FL_FOREGROUND_COLOR);
+      m_peAddressSet1->align(Fl_Align(FL_ALIGN_TOP));
+      m_peAddressSet1->when(FL_WHEN_RELEASE);
+      m_peAddressSet1->end();
+    } // AddressOffsetGroup* m_peAddressSet1
+    { m_peAddressSet2 = new AddressOffsetGroup(15, 111, 395, 37);
+      m_peAddressSet2->box(FL_BORDER_BOX);
+      m_peAddressSet2->color(FL_BACKGROUND_COLOR);
+      m_peAddressSet2->selection_color(FL_BACKGROUND_COLOR);
+      m_peAddressSet2->labeltype(FL_NORMAL_LABEL);
+      m_peAddressSet2->labelfont(0);
+      m_peAddressSet2->labelsize(14);
+      m_peAddressSet2->labelcolor(FL_FOREGROUND_COLOR);
+      m_peAddressSet2->align(Fl_Align(FL_ALIGN_TOP));
+      m_peAddressSet2->when(FL_WHEN_RELEASE);
+      m_peAddressSet2->end();
+    } // AddressOffsetGroup* m_peAddressSet2
+    { m_peAddressSet3 = new AddressOffsetGroup(15, 159, 395, 37);
+      m_peAddressSet3->box(FL_BORDER_BOX);
+      m_peAddressSet3->color(FL_BACKGROUND_COLOR);
+      m_peAddressSet3->selection_color(FL_BACKGROUND_COLOR);
+      m_peAddressSet3->labeltype(FL_NORMAL_LABEL);
+      m_peAddressSet3->labelfont(0);
+      m_peAddressSet3->labelsize(14);
+      m_peAddressSet3->labelcolor(FL_FOREGROUND_COLOR);
+      m_peAddressSet3->align(Fl_Align(FL_ALIGN_TOP));
+      m_peAddressSet3->when(FL_WHEN_RELEASE);
+      m_peAddressSet3->end();
+    } // AddressOffsetGroup* m_peAddressSet3
+    { m_peAddressSet4 = new AddressOffsetGroup(15, 208, 395, 37);
+      m_peAddressSet4->box(FL_BORDER_BOX);
+      m_peAddressSet4->color(FL_BACKGROUND_COLOR);
+      m_peAddressSet4->selection_color(FL_BACKGROUND_COLOR);
+      m_peAddressSet4->labeltype(FL_NORMAL_LABEL);
+      m_peAddressSet4->labelfont(0);
+      m_peAddressSet4->labelsize(14);
+      m_peAddressSet4->labelcolor(FL_FOREGROUND_COLOR);
+      m_peAddressSet4->align(Fl_Align(FL_ALIGN_TOP));
+      m_peAddressSet4->when(FL_WHEN_RELEASE);
+      m_peAddressSet4->end();
+    } // AddressOffsetGroup* m_peAddressSet4
+    { m_peResolvedAddress = new ValueInput(140, 306, 130, 24);
+      m_peResolvedAddress->box(FL_DOWN_BOX);
+      m_peResolvedAddress->color(FL_BACKGROUND2_COLOR);
+      m_peResolvedAddress->selection_color(FL_SELECTION_COLOR);
+      m_peResolvedAddress->labeltype(FL_NORMAL_LABEL);
+      m_peResolvedAddress->labelfont(0);
+      m_peResolvedAddress->labelsize(14);
+      m_peResolvedAddress->labelcolor(FL_FOREGROUND_COLOR);
+      m_peResolvedAddress->align(Fl_Align(FL_ALIGN_LEFT));
+      m_peResolvedAddress->when(FL_WHEN_RELEASE);
+      m_peResolvedAddress->deactivate();
+    } // ValueInput* m_peResolvedAddress
+    { Fl_Box* o = new Fl_Box(15, 311, 130, 16, "Resolved Address:");
+      o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+    } // Fl_Box* o
+    { m_peValueType = new ValueTypeChoice(315, 340, 95, 20, "Type:");
+      m_peValueType->box(FL_FLAT_BOX);
+      m_peValueType->down_box(FL_BORDER_BOX);
+      m_peValueType->color(FL_BACKGROUND_COLOR);
+      m_peValueType->selection_color(FL_SELECTION_COLOR);
+      m_peValueType->labeltype(FL_NORMAL_LABEL);
+      m_peValueType->labelfont(0);
+      m_peValueType->labelsize(14);
+      m_peValueType->labelcolor(FL_FOREGROUND_COLOR);
+      m_peValueType->callback((Fl_Callback*)cb_m_peValueType);
+      m_peValueType->align(Fl_Align(FL_ALIGN_LEFT));
+      m_peValueType->when(FL_WHEN_CHANGED);
+    } // ValueTypeChoice* m_peValueType
+    { m_peRefreshButton = new Fl_Button(173, 390, 80, 25, "Refresh");
+      m_peRefreshButton->callback((Fl_Callback*)cb_m_peRefreshButton);
+    } // Fl_Button* m_peRefreshButton
+    { m_peOKButton = new Fl_Button(113, 425, 80, 25, "OK");
+      m_peOKButton->callback((Fl_Callback*)cb_m_peOKButton);
+    } // Fl_Button* m_peOKButton
+    { m_peCancelButton = new Fl_Button(233, 425, 80, 25, "Cancel");
+      m_peCancelButton->callback((Fl_Callback*)cb_m_peCancelButton);
+    } // Fl_Button* m_peCancelButton
+    { m_peAddPointerButton = new Fl_Button(113, 260, 80, 25, "Add");
+      m_peAddPointerButton->callback((Fl_Callback*)cb_m_peAddPointerButton);
+    } // Fl_Button* m_peAddPointerButton
+    { m_peDeletePointerButton = new Fl_Button(233, 260, 80, 25, "Delete");
+      m_peDeletePointerButton->callback((Fl_Callback*)cb_m_peDeletePointerButton);
+    } // Fl_Button* m_peDeletePointerButton
+    { m_peResolvedValue = new ValueInput(140, 336, 130, 24);
+      m_peResolvedValue->box(FL_DOWN_BOX);
+      m_peResolvedValue->color(FL_BACKGROUND2_COLOR);
+      m_peResolvedValue->selection_color(FL_SELECTION_COLOR);
+      m_peResolvedValue->labeltype(FL_NORMAL_LABEL);
+      m_peResolvedValue->labelfont(0);
+      m_peResolvedValue->labelsize(14);
+      m_peResolvedValue->labelcolor(FL_FOREGROUND_COLOR);
+      m_peResolvedValue->align(Fl_Align(FL_ALIGN_LEFT));
+      m_peResolvedValue->when(FL_WHEN_RELEASE);
+      m_peResolvedValue->deactivate();
+    } // ValueInput* m_peResolvedValue
+    { Fl_Box* o = new Fl_Box(15, 341, 125, 16, "Resolved Value:");
+      o->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
+    } // Fl_Box* o
+    m_peWindow->reset();
+    m_peWindow->set_modal();
+    m_peWindow->end();
+  } // PointerEditorWindow* m_peWindow
 }
 
 void rkCheatUI::setInterface(InterfaceCCAPI *iface) {

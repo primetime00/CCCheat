@@ -38,6 +38,9 @@ decl {\#include "IPInput.h"} {public global
 decl {\#include "SearchOperationChoice.h"} {public global
 } 
 
+decl {\#include "ValueTypeChoice.h"} {public global
+} 
+
 decl {\#include "Common.h"} {public global
 } 
 
@@ -54,6 +57,12 @@ decl {\#include "PointerScannerWindow.h"} {public global
 } 
 
 decl {\#include "PointerScannerTable.h"} {public global
+} 
+
+decl {\#include "AddressOffsetGroup.h"} {public global
+} 
+
+decl {\#include "PointerEditorWindow.h"} {public global
 } 
 
 decl {\#define RANGE_SAVE 0} {public global
@@ -426,8 +435,8 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat
-      xywh {143 114 1389 843} type Double align 80
-      class rkWindow visible
+      xywh {143 114 1389 843} type Double align 80 hide
+      class rkWindow
     } {
       Fl_Group searchGroup {
         label Search open
@@ -678,7 +687,7 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_valueviewer {
-      label {Value Viewer} open
+      label {Value Viewer}
       xywh {-32000 -32000 526 695} type Double hide
       class ValueViewerWindow
     } {
@@ -709,8 +718,8 @@ m_inProgress = false;} {}
       class InfoWindow
     } {}
     Fl_Window m_pointerScannerWindow {
-      label {Pointer Scanner} open
-      xywh {168 223 557 534} type Double
+      label {Pointer Scanner}
+      xywh {301 233 557 534} type Double
       class PointerScannerWindow modal visible
     } {
       Fl_Group m_psLoadNewGroup {open
@@ -736,7 +745,7 @@ m_inProgress = false;} {}
           xywh {70 157 425 38}
         }
       }
-      Fl_Group m_psNewGroup {open selected
+      Fl_Group m_psNewGroup {open
         xywh {10 10 550 515}
       } {
         Fl_Input m_psNewAddress {
@@ -790,9 +799,83 @@ m_inProgress = false;} {}
         }
         Fl_Button m_psAddPointerButton {
           label {Add Pointer}
-          callback {((PointerScannerWindow*)o->parent()->parent())->hide();}
+          callback {((PointerScannerWindow*)o->parent()->parent())->AddPointerToListCB(o);}
           xywh {455 130 85 25}
         }
+      }
+    }
+    Fl_Window m_peWindow {
+      label {Pointer Editor} open
+      xywh {330 277 426 476} type Double
+      code0 {m_peWindow->reset();}
+      class PointerEditorWindow modal visible
+    } {
+      Fl_Group m_peAddressSet0 {
+        xywh {15 14 395 37} box BORDER_BOX
+        class AddressOffsetGroup
+      } {}
+      Fl_Group m_peAddressSet1 {
+        xywh {15 62 395 37} box BORDER_BOX
+        class AddressOffsetGroup
+      } {}
+      Fl_Group m_peAddressSet2 {
+        xywh {15 111 395 37} box BORDER_BOX
+        class AddressOffsetGroup
+      } {}
+      Fl_Group m_peAddressSet3 {
+        xywh {15 159 395 37} box BORDER_BOX
+        class AddressOffsetGroup
+      } {}
+      Fl_Group m_peAddressSet4 {
+        xywh {15 208 395 37} box BORDER_BOX
+        class AddressOffsetGroup
+      } {}
+      Fl_Input m_peResolvedAddress {
+        xywh {140 306 130 24} deactivate
+        class ValueInput
+      }
+      Fl_Box {} {
+        label {Resolved Address:}
+        xywh {15 311 130 16} align 20
+      }
+      Fl_Choice m_peValueType {
+        label {Type:}
+        callback {((PointerEditorWindow*)o->parent())->OnTypeChangedCB(o);} open selected
+        xywh {315 340 95 20} down_box BORDER_BOX when 1
+        class ValueTypeChoice
+      } {}
+      Fl_Button m_peRefreshButton {
+        label Refresh
+        callback {((PointerEditorWindow*)o->parent())->OnRefreshCB(o);}
+        xywh {173 390 80 25}
+      }
+      Fl_Button m_peOKButton {
+        label OK
+        callback {((PointerEditorWindow*)o->parent())->OnOKCB(o);}
+        xywh {113 425 80 25}
+      }
+      Fl_Button m_peCancelButton {
+        label Cancel
+        callback {((PointerEditorWindow*)o->parent())->OnCancelCB(o);}
+        xywh {233 425 80 25}
+      }
+      Fl_Button m_peAddPointerButton {
+        label Add
+        callback {((PointerEditorWindow*)o->parent())->OnAddCB(o);}
+        xywh {113 260 80 25}
+      }
+      Fl_Button m_peDeletePointerButton {
+        label Delete
+        callback {((PointerEditorWindow*)o->parent())->OnDeleteCB(o);}
+        xywh {233 260 80 25}
+      }
+      Fl_Input m_peResolvedValue {
+        xywh {140 336 130 24} deactivate
+        class ValueInput
+      }
+      Fl_Box {} {
+        label {Resolved Value:}
+        xywh {15 341 125 16} align 20
       }
     }
   }
@@ -1025,5 +1108,7 @@ if (GetCurrentDir(buf, 255) != 0) //we can store the IP
     code {static char ui_version[70];
 sprintf(ui_version, "Version: %s", ver.c_str());
 ui_versionText->label(ui_version);} {}
+  }
+  decl {\#include "PointerScannerTable.h"} {public global
   }
 } 

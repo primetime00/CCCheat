@@ -41,6 +41,25 @@ public:
 		return false;
 	}
 
+	static long long convert4BytesToType(long long value, char type)
+	{
+		switch (type)
+		{
+		case SEARCH_VALUE_TYPE_2BYTE:
+			return (long long) ((short*) (&value))[1];
+			break;
+		case SEARCH_VALUE_TYPE_4BYTE:
+			return value;
+			break;
+		case SEARCH_VALUE_TYPE_1BYTE:
+			return (long long) ((char*) (&value))[3];
+			break;
+		default:
+			return value;
+			break;
+		}
+	}
+
 	static long long convertValueType(long long value, char newType, char oldType, bool sign)
 	{
 		switch (oldType)

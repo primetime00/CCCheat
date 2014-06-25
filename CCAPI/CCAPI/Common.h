@@ -73,13 +73,34 @@ struct AddressItem
 };
 
 
+struct AddressOffset
+{
+	unsigned long address;
+	unsigned int offset;
+	AddressOffset(unsigned long a, unsigned int o) { address = a; offset = o; }
+};
+
 typedef list<unsigned int> PointerOffsets;
+typedef list<AddressOffset> AddressOffsets;
 struct PointerObj
 {
-	unsigned long base;
-	PointerOffsets offsets;
+	AddressOffsets pointers;	
 	unsigned long result;
-	PointerObj(unsigned long b, PointerOffsets ls) { base = b; offsets = ls; result = 0;}
+	unsigned long getBase() { return (pointers.size() > 0) ? pointers.front().address : 0; }
+	unsigned int updateCount;
+	long long value;
+	char type;
+	void fromPointerOffsets(const unsigned long address, const PointerOffsets &pt) { 
+		pointers.clear();
+		for (auto it = pt.begin(); it!= pt.end(); ++ it)
+		{
+			pointers.push_back(AddressOffset(0, *it));
+		}
+		if (pointers.size() > 0) pointers.front().address = address;
+	}
+	void update() { updateCount++; updateCount %= 0xFFFFFFF; }
+	PointerObj(AddressOffsets b) { pointers = b; result = 0; updateCount = 0; type = SEARCH_VALUE_TYPE_4BYTE; }
+	PointerObj(const unsigned long address, const PointerOffsets &pt) { fromPointerOffsets(address, pt); updateCount =0; type = SEARCH_VALUE_TYPE_4BYTE;}
 };
 typedef shared_ptr<PointerObj> PointerItem;
 
@@ -142,11 +163,9 @@ struct MemoryChunkReadItem{
 };
 
 struct PointerReadItem{
-	unsigned int address;
-	list<unsigned int> offsets;
-	char *memory;
+	PointerItem pointer;
 	bool keep;
-	PointerReadItem(unsigned int a, list<unsigned int> &o, char *m, bool k) { address = a; memory = m; keep = k; offsets = o;}
+	PointerReadItem(PointerItem p, bool k) { pointer = p; keep = k;}
 };
 
 

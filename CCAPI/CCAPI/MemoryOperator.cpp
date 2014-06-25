@@ -1,4 +1,5 @@
 #include "MemoryOperator.h"
+#include "Helpers.h"
 #include <iostream>
 #include <cstring>
 void MemoryOperator::start()
@@ -33,6 +34,29 @@ void MemoryOperator::setReadMemoryOperation(unsigned long address, char type, ch
 	}
 	m_mutex.unlock();
 }
+
+
+void MemoryOperator::setReadPointerOperation(PointerItem pointer)
+{
+	m_mutex.lock();
+	unsigned long address = pointer->getBase();
+	bool found = false;
+	if (pointerReadOperationList.count(address) > 0) //we already have it!
+	{
+		found = true;
+	}
+	if (!found) //this is a new memory location
+	{
+		pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(pointer, false));
+	}
+//	else
+//	{
+//		pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(address, offsets, memory, keep));
+//	}
+	m_mutex.unlock();
+
+}
+
 
 void MemoryOperator::setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep)
 {
@@ -76,34 +100,6 @@ void MemoryOperator::setWriteMemoryOperation(unsigned long address, long long va
 	}
 	m_mutex.unlock();
 }
-
-void MemoryOperator::setReadPointerOperation(unsigned long address, list <unsigned int> offsets, char *memory, bool keep)
-{
-	m_mutex.lock();
-	if (pointerReadOperationList.count(address) > 0) //we already have it!
-	{
-		bool found = false;
-		for (PointerReadSet::iterator it = pointerReadOperationList[address].begin(); it != pointerReadOperationList[address].end(); ++it)
-		{
-			if ((*it)->memory == memory) //we have it!
-			{
-				found = true;
-				(*it)->keep |= keep;
-				break;
-			}
-		}
-		if (!found) //this is a new memory location
-		{
-			pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(address, offsets, memory, keep));
-		}
-	}
-	else
-	{
-		pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(address, offsets, memory, keep));
-	}
-	m_mutex.unlock();
-}
-
 
 void MemoryOperator::removeMemoryOperation(char command, unsigned long address)
 {
@@ -210,6 +206,35 @@ int MemoryOperator::processRead()
 	return 0;
 }
 
+long long MemoryOperator::readAddress(unsigned long address, char type)
+{
+	unsigned int length;
+	char *data;
+	length = Helpers::getTypeLength(type);
+	if (m_ccapi->readMemory(address, length) == 0)
+	{
+		data = m_ccapi->getData(length);
+		if (type == SEARCH_VALUE_TYPE_2BYTE)
+		{
+			short tmp = BSWAP16(*(short*)&data[0]);
+			return (long long)tmp;
+		}
+		else if (type == SEARCH_VALUE_TYPE_4BYTE)
+		{
+			long tmp = BSWAP32(*(long*)&data[0]);
+			return (long long)tmp;
+		}
+		else if (type == SEARCH_VALUE_TYPE_FLOAT)
+		{
+			unsigned long tmp = BSWAP32(*(unsigned long*)&data[0]);
+			return *(unsigned long*)&tmp;
+		}
+		else
+		{
+			return (long long)data[0];
+		}
+	}
+}
 
 unsigned int MemoryOperator::readPointer(unsigned int address, unsigned int offset)
 {
@@ -230,23 +255,34 @@ int MemoryOperator::processPointers()
 	unsigned int cAddress, cOffset;
 	char *data;
 	m_mutex.lock();
-	for (PointerReadItemList::iterator it = pointerReadOperationList.begin(); it != pointerReadOperationList.end();)
+	for (PointerReadItemList::iterator it = pointerReadOperationList.begin(); it != pointerReadOperationList.end();) //read the map of pointers
 	{
 		if (m_exit) { m_mutex.unlock(); return 1; }
-		for (PointerReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
+		for (PointerReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();) //read the list of pointers with this base address probably just 1
 		{
-			list<unsigned int> copyOffset = (*setIT)->offsets;
-			cAddress = (*setIT)->address;
-			while (copyOffset.size() > 0)
+			cAddress = (*setIT)->pointer->getBase();
+			bool foundNull = false;
+			for (auto addressOffsetIT = (*setIT)->pointer->pointers.begin(); addressOffsetIT != (*setIT)->pointer->pointers.end(); ++addressOffsetIT) //read each offset of the pointer
 			{
-				cOffset = copyOffset.front();
-				cAddress = readPointer(cAddress, cOffset);
 				if (cAddress == 0)
+				{
+					foundNull = true;
 					break;
-				copyOffset.pop_front();
+				}
+				addressOffsetIT->address = cAddress; 
+				cAddress = readPointer(cAddress, addressOffsetIT->offset);
+			}
+			if (foundNull)
+				(*setIT)->pointer->result = 0;
+			else
+			{
+				(*setIT)->pointer->result = cAddress;
+				//(*setIT)->pointer->value = readAddress(cAddress, (*setIT)->pointer->type);
+				(*setIT)->pointer->value = readAddress(cAddress, SEARCH_VALUE_TYPE_4BYTE);
 			}
 
-			((long long*)(*setIT)->memory)[0] = (long long)cAddress;
+			(*setIT)->pointer->update();
+
 			if ((*setIT)->keep == true)
 			{
 				++setIT;
