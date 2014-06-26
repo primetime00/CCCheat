@@ -31,10 +31,15 @@ CodeTable::CodeTable(int X, int Y, int W, int H, const char *l) : Fl_Table_Row(X
 	cols(CODE_COLS);
 	col_header(1);
 	col_width_all(110);
-	col_width(DESC_COL, 400);
+	col_width(DESC_COL, 330);
 	col_width(VALUE_COL, 250);
+	col_width(ADDRESS_COL, 200);
+	col_width(FREEZE_COL, 90);
 	col_resize(1);
-	w(400+250+110+110+110+3);
+	unsigned int width=0;
+	for (unsigned int i=0; i<cols(); ++i)
+		width += col_width(i);
+	w(width+3);
 
 	viewer = 0;
 
@@ -58,7 +63,7 @@ void CodeTable::addEntry(string desc, unsigned long address, long long value, ch
 	{
 		for (unsigned int i=0; i<data.size(); i++)
 		{
-			if (data.at(i)->address == address) //we have this
+			if (data.at(i)->m_address.address == address) //we have this
 			{
 				found = true;
 				break;
@@ -131,7 +136,7 @@ void CodeTable::addEntry(string desc, unsigned long address, long long value, ch
 	
 		if (m_operator != 0)
 		{
-			m_operator->setReadMemoryOperation(cItem->address, cItem->type, (char*)&cItem->value, true);
+			m_operator->setReadMemoryOperation(cItem->m_address.address, cItem->type, (char*)&cItem->m_address.value, true);
 		}
 		rebuildTable();
 
@@ -143,8 +148,16 @@ void CodeTable::deleteEntry(unsigned int row)
 	if (m_operator != 0)
 	{
 		rkCheat_CodeList::iterator it = data.begin()+row;
-		m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->address);
-		m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->address);
+		if ((*it)->m_isPointer)
+		{
+			m_operator->removePointerOperation(MEMORY_COMMAND_WRITE, (*it)->m_pointer);
+			m_operator->removePointerOperation(MEMORY_COMMAND_READ, (*it)->m_pointer);
+		}
+		else
+		{
+			m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->m_address.address);
+			m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->m_address.address);
+		}
 	}
 
 	if (data.size() == 1) //we are getting rid of the last entry
@@ -153,7 +166,8 @@ void CodeTable::deleteEntry(unsigned int row)
 	}
 	else
 	{
-		this->remove(*data.at(row)->widget->address_input);
+		if (!data.at(row)->m_isPointer)
+			this->remove(*data.at(row)->widget->address_input);
 		this->remove(*data.at(row)->widget->description);
 		this->remove(*data.at(row)->widget->freeze);
 		this->remove(*data.at(row)->widget->type);
@@ -173,8 +187,16 @@ void CodeTable::deleteEntry(vector<int> &indexRows)
 		{
 			for (rkCheat_CodeList::iterator it = data.begin(); it != data.end(); ++it)
 			{
-				m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->address);
-				m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->address);
+				if ((*it)->m_isPointer)
+				{
+					m_operator->removePointerOperation(MEMORY_COMMAND_WRITE, (*it)->m_pointer);
+					m_operator->removePointerOperation(MEMORY_COMMAND_READ, (*it)->m_pointer);
+				}
+				else
+				{
+					m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->m_address.address);
+					m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->m_address.address);
+				}
 			}
 		}
 		clearTable();
@@ -189,9 +211,18 @@ void CodeTable::deleteEntry(vector<int> &indexRows)
 		{
 			if ((*it)->_delete == 1)
 			{
-				m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->address);
-				m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->address);
-				remove(*(*it)->widget->address_input);
+				if ((*it)->m_isPointer)
+				{
+					m_operator->removePointerOperation(MEMORY_COMMAND_WRITE, (*it)->m_pointer);
+					m_operator->removePointerOperation(MEMORY_COMMAND_READ, (*it)->m_pointer);
+				}
+				else
+				{
+					m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, (*it)->m_address.address);
+					m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, (*it)->m_address.address);
+				}
+				if (!(*it)->m_isPointer)
+					remove(*(*it)->widget->address_input);
 				remove(*(*it)->widget->description);
 				remove(*(*it)->widget->freeze);
 				remove(*(*it)->widget->type);
@@ -212,7 +243,8 @@ void CodeTable::reInsert()
 	for (unsigned int i=0; i<data.size(); i++)
 	{
 		insert( *((Fl_Widget*)data[i]->widget->description), j++);
-		insert( *((Fl_Widget*)data[i]->widget->address_input), j++);
+		if (!data[i]->m_pointer)
+			insert( *((Fl_Widget*)data[i]->widget->address_input), j++);
 		insert( *((Fl_Widget*)data[i]->widget->value_input), j++);
 		insert( *((Fl_Widget*)data[i]->widget->type), j++);
 		insert( *((Fl_Widget*)data[i]->widget->freeze), j++);
@@ -226,8 +258,11 @@ void CodeTable::rebuildTable()
 	{
 		find_cell(CONTEXT_TABLE, i, DESC_COL, x,y,w,h);
 		((Fl_Widget*)data[i]->widget->description)->position(x, y);
-		find_cell(CONTEXT_TABLE, i, ADDRESS_COL, x,y,w,h);
-		((Fl_Widget*)data[i]->widget->address_input)->position(x, y);
+		if (!data[i]->m_pointer)
+		{
+			find_cell(CONTEXT_TABLE, i, ADDRESS_COL, x,y,w,h);
+			((Fl_Widget*)data[i]->widget->address_input)->position(x, y);
+		}
 		find_cell(CONTEXT_TABLE, i, VALUE_COL, x,y,w,h);
 		((Fl_Widget*)data[i]->widget->value_input)->position(x, y);
 		find_cell(CONTEXT_TABLE, i, TYPE_COL, x,y,w,h);
@@ -246,6 +281,7 @@ bool CodeTable::hasSelection()
 
 void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, int W, int H){
     static char s[40];
+	AddressItem *addressRef;
 	int x,y,w,h;
     switch ( context ) {
       case CONTEXT_STARTPAGE:                   // before page is drawn..
@@ -294,7 +330,7 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 			return;
 		if (COL == DESC_COL && data[ROW]->widget->description->visible())
 			return;
-		if (COL == ADDRESS_COL && data[ROW]->widget->address_input->visible())
+		if (COL == ADDRESS_COL && !data[ROW]->m_isPointer && data[ROW]->widget->address_input->visible())
 			return;
 		else if (COL == VALUE_COL && data[ROW]->widget->value_input->visible())
 			return;
@@ -311,6 +347,7 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 		fl_color(FL_BLACK);
 		if ((unsigned int)ROW < data.size())
 		{
+			addressRef = (data[ROW]->m_isPointer) ? &data[ROW]->m_pointer->m_address : &data[ROW]->m_address;
 			switch(COL)
 			{
 			case DESC_COL: 
@@ -319,32 +356,37 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 				else
 					sprintf(s,"%s",data[ROW]->description.c_str()); 
 				break;
-			case ADDRESS_COL: sprintf(s,"0x%08X",data[ROW]->address); break;
+			case ADDRESS_COL: 
+				if (data[ROW]->m_isPointer)
+					sprintf(s,"0x%08X -> 0x%08X",data[ROW]->m_pointer->getBase(), addressRef->address);
+				else
+					sprintf(s,"0x%08X",addressRef->address);
+				break;
 			case VALUE_COL: 
-				switch (data[ROW]->type)
+				switch (addressRef->type)
 				{
-				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%f", *(float*)&data[ROW]->value); break;
+				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%f", *(float*)&addressRef->value); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
-						if (data[ROW]->sign) 
-							 sprintf(s,"%ld", (char)data[ROW]->value); 
+						if (addressRef->sign) 
+							 sprintf(s,"%ld", (char)addressRef->value); 
 						 else
-							 sprintf(s,"%lu", (unsigned char)data[ROW]->value); 
+							 sprintf(s,"%lu", (unsigned char)addressRef->value); 
 						 break;					
 				case SEARCH_VALUE_TYPE_2BYTE: 
-						if (data[ROW]->sign) 
-							 sprintf(s,"%ld", (short)data[ROW]->value); 
+						if (data[ROW]->m_address.sign) 
+							 sprintf(s,"%ld", (short)addressRef->value); 
 						 else
-							 sprintf(s,"%lu", (unsigned short)data[ROW]->value); 
+							 sprintf(s,"%lu", (unsigned short)addressRef->value); 
 						 break;					
 				default:
-						if (data[ROW]->sign) 
-							 sprintf(s,"%ld", (long)data[ROW]->value); 
+						if (data[ROW]->m_address.sign) 
+							 sprintf(s,"%ld", (long)addressRef->value); 
 						 else
-							 sprintf(s,"%lu", (unsigned long)data[ROW]->value); 
+							 sprintf(s,"%lu", (unsigned long)addressRef->value); 
 						 break;
 				} break;
 			case TYPE_COL: 
-				switch (data[ROW]->type)
+				switch (addressRef->type)
 				{
 				case SEARCH_VALUE_TYPE_1BYTE: sprintf(s,"1 Byte"); break;
 				case SEARCH_VALUE_TYPE_2BYTE: sprintf(s,"2 Bytes"); break;
@@ -405,7 +447,7 @@ void CodeTable::saveData(string filename)
 	fstream f(filename, ios_base::out | ios_base::trunc | ios_base::binary);
 	for (rkCheat_CodeList::iterator it = data.begin(); it != data.end(); ++it)
 	{
-		f << (*it)->description << "\n" << (*it)->address << " " << (*it)->value << " " << (*it)->type << " " << (*it)->freeze << "\n";
+		f << (*it)->description << "\n" << (*it)->m_address.address << " " << (*it)->m_address.value << " " << (*it)->type << " " << (*it)->freeze << "\n";
 	}
 	f.close();
 }
@@ -467,30 +509,30 @@ void CodeTable::onAddressChanged(rkCheat_Code *item, unsigned long value)
 {
 	if (m_operator != 0)
 	{
-		m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, item->address);
-		m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, item->address);
+		m_operator->removeMemoryOperation(MEMORY_COMMAND_READ, item->m_address.address);
+		m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, item->m_address.address);
 	}
-	item->address = value;
+	item->m_address.address = value;
 	item->freeze = false;
 	item->widget->freeze->value(0);
 	if (m_operator != 0)
 	{
-		m_operator->setReadMemoryOperation(item->address, item->type, (char*)&item->value, true);
+		m_operator->setReadMemoryOperation(item->m_address.address, item->type, (char*)&item->m_address.value, true);
 	}
 }
 
 void CodeTable::onValueChanged(rkCheat_Code *item, long long value)
 {
-	if (item->value != value)
+	if (item->m_address.value != value)
 	{
-		item->value = value;
+		item->m_address.value = value;
 		if (value < 0)
 			item->setSign(true);
 		else
 			item->setSign(false);
 		//item->setSign(Helpers::isSigned(item->type, value));
 		if (m_operator != 0)
-			m_operator->setWriteMemoryOperation(item->address, value, item->type, item->freeze);
+			m_operator->setWriteMemoryOperation(item->m_address.address, value, item->type, item->freeze);
 	}
 }
 
@@ -498,9 +540,10 @@ void CodeTable::onCodeTypeChanged(rkCheat_Code *item, int type)
 {
 	long long int_val;
 	float float_val;
+	auto addressRef = (item->m_isPointer) ? &item->m_pointer->m_address : &item->m_address;
 	int oldtype = item->type;
 	item->type = type;
-	int_val = Helpers::convertValueType(item->value, type, oldtype, item->sign);
+	int_val = Helpers::convertValueType(addressRef->value, type, oldtype, addressRef->sign);
 	if (type != SEARCH_VALUE_TYPE_FLOAT)
 	{
 		item->widget->value_input->value(to_string(int_val).c_str());
@@ -511,10 +554,15 @@ void CodeTable::onCodeTypeChanged(rkCheat_Code *item, int type)
 		item->widget->value_input->value(to_string(float_val).c_str());
 	}
 	item->widget->value_input->setValueType(type);
-	item->value = item->widget->value_input->getLLValue();
-	item->setSign(Helpers::isSigned(item->type, item->value));
+	addressRef->value = item->widget->value_input->getLLValue();
+	item->setSign(Helpers::isSigned(item->type, addressRef->value));
 	if (m_operator != 0)
-		m_operator->setReadMemoryOperation(item->address, item->type, (char*)&item->value, true);
+	{
+		if (item->m_isPointer)
+			m_operator->setReadPointerOperation(item->m_pointer, true);
+		else
+			m_operator->setReadMemoryOperation(item->m_address.address, item->type, (char*)&item->m_address.value, true);
+	}
 }
 void CodeTable::onCodeFreezeChanged(rkCheat_Code *item, int value)
 {
@@ -522,22 +570,22 @@ void CodeTable::onCodeFreezeChanged(rkCheat_Code *item, int value)
 	if (m_operator != 0)
 	{
 		if (item->freeze)
-			m_operator->setWriteMemoryOperation(item->address, item->value, item->type,true);
+			m_operator->setWriteMemoryOperation(item->m_address.address, item->m_address.value, item->type,true);
 		else
-			m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, item->address);
+			m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, item->m_address.address);
 	}
 }
 
 void CodeTable::onCellDoubleClicked(int row, int col)
 {
 	long long int_val; 
-	if (data[row]->sign)
-		int_val = (signed long)data[row]->value;
+	if (data[row]->m_address.sign)
+		int_val = (signed long)data[row]->m_address.value;
 	else
-		int_val = (unsigned long) data[row]->value;
-	unsigned long address = data[row]->address;
+		int_val = (unsigned long) data[row]->m_address.value;
+	unsigned long address = data[row]->m_address.address;
 	char hex[50];
-	float float_val = *(float*)&data[row]->value;
+	float float_val = *(float*)&data[row]->m_address.value;
 	switch (col)
 	{
 	case DESC_COL:
@@ -552,16 +600,32 @@ void CodeTable::onCellDoubleClicked(int row, int col)
 		last_cell_widget = current_cell_widget;
 		break;
 	case ADDRESS_COL: //address
-		current_cell_widget = data[row]->widget->address_input;
-		if (current_cell_widget != last_cell_widget) //click on a new widget
+		if (data[row]->m_isPointer) //bring up the pointer editor!
 		{
-			if (last_cell_widget) last_cell_widget->hide();
-			data[row]->widget->address_input->show();
-			sprintf(hex, "%.8X", address);
-			data[row]->widget->address_input->value(hex);
-			data[row]->widget->address_input->take_focus();
+			current_cell_widget = 0;
+			if (m_operator != 0)
+			{
+				m_operator->removePointerOperation(MEMORY_COMMAND_READ, data[row]->m_pointer);
+				PointerItem p = uiInstance->m_peWindow->popup(data[row]->m_pointer);
+				if (p == nullptr)
+				{
+					m_operator->setReadPointerOperation(data[row]->m_pointer, true);
+				}
+			}
 		}
-		last_cell_widget = current_cell_widget;
+		else
+		{
+			current_cell_widget = data[row]->widget->address_input;
+			if (current_cell_widget != last_cell_widget) //click on a new widget
+			{
+				if (last_cell_widget) last_cell_widget->hide();
+				data[row]->widget->address_input->show();
+				sprintf(hex, "%.8X", address);
+				data[row]->widget->address_input->value(hex);
+				data[row]->widget->address_input->take_focus();
+			}
+			last_cell_widget = current_cell_widget;
+		}
 		break;
 	case VALUE_COL: //input
 		current_cell_widget = data[row]->widget->value_input;
@@ -577,13 +641,13 @@ void CodeTable::onCellDoubleClicked(int row, int col)
 				switch (data[row]->type)
 				{
 				case SEARCH_VALUE_TYPE_1BYTE:
-					data[row]->widget->value_input->value(data[row]->sign ? to_string((char)int_val).c_str() : to_string((unsigned char)int_val).c_str());
+					data[row]->widget->value_input->value(data[row]->m_address.sign ? to_string((char)int_val).c_str() : to_string((unsigned char)int_val).c_str());
 					break;
 				case SEARCH_VALUE_TYPE_2BYTE:
-					data[row]->widget->value_input->value(data[row]->sign ? to_string((short)int_val).c_str() : to_string((unsigned short)int_val).c_str());
+					data[row]->widget->value_input->value(data[row]->m_address.sign ? to_string((short)int_val).c_str() : to_string((unsigned short)int_val).c_str());
 					break;
 				default:
-					data[row]->widget->value_input->value(data[row]->sign ? to_string((long)int_val).c_str() : to_string((unsigned long)int_val).c_str());
+					data[row]->widget->value_input->value(data[row]->m_address.sign ? to_string((long)int_val).c_str() : to_string((unsigned long)int_val).c_str());
 					break;
 				}
 			}
@@ -637,7 +701,17 @@ void CodeTable::onTableClicked()
 
 void CodeTable::newCode()
 {
-	addEntry("", 0x0, 0, SEARCH_VALUE_TYPE_4BYTE);
+	int choice = fl_choice("Would you like to add a new address or a new pointer?", "Cancel", "Address", "Pointer");
+	if (choice == 1)
+		addEntry("", 0x0, 0, SEARCH_VALUE_TYPE_4BYTE);
+	else if (choice == 2)
+	{
+		PointerOffsets po;
+		po.push_back(0);
+		PointerItem p = uiInstance->m_peWindow->popup(0x0000, po);
+		if (p != nullptr)
+			addPointer("", p);
+	}
 }
 
 vector<int> CodeTable::getSelectedRows() 
@@ -699,7 +773,84 @@ void CodeTable::setMemoryOperator(MemoryOperator *op)
 	{
 		for (rkCheat_CodeList::iterator it = data.begin(); it != data.end(); ++it)
 		{
-			m_operator->setReadMemoryOperation((*it)->address, (*it)->type, (char*)&(*it)->value, true);
+			m_operator->setReadMemoryOperation((*it)->m_address.address, (*it)->type, (char*)&(*it)->m_address.value, true);
 		}
+	}
+}
+
+void CodeTable::addPointer(string desc, PointerItem p, bool freeze)
+{
+	bool found = false;
+	if (p->getBase() != 0)
+	{
+		for (unsigned int i=0; i<data.size(); i++)
+		{
+			if (data.at(i)->m_isPointer && data.at(i)->m_pointer->equal(*p)) //we have this
+			{
+				found = true;
+				break;
+			}
+		}
+	}
+	if (!found)
+	{
+		int x,y,w,h;
+		begin();
+		rows(data.size()+1);
+
+		find_cell(Fl_Table::CONTEXT_TABLE, data.size(), DESC_COL, x,y,w,h);
+		Fl_Input *desc_input = new Fl_Input(x,y,w,h);
+		desc_input->maximum_size(26);
+		desc_input->callback((Fl_Callback*)codeDescriptionChangedCB);
+		desc_input->when(FL_WHEN_CHANGED);
+		desc_input->hide();
+
+		find_cell(Fl_Table::CONTEXT_TABLE, data.size(), VALUE_COL, x,y,w,h);
+		ValueInput *value_input = new ValueInput(x,y,w,h);
+		value_input->setHex(false);
+		value_input->setLiteral(true);
+		value_input->setValueType(p->m_address.type);
+		value_input->callback((Fl_Callback*)codeValueChangedCB);
+		value_input->when(FL_WHEN_RELEASE);
+		value_input->setCodeType(true);
+		value_input->hide();
+
+		find_cell(Fl_Table::CONTEXT_TABLE, data.size(), TYPE_COL, x,y,w,h);
+		Fl_Choice *type_choice = new Fl_Choice(x,y,w,h);
+		type_choice->menu(rkCheatUI::menu_ui_valueType);
+		type_choice->callback((Fl_Callback*)codeTypeChangedCB);
+		type_choice->when(FL_WHEN_CHANGED);
+		type_choice->hide();
+		for (int i=0; rkCheatUI::menu_ui_valueType[i].text != 0; ++i)
+		{
+			if ( get_user_data(char, rkCheatUI::menu_ui_valueType[i].user_data()) == p->m_address.type )
+			{
+				type_choice->value(i);
+				break;
+			}
+		}		
+		find_cell(Fl_Table::CONTEXT_TABLE, data.size(), FREEZE_COL, x,y,w,h);
+		Fl_Check_Button *freeze_check = new Fl_Check_Button(x+(w-20)/2,y,20,h);
+		freeze_check->align(FL_ALIGN_CENTER);
+		freeze_check->callback((Fl_Callback*)codeFreezeChangedCB);
+		freeze_check->when(FL_WHEN_CHANGED);
+		freeze_check->value(freeze ? 1: 0);
+
+		end();
+		rkCheat_CodeItem cItem = make_shared<rkCheat_Code>(desc, p, freeze, new WidgetField(desc_input, 0, value_input, type_choice,freeze_check));
+		data.push_back(cItem);
+
+		desc_input->user_data(cItem.get());
+		type_choice->user_data(cItem.get());
+		freeze_check->user_data(cItem.get());
+		value_input->user_data(cItem.get());
+
+		cItem->setSign(Helpers::isSigned(p->m_address.type, 0));
+	
+		if (m_operator != 0)
+		{
+			m_operator->setReadPointerOperation(p, true);
+		}
+		rebuildTable();
 	}
 }

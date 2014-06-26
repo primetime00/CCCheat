@@ -123,7 +123,7 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
 			sprintf(s, "%s", str.str().c_str());
 			break;
 		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->pointers.size()); break;
-		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->result); break;
+		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->m_address.address); break;
 		default: break;
 		}
 		DrawData(s,X,Y,W,H);
@@ -292,7 +292,7 @@ void PointerScannerTable::addRow(unsigned long address, PointerOffsets offsets)
 	if (!found)
 	{
 		PointerItem pi = make_shared<PointerObj>(address, offsets);
-		pi->result = m_resultAddress;
+		pi->m_address.address = m_resultAddress;
 		m_pointerList.push_back(pi);
 		rows(m_pointerList.size());
 		damage(FL_DAMAGE_ALL);

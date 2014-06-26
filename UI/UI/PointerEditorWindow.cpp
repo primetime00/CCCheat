@@ -7,6 +7,7 @@ using namespace std;
 
 void PointerEditorWindow::OnOKCB(Fl_Widget *w)
 {
+	readPointers();
 	hide();
 }
 
@@ -68,7 +69,7 @@ void PointerEditorWindow::OnRefreshCB(Fl_Widget *w)
 	if (m_operator != 0 && currentPointer != nullptr)
 	{
 		uiInstance->m_peRefreshButton->deactivate();
-		m_operator->setReadPointerOperation(currentPointer);
+		m_operator->setReadPointerOperation(currentPointer, false);
 		Fl::add_timeout(0.5, refreshTimeout, this);
 	}
 }
@@ -87,12 +88,12 @@ void PointerEditorWindow::refreshTimeout()
 			groups[i]->set(it->address, it->offset);
 			groups[i]->setRefresh(false);
 		}
-		uiInstance->m_peResolvedAddress->setValue(currentPointer->result);
+		uiInstance->m_peResolvedAddress->setValue(currentPointer->m_address.address);
 		uiInstance->m_peResolvedValue->setValueType(-1);
-		uiInstance->m_peResolvedValue->setLiteral(currentPointer->type != SEARCH_VALUE_TYPE_FLOAT);
-		long long nval = Helpers::convert4BytesToType(currentPointer->value, currentPointer->type);
+		uiInstance->m_peResolvedValue->setLiteral(currentPointer->m_address.type != SEARCH_VALUE_TYPE_FLOAT);
+		long long nval = Helpers::convert4BytesToType(currentPointer->m_address.value, currentPointer->m_address.type);
 		uiInstance->m_peResolvedValue->setValue(nval);
-		uiInstance->m_peResolvedValue->setValueType(currentPointer->type);
+		uiInstance->m_peResolvedValue->setValueType(currentPointer->m_address.type);
 
 		uiInstance->m_peRefreshButton->activate();
 		damage(FL_DAMAGE_ALL);
@@ -119,7 +120,7 @@ void PointerEditorWindow::readPointers()
 		po.push_back(groups[i]->getOffset());
 	}
 	currentPointer = make_shared<PointerObj>(address, po);
-	currentPointer->type = uiInstance->m_peValueType->getValue();
+	currentPointer->m_address.type = uiInstance->m_peValueType->getValue();
 	pointerUpdateCounter = 0;
 }
 
@@ -150,21 +151,19 @@ void PointerEditorWindow::reset()
 void PointerEditorWindow::OnTypeChangedCB(Fl_Widget *w)
 {
 	char type = uiInstance->m_peValueType->getValue();
-	if (currentPointer != nullptr && currentPointer->type != type);
+	if (currentPointer != nullptr && currentPointer->m_address.type != type);
 	{
 		uiInstance->m_peResolvedValue->setLiteral(type != SEARCH_VALUE_TYPE_FLOAT);
-		long long nval = Helpers::convert4BytesToType(currentPointer->value, type);
+		long long nval = Helpers::convert4BytesToType(currentPointer->m_address.value, type);
 		uiInstance->m_peResolvedValue->setValue(nval);
 		uiInstance->m_peResolvedValue->setValueType(type);
-		currentPointer->type = type;
+		currentPointer->m_address.type = type;
 	}
 }
 
 void PointerEditorWindow::show()
 {
-	//if (!visible())
-	//	uiInstance->m_valueTable->startMemoryRead();
-	Fl_Window::show();
+	rkWindow::show();
 }
 
 PointerItem PointerEditorWindow::popup(unsigned long address, PointerOffsets offsets)
@@ -175,11 +174,20 @@ PointerItem PointerEditorWindow::popup(unsigned long address, PointerOffsets off
 	while (shown()) Fl::wait();
 	return currentPointer;
 }
+
+PointerItem PointerEditorWindow::popup(PointerItem p)
+{
+	reset();
+	setPointer(p);
+	show();
+	while (shown()) Fl::wait();
+	return currentPointer;
+}
 void PointerEditorWindow::hide()
 {
 	//if (visible())
 //		uiInstance->m_valueTable->stopMemoryRead();
-	Fl_Window::hide();
+	rkWindow::hide();
 }
 
 void PointerEditorWindow::setPointer(unsigned long address, PointerOffsets offsets)
@@ -199,6 +207,16 @@ void PointerEditorWindow::setPointer(unsigned long address, PointerOffsets offse
 	else
 		uiInstance->m_peResolvedAddress->setValue(m_resAddress);
 	currentPointer = make_shared<PointerObj>(address, offsets);
+}
+
+void PointerEditorWindow::setPointer(PointerItem p)
+{
+	PointerOffsets po;
+	for (auto it = p->pointers.begin(); it != p->pointers.end(); ++ it)
+	{
+		po.push_back(it->offset);
+	}
+	setPointer(p->getBase(), po);
 }
 
 void PointerEditorWindow::createGroup()

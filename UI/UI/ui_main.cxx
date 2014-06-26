@@ -614,7 +614,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1389, 843, "CCCheat");
+  { mainWindow = new rkWindow(1379, 833, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -997,6 +997,7 @@ rkCheatUI::rkCheatUI() {
       } // Fl_Button* m_psAddPointerButton
       m_psNewGroup->end();
     } // Fl_Group* m_psNewGroup
+    m_pointerScannerWindow->reset();
     m_pointerScannerWindow->set_modal();
     m_pointerScannerWindow->end();
   } // PointerScannerWindow* m_pointerScannerWindow

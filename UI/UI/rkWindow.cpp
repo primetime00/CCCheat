@@ -4,6 +4,8 @@
 
 vector<IDeactivate *> rkWindow::objs;
 
+
+
 int rkWindow::handle(int evt)
 {
 	int res = Fl_Double_Window::handle(evt);
@@ -16,4 +18,14 @@ int rkWindow::handle(int evt)
 		}
 	}
 	return res;
+}
+
+void rkWindow::show()
+{
+	Fl_Window::show();
+	resize(x(), y(), createdW, createdH);
+}
+void rkWindow::hide()
+{
+	Fl_Window::hide();
 }

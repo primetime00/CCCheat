@@ -25,11 +25,9 @@ class PointerScannerWindow : public rkWindow
 public:
 	PointerScannerWindow(int X, int Y, int W, int H, const char *l=0) : rkWindow(X,Y,W,H,l) 
 	{
-		reset();
 	}
 	PointerScannerWindow(int W, int H, const char *l=0) : rkWindow(W,H,l) 
 	{
-		reset();
 	}
 
 	void reset();

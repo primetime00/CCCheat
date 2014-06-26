@@ -44,8 +44,10 @@ public:
 	void show();
 	void hide();
 	PointerItem popup(unsigned long address, PointerOffsets offsets);
+	PointerItem popup(PointerItem p);
 
 	void setPointer(unsigned long address, PointerOffsets offsets);
+	void setPointer(PointerItem p);
 	void setResolvedAddress(unsigned long address) { m_resAddress = address; }
 	void setMemoryOperator(MemoryOperator *op) { m_operator = op; }
 

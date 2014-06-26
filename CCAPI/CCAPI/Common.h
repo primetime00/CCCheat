@@ -68,8 +68,11 @@ struct AddressItem
 	unsigned long address;
 	unsigned long value;
 	char sign;
-	AddressItem(unsigned long a, unsigned long v, char s) { address = a; value = v; sign = s; }
-	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; return *this;}
+	char type;
+	AddressItem() { address = 0; value = 0; sign = 0; }
+	AddressItem(unsigned long a, unsigned long v, char t, char s) { address = a; value = v; type = t; sign = s; }
+	AddressItem(unsigned long a, unsigned long v, char s) { address = a; value = v; type = SEARCH_VALUE_TYPE_4BYTE; sign = s; }
+	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; type = t.type; return *this;}
 };
 
 
@@ -82,14 +85,15 @@ struct AddressOffset
 
 typedef list<unsigned int> PointerOffsets;
 typedef list<AddressOffset> AddressOffsets;
+
 struct PointerObj
 {
 	AddressOffsets pointers;	
-	unsigned long result;
+
+	AddressItem m_address;
+
 	unsigned long getBase() { return (pointers.size() > 0) ? pointers.front().address : 0; }
 	unsigned int updateCount;
-	long long value;
-	char type;
 	void fromPointerOffsets(const unsigned long address, const PointerOffsets &pt) { 
 		pointers.clear();
 		for (auto it = pt.begin(); it!= pt.end(); ++ it)
@@ -98,9 +102,21 @@ struct PointerObj
 		}
 		if (pointers.size() > 0) pointers.front().address = address;
 	}
+	bool equal(PointerObj p) {
+		auto pstart = p.pointers.begin();
+		auto start = pointers.begin();
+		if (p.getBase() != getBase()) return false;
+		if (p.pointers.size() != pointers.size()) return false;
+		while (start != pointers.end())
+		{
+			if (start->offset != pstart->offset) return false;
+			++start; ++pstart;
+		}
+		return true;
+	}
 	void update() { updateCount++; updateCount %= 0xFFFFFFF; }
-	PointerObj(AddressOffsets b) { pointers = b; result = 0; updateCount = 0; type = SEARCH_VALUE_TYPE_4BYTE; }
-	PointerObj(const unsigned long address, const PointerOffsets &pt) { fromPointerOffsets(address, pt); updateCount =0; type = SEARCH_VALUE_TYPE_4BYTE;}
+	PointerObj(AddressOffsets b) { pointers = b; m_address.address = 0; updateCount = 0; m_address.type = SEARCH_VALUE_TYPE_4BYTE; }
+	PointerObj(const unsigned long address, const PointerOffsets &pt) { fromPointerOffsets(address, pt); updateCount =0; m_address.type = SEARCH_VALUE_TYPE_4BYTE;}
 };
 typedef shared_ptr<PointerObj> PointerItem;
 
@@ -125,11 +141,8 @@ struct _DumpData
 typedef shared_ptr<_DumpData> DumpData;
 typedef vector<DumpData> DumpDataList;
 
-//typedef tuple<unsigned long, unsigned long, char> AddressItem;
 typedef vector<AddressItem> AddressList;
-typedef vector<AddressItem*> AddressListPtr;
 typedef map<unsigned long, AddressList> ResultList;
-typedef map<unsigned long, ResultList*> ThreadResultList;
 
 //typedef pair<long long, long long> RangePair;
 struct RangePair

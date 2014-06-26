@@ -21,9 +21,9 @@ void ValueViewerWindow::AddCodeCB(Fl_Widget *w)
 void ValueViewerWindow::setCodeData(rkCheat_Code *item)
 {
 	uiInstance->m_viewerTypeChoice->value(item->type);
-	if (visible() && uiInstance->m_valueTable->getAddress() != item->address)
+	if (visible() && uiInstance->m_valueTable->getAddress() != item->m_address.address)
 		hide();
-	uiInstance->m_valueTable->setAddress(item->address);
+	uiInstance->m_valueTable->setAddress(item->m_address.address);
 	uiInstance->m_valueTable->setType(item->type);
 }
 
@@ -31,12 +31,12 @@ void ValueViewerWindow::show()
 {
 	if (!visible())
 		uiInstance->m_valueTable->startMemoryRead();
-	Fl_Window::show();
+	rkWindow::show();
 }
 
 void ValueViewerWindow::hide()
 {
 	if (visible())
 		uiInstance->m_valueTable->stopMemoryRead();
-	Fl_Window::hide();
+	rkWindow::hide();
 }

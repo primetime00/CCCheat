@@ -435,8 +435,8 @@ m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat
-      xywh {143 114 1389 843} type Double align 80 hide
-      class rkWindow
+      xywh {148 119 1379 833} type Double align 80
+      class rkWindow visible
     } {
       Fl_Group searchGroup {
         label Search open
@@ -539,7 +539,7 @@ m_inProgress = false;} {}
         }
       }
       Fl_Group ui_rangeGroup {
-        label Range open
+        label Range
         xywh {410 70 375 275} box BORDER_BOX color 47
       } {
         Fl_Table ui_rangeTable {
@@ -718,8 +718,9 @@ m_inProgress = false;} {}
       class InfoWindow
     } {}
     Fl_Window m_pointerScannerWindow {
-      label {Pointer Scanner}
+      label {Pointer Scanner} open selected
       xywh {301 233 557 534} type Double
+      code0 {m_pointerScannerWindow->reset();}
       class PointerScannerWindow modal visible
     } {
       Fl_Group m_psLoadNewGroup {open
@@ -805,10 +806,10 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_peWindow {
-      label {Pointer Editor} open
-      xywh {330 277 426 476} type Double
+      label {Pointer Editor}
+      xywh {-32000 -32000 426 476} type Double hide
       code0 {m_peWindow->reset();}
-      class PointerEditorWindow modal visible
+      class PointerEditorWindow modal
     } {
       Fl_Group m_peAddressSet0 {
         xywh {15 14 395 37} box BORDER_BOX
@@ -840,7 +841,7 @@ m_inProgress = false;} {}
       }
       Fl_Choice m_peValueType {
         label {Type:}
-        callback {((PointerEditorWindow*)o->parent())->OnTypeChangedCB(o);} open selected
+        callback {((PointerEditorWindow*)o->parent())->OnTypeChangedCB(o);} open
         xywh {315 340 95 20} down_box BORDER_BOX when 1
         class ValueTypeChoice
       } {}

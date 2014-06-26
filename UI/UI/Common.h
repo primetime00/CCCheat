@@ -52,31 +52,46 @@ struct WidgetField
 struct rkCheat_Code
 {
 	string description;
-	unsigned long address;
+	AddressItem m_address;
+	PointerItem m_pointer;
+	bool m_isPointer;
+
+/*	unsigned long address;
 	long long value;
+	bool sign;*/
 	char type;
 	bool freeze;
-	bool sign;
 	char _delete;
 	WidgetField *widget;
 	rkCheat_Code(){
-		address = 0;
-		value = 0;
+		m_isPointer = false;
+		m_address.address = 0;
+		m_address.value = 0;
+		m_address.sign = 1;
 		type = 0;
 		freeze = false;
 		widget = 0;
 		description = "";
-		sign = true;
+		_delete = 0;
+	}
+	rkCheat_Code(string d, PointerItem p, bool f, WidgetField *w){
+		m_isPointer = true;
+		m_pointer = p;
+		m_address.sign = 1;
+		freeze = f;
+		widget = w;
+		description = d;
 		_delete = 0;
 	}
 	rkCheat_Code(string d, unsigned long add, long long val, char t, bool f, WidgetField *w){
-		address = add;
-		value = val;
+		m_isPointer = false;
+		m_address.address = add;
+		m_address.value = val;
+		m_address.sign = 1;
 		type = t;
 		freeze = f;
 		widget = w;
 		description = d;
-		sign = true;
 		_delete = 0;
 	}
 	~rkCheat_Code() {
@@ -88,15 +103,15 @@ struct rkCheat_Code
 	}
 	void operator=(rkCheat_Code &item) {
 		description = item.description;
-		address = item.address;
-		value = item.value;
+		m_address.address = item.m_address.address;
+		m_address.value = item.m_address.value;
 		type = item.type;
 		freeze = item.freeze;
 		widget = item.widget;
-		sign = item.sign;
+		m_address.sign = item.m_address.sign;
 		_delete = item._delete;
 	}
-	void setSign(bool s) { sign = s; }
+	void setSign(bool s) { m_address.sign = s; }
 };
 
 struct ResultRow {

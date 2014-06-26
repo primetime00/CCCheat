@@ -26,11 +26,12 @@ public:
 	string getStatus() { return m_status; }
 
 	void setReadMemoryOperation(unsigned long address, char type, char *memory, bool keep);
-	void setReadPointerOperation(PointerItem pointer);
+	void setReadPointerOperation(PointerItem pointer, bool keep);
 
 	void setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze);
 	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
 	void removeMemoryOperation(char command, unsigned long address);
+	void removePointerOperation(char command, PointerItem p);
 
 	void setReadPointerOperation(unsigned long address, list <unsigned int> offsets, char *memory, bool keep);
 	unsigned int getPointerListSize() { return pointerReadOperationList.size(); }

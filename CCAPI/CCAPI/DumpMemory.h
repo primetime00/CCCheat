@@ -22,7 +22,6 @@ public:
 	unsigned int getError() { return m_error; }
 	void stopThreads() { for (unsigned int i=0; i<m_threadList.size(); i++) { m_threadList.at(i)->join(); } }
 	bool isRunning() { return m_running; }
-	int writeDump(string fname);
 	DumpData consolideDump();
 
 private:

@@ -204,20 +204,6 @@ void DumpMemory::cancel()
 	m_status = "CANCEL";
 }
 
-int DumpMemory::writeDump(string fname)
-{
-	ofstream oFile(fname, ofstream::binary);
-	if (!oFile)
-		return TASK_ERROR_FILE_FAIL;
-	DumpHeader header(m_offset, m_offset+m_length, 0);
-	oFile.write((char*)&header, sizeof(DumpHeader));
-	for (int i = 0; i<m_threadCount; i++)
-	{
-		char *b = m_threadList.at(i)->getBuffer();
-		oFile.write(b, m_threadList.at(i)->getLength());
-	}
-	oFile.close();
-}
 
 DumpData DumpMemory::consolideDump()
 {

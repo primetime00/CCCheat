@@ -260,7 +260,7 @@ void PointerScannerWindow::show()
 {
 	//if (!visible())
 	//	uiInstance->m_valueTable->startMemoryRead();
-	Fl_Window::show();
+	rkWindow::show();
 }
 
 void PointerScannerWindow::hide()
@@ -268,7 +268,7 @@ void PointerScannerWindow::hide()
 	//if (visible())
 //		uiInstance->m_valueTable->stopMemoryRead();
 	reset();
-	Fl_Window::hide();
+	rkWindow::hide();
 }
 
 void PointerScannerWindow::progressTimeout()
