@@ -84,7 +84,7 @@ void ResultTable::setResults(rkCheat_Results &r)
 			{
 				for (AddressList::iterator ait = it->second.begin(); ait != it->second.end(); ++ait) //each address list
 				{
-					data.push_back(ResultRow(&(*ait), it->first, thread, id));
+					data.push_back(ResultRow(*ait, it->first, thread, id));
 					rounds++;
 					if (rounds > MAX_RESULTS)
 					{
@@ -251,7 +251,7 @@ vector<AddressItem> ResultTable::getSelectedResults()
 	{
 		if (row_selected(i))
 		{
-			res.push_back(*data[i].item);
+			res.push_back(data[i].item);
 		}
 	}
 	return res;
@@ -312,7 +312,7 @@ void ResultTable::refreshResults()
 		return;
 	for (Results::iterator it = data.begin(); it != data.end(); ++it)
 	{
-		m_operator->setReadMemoryOperation(it->item->address, resultType, (char*)&it->item->value, false);
+		m_operator->setReadMemoryOperation(it->item, false);
 	}
 }
 

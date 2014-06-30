@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include "Common.h"
+#include "Types.h"
 #include "CCAPI.h"
 
 #define RANGE_INTERVAL 0x10000

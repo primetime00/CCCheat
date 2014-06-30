@@ -43,7 +43,7 @@ int DumpScan::process(DumpDataList::iterator startDump, unsigned long startByte)
 			if ( currentAddress >= min && currentAddress <= max) //we want this
 			{
 				PointerOffsets po = m_offsets;
-				po.push_back(m_address - currentAddress);
+				po.push_front(m_address - currentAddress);
 				m_results.push_back(ScanResult(i+(*it)->header.begin, po));
 				if (++m_counter >= m_maxResults)
 				{

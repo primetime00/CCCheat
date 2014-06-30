@@ -113,17 +113,17 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
 		fl_color(FL_BLACK);
 		switch(COL)
 		{
-		case ADDRESS_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->getBase()); break;
+		case ADDRESS_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->address); break;
 		case OFFSET_COL:
 			str.clear();
-			for (auto it=m_pointerList[ROW]->pointers.begin(); it != m_pointerList[ROW]->pointers.end(); ++it)
+			for (auto it=m_pointerList[ROW]->pointer->pointers.begin(); it != m_pointerList[ROW]->pointer->pointers.end(); ++it)
 			{
 				str << hex << it->offset << " ";
 			}
 			sprintf(s, "%s", str.str().c_str());
 			break;
-		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->pointers.size()); break;
-		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->m_address.address); break;
+		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->pointer->pointers.size()); break;
+		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->pointer->resolved); break;
 		default: break;
 		}
 		DrawData(s,X,Y,W,H);
@@ -143,6 +143,10 @@ int PointerScannerTable::handle(int evt)
 	int res = 0;
 	when(FL_WHEN_NEVER);
 	res = Fl_Table_Row::handle(evt);
+	if (hasSelection())
+		uiInstance->m_psAddPointerButton->activate();
+	else
+		uiInstance->m_psAddPointerButton->deactivate();
 	return res;
 }
 void PointerScannerTable::DrawData(const char *s, int X, int Y, int W, int H) {
@@ -283,19 +287,33 @@ void PointerScannerTable::addRow(unsigned long address, PointerOffsets offsets)
 	bool found = false;
 	for (auto it = m_pointerList.begin(); it != m_pointerList.end(); ++it)
 	{
-		if ((*it)->getBase() == address)
+		if ((*it)->address == address)
 		{
-			found = true;
-			break;
+			PointerItem p = make_shared<PointerObj>(address, offsets);
+			if ((*it)->pointer->equal(*p))
+			{
+				found = true;
+				break;
+			}
 		}
 	}
 	if (!found)
 	{
-		PointerItem pi = make_shared<PointerObj>(address, offsets);
-		pi->m_address.address = m_resultAddress;
-		m_pointerList.push_back(pi);
+		AddressItem ai = make_shared<AddressObj>(address, offsets, SEARCH_VALUE_TYPE_4BYTE, 0);
+		ai->pointer->resolved = m_resultAddress;
+		m_pointerList.push_back(ai);
 		rows(m_pointerList.size());
 		damage(FL_DAMAGE_ALL);
 	}
 }
 
+AddressItem PointerScannerTable::getSelectedPointer()
+{
+	if (hasSelection())
+	{
+		for (int i=0; i<rows(); ++i)
+			if (row_selected(i))
+				return m_pointerList[i];
+	}
+	return nullptr;
+}

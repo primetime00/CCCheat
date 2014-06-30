@@ -107,7 +107,7 @@ void ChunkValueSearch::setup(char len, char comp, long long val)
 #define DO_COMPARE_FLOAT(val, loc, base)\
 	if (testFunction_Float(*((float*)val)))\
 	{\
-		(*resultRef)[base].push_back(AddressItem(loc, *((unsigned long*)val), TEST_SIGN_UNKNOWN));\
+		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, *((unsigned long*)val), TEST_SIGN_UNKNOWN));\
 	}
 
 #define DO_COMPARE_FLOAT_NEXT(section, val, item)\
@@ -115,8 +115,8 @@ void ChunkValueSearch::setup(char len, char comp, long long val)
 	if (testFunction_Float(*((float*)val)))\
 	{\
 		signage = TEST_SIGN_UNKNOWN;\
-		(item.value) = *((unsigned long*)val);\
-		(item.sign) = signage;\
+		(item->value) = *((unsigned long*)val);\
+		(item->sign) = signage;\
 	}
 
 #define CMP(_type, val, loc) (testFunction_Signed(*((_type*)val)))
@@ -129,25 +129,25 @@ void ChunkValueSearch::setup(char len, char comp, long long val)
 		signage |= TEST_SIGN_NO;\
 	if (signage != TEST_SIGN_NULL)\
 	{\
-		(*resultRef)[base].push_back(AddressItem(loc, (_type) *((_type*)val), signage));\
+		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, (_type) *((_type*)val), signage));\
 	}
 
 #define DO_COMPARE_NEXT(_type, section, val, item)\
 	signage = TEST_SIGN_NULL;\
-	if ((item.sign) & TEST_SIGN_YES)\
+	if ((item->sign) & TEST_SIGN_YES)\
 	{\
-		if (CMP(_type, val, (item.address)))\
+		if (CMP(_type, val, (item->address)))\
 			signage |= TEST_SIGN_YES;\
 	}\
-	if ((item.sign) & TEST_SIGN_NO)\
+	if ((item->sign) & TEST_SIGN_NO)\
 	{\
-		if (CMP_UNSIGNED(_type, val, (item.address)))\
+		if (CMP_UNSIGNED(_type, val, (item->address)))\
 			signage |= TEST_SIGN_NO;\
 	}\
 	if (signage != TEST_SIGN_NULL)\
 	{\
-		(item.value) = (_type) *((_type*)val);\
-		(item.sign) = signage;\
+		(item->value) = (_type) *((_type*)val);\
+		(item->sign) = signage;\
 	}
 
 //used for initial value search against PS3 memory
@@ -226,7 +226,7 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 
 
 //used for continuing value search against a result file
-bool ChunkValueSearch::digestValue(char *memory, AddressItem &item, unsigned long section)
+bool ChunkValueSearch::digestValue(char *memory, AddressItem item, unsigned long section)
 {
 	char signage;
 	if (valueByteLength == 1)

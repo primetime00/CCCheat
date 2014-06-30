@@ -12,7 +12,7 @@ public:
 
 	void setup(char len, char comp);
 	void digest(char *newMemory, char *prevMemory, unsigned long length, unsigned long address);
-	bool digestValue(char* memory, AddressItem &item, unsigned long section);
+	bool digestValue(char* memory, AddressItem item, unsigned long section);
 	void digestValue(char* memory, unsigned long prevVal, unsigned long address, char sign = TEST_SIGN_BOTH);
 	void clear() { first = true; prevAddress = 0; }
 

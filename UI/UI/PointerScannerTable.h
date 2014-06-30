@@ -30,14 +30,8 @@ public:
   void addRow(unsigned long address, PointerOffsets offsets);
   void reset() { m_pointerList.clear(); }
   void setResultAddress(unsigned long a) { m_resultAddress = a; }
-#if 0
-  void addSelectedAddresses();
-  void setMemoryOperator(MemoryOperator *op);
-  void setCodeTable(CodeTable *t) { m_codeTable = t; }
-  void setType(char type) { m_selectedType = type; }
-  void setAddress(unsigned long address) { m_focusAddress = address; }
-  unsigned long getAddress() { return m_focusAddress; }
-#endif
+  
+  AddressItem getSelectedPointer();
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)
@@ -75,10 +69,9 @@ private:
   void doDeactivate();
   Fl_Widget *getWidget() { return this; }
 
-  vector<int> getSelectedRows();
 
 private:
-	vector<PointerItem> m_pointerList;
+	vector<AddressItem> m_pointerList;
 		unsigned long m_focusAddress, m_startAddress;
 		unsigned long m_resultAddress;
 

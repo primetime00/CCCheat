@@ -3,6 +3,7 @@
 #include "CCAPI/Helpers.h"
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <FL/fl_draw.H>
 #include <FL/Fl_Widget.H>
 #include "ui_main.h"
@@ -62,7 +63,9 @@ void ValueViewerTable::addSelectedAddresses()
 		if (i > DEFAULT_ROWS)
 			break;
 		if (row_selected(i))
-			m_codeTable->addEntry("Value Viewer Entry", m_startAddress+i, 0, m_selectedType);
+		{
+			m_codeTable->addEntry("Value Viewer Entry", make_shared<AddressObj>(m_startAddress+i, 0, m_selectedType, m_signed ? 1 : 0));
+		}
 	}
 }
 
@@ -352,5 +355,5 @@ void ValueViewerTable::stopMemoryRead()
 {
 	if (m_operator == 0)
 		return;
-	m_operator->removeMemoryOperation(MEMORY_COMMAND_READCHUNK, m_startAddress);
+	m_operator->removeChunkReadOperation(m_startAddress);
 }

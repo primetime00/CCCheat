@@ -53,41 +53,40 @@ struct rkCheat_Code
 {
 	string description;
 	AddressItem m_address;
-	PointerItem m_pointer;
-	bool m_isPointer;
-
-/*	unsigned long address;
-	long long value;
-	bool sign;*/
 	char type;
 	bool freeze;
 	char _delete;
 	WidgetField *widget;
 	rkCheat_Code(){
-		m_isPointer = false;
-		m_address.address = 0;
-		m_address.value = 0;
-		m_address.sign = 1;
+		m_address->address = 0;
+		m_address->value = 0;
+		m_address->sign = 1;
 		type = 0;
 		freeze = false;
 		widget = 0;
 		description = "";
 		_delete = 0;
 	}
-	rkCheat_Code(string d, PointerItem p, bool f, WidgetField *w){
-		m_isPointer = true;
-		m_pointer = p;
-		m_address.sign = 1;
+	rkCheat_Code(string d, unsigned long address, PointerItem p, bool f, WidgetField *w){
+		m_address->address = address;
+		m_address->pointer = p;
+		m_address->sign = 1;
+		freeze = f;
+		widget = w;
+		description = d;
+		_delete = 0;
+	}
+	rkCheat_Code(string d, AddressItem i, bool f, WidgetField *w){
+		m_address = i;
 		freeze = f;
 		widget = w;
 		description = d;
 		_delete = 0;
 	}
 	rkCheat_Code(string d, unsigned long add, long long val, char t, bool f, WidgetField *w){
-		m_isPointer = false;
-		m_address.address = add;
-		m_address.value = val;
-		m_address.sign = 1;
+		m_address->address = add;
+		m_address->value = val;
+		m_address->sign = 1;
 		type = t;
 		freeze = f;
 		widget = w;
@@ -103,23 +102,25 @@ struct rkCheat_Code
 	}
 	void operator=(rkCheat_Code &item) {
 		description = item.description;
-		m_address.address = item.m_address.address;
-		m_address.value = item.m_address.value;
+		m_address->address = item.m_address->address;
+		m_address->value = item.m_address->value;
+		if (item.m_address->pointer != nullptr)
+			m_address->pointer = make_shared<PointerObj>(item.m_address->address, item.m_address->pointer->getOffsets());
 		type = item.type;
 		freeze = item.freeze;
 		widget = item.widget;
-		m_address.sign = item.m_address.sign;
+		m_address->sign = item.m_address->sign;
 		_delete = item._delete;
 	}
-	void setSign(bool s) { m_address.sign = s; }
+	void setSign(bool s) { m_address->sign = s; }
 };
 
 struct ResultRow {
-	AddressItem *item;
+	AddressItem item;
 	unsigned long section;
 	unsigned long thread;
 	unsigned long searchID;
-	ResultRow(AddressItem *i, unsigned long s, unsigned long t, unsigned long sid) { item = i; section = s; thread = t; searchID = sid;}
+	ResultRow(AddressItem i, unsigned long s, unsigned long t, unsigned long sid) { item = i; section = s; thread = t; searchID = sid;}
 };
 
 typedef vector<ResultRow> Results;

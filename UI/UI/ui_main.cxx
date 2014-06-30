@@ -332,7 +332,8 @@ void rkCheatUI::SearchTypeChangeCB(Fl_Widget *w, void *data) {
   if (uiInstance->ui_searchType->isFuzzy())
   {
   	uiInstance->ui_valueInputGroup->deactivate();
-  	uiInstance->ui_valueType->activate();
+  	if (!uiInstance->m_inProgress)
+    		uiInstance->ui_valueType->activate();
   }
   else if (uiInstance->ui_searchType->isPointer())
   {

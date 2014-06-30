@@ -27,9 +27,8 @@ public:
   CodeTable(int X, int Y, int W, int H, const char *l=0);
   ~CodeTable() { Fl::remove_timeout(redraw); }
 
-  void addEntry(string desc, unsigned long address, long long value, char type, bool freeze=false);
-  void addPointer(string desc, PointerItem p, bool freeze=false);
-  void deleteEntry(unsigned int row);
+  void addEntry(string desc, AddressItem item, bool freeze=false);
+    void deleteEntry(unsigned int row);
   void deleteEntry(vector<int> &indexRows);
 
   void saveData(string filename);

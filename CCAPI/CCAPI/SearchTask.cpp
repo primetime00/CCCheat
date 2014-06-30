@@ -421,7 +421,7 @@ int SearchTask::fuzzySearchResults()
 					for (AddressList::iterator addrIt = it->second.begin(); addrIt != it->second.end();) //read all addresses in a section
 					{
 						//if (m_fuzzySearcher.digestValue(&dataBuf[get<0>(*addrIt) - section], *addrIt, section)) //we need to keep it!
-						if (m_fuzzySearcher.digestValue(&dataBuf[(addrIt->address) - section], *addrIt, section)) //we need to keep it!
+						if (m_fuzzySearcher.digestValue(&dataBuf[((*addrIt)->address) - section], *addrIt, section)) //we need to keep it!
 							keep.push_back(*addrIt);
 						addrIt++;
 						if (scans % cbRate == 0) progressCallback(this, scans, resListSize);
@@ -438,7 +438,7 @@ int SearchTask::fuzzySearchResults()
 				if (m_cancel)
 					return TASK_ERROR_CANCEL;
 
-				if (m_ccapi->readMemory((addrIt->address), length) == 0)
+				if (m_ccapi->readMemory(((*addrIt)->address), length) == 0)
 				{
 					dataBuf = m_ccapi->getData(readLen);
 					if (m_fuzzySearcher.digestValue(dataBuf, *addrIt, section)) //we need to keep it!
@@ -504,7 +504,7 @@ int SearchTask::valueSearchResults()
 				{
 					for (AddressList::iterator addrIt = it->second.begin(); addrIt != it->second.end();) //read all addresses in a section
 					{
-						if (m_valueSearcher.digestValue(&dataBuf[(addrIt->address) - section], *addrIt, section)) //we need to keep it!
+						if (m_valueSearcher.digestValue(&dataBuf[((*addrIt)->address) - section], *addrIt, section)) //we need to keep it!
 							keep.push_back(*addrIt);
 						addrIt++;
 						if (scans % cbRate == 0) progressCallback(this, scans, resListSize);
@@ -520,7 +520,7 @@ int SearchTask::valueSearchResults()
 			{
 				if (m_cancel)
 					return TASK_ERROR_CANCEL;
-				if (m_ccapi->readMemory((addrIt->address), length) == 0)
+				if (m_ccapi->readMemory(((*addrIt)->address), length) == 0)
 				{
 					dataBuf = m_ccapi->getData(readLen);
 					if (m_valueSearcher.digestValue(dataBuf, *addrIt, section)) //we need to keep it!

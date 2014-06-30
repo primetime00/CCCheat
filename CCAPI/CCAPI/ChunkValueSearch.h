@@ -15,7 +15,7 @@ public:
 
 	void setup(char len, char comp, long long val);
 	void digest(char *memory, unsigned long length, unsigned long address);
-	bool digestValue(char* memory, AddressItem &item, unsigned long section);
+	bool digestValue(char* memory, AddressItem item, unsigned long section);
 	void clear() { first = true; prevAddress = 0;}
 	void setResultReference(ResultList *ref) { resultRef = ref; }
 	long long getValue() { return value; }

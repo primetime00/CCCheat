@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <mutex>
+#include "Helpers.h"
 #include "Common.h"
 #include "CCAPI.h"
 
@@ -25,16 +26,13 @@ public:
 	void exit() { m_exit = true; }
 	string getStatus() { return m_status; }
 
-	void setReadMemoryOperation(unsigned long address, char type, char *memory, bool keep);
-	void setReadPointerOperation(PointerItem pointer, bool keep);
-
-	void setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze);
+	void setWriteMemoryOperation(AddressItem item, long long value, bool freeze);
+	void setReadMemoryOperation(AddressItem item, bool keep);
 	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
-	void removeMemoryOperation(char command, unsigned long address);
-	void removePointerOperation(char command, PointerItem p);
 
-	void setReadPointerOperation(unsigned long address, list <unsigned int> offsets, char *memory, bool keep);
-	unsigned int getPointerListSize() { return pointerReadOperationList.size(); }
+	void removeMemoryOperation(char command, AddressItem item);
+	void removePointerOperation(char command, PointerItem p);
+	void removeChunkReadOperation(unsigned long address);
 
 	void setHostCCAPIVersion(int ver) { m_ccapiHostVersion = ver; }
 
@@ -47,9 +45,9 @@ private:
 	int processChunkRead();
 	int processWrite();
 
-	unsigned int getLength(char type) { if (type == SEARCH_VALUE_TYPE_1BYTE) return 1; if (type == SEARCH_VALUE_TYPE_2BYTE) return 2; return 4; }
-	unsigned int readPointer(unsigned int address, unsigned int offset);
+	unsigned int getLength(char type) { return Helpers::getTypeLength(type); }
 	long long readAddress(unsigned long address, char type);
+	void writeAddress(unsigned long address, char type, long long value);
 
 	int connect();
 
@@ -59,7 +57,6 @@ private:
 	MemoryReadItemList memoryReadOperationList;
 	MemoryChunkReadItemList memoryChunkReadOperationList;
 	MemoryWriteItemList memoryWriteOperationList;
-	PointerReadItemList pointerReadOperationList;
 	bool m_exit;
 	string m_status;
 	mutex m_mutex;

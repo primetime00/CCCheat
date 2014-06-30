@@ -7,6 +7,7 @@
 #include <tuple>
 #include <list>
 #include <memory>
+#include "Types.h"
 
 using namespace std;
 
@@ -60,22 +61,8 @@ using namespace std;
 
 #define MEMORY_COMMAND_READ			0x00
 #define MEMORY_COMMAND_WRITE		0x01
-#define MEMORY_COMMAND_READCHUNK	0x02
 
-
-struct AddressItem
-{
-	unsigned long address;
-	unsigned long value;
-	char sign;
-	char type;
-	AddressItem() { address = 0; value = 0; sign = 0; }
-	AddressItem(unsigned long a, unsigned long v, char t, char s) { address = a; value = v; type = t; sign = s; }
-	AddressItem(unsigned long a, unsigned long v, char s) { address = a; value = v; type = SEARCH_VALUE_TYPE_4BYTE; sign = s; }
-	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; type = t.type; return *this;}
-};
-
-
+#if 0
 struct AddressOffset
 {
 	unsigned long address;
@@ -120,6 +107,23 @@ struct PointerObj
 };
 typedef shared_ptr<PointerObj> PointerItem;
 
+/* An AddressItem is either an address that we are focusing on or a base of a pointer that we are focusing on.
+   The value is the memory at that address or whatever the resolved pointer address is. */
+struct AddressItem
+{
+	unsigned long address;
+	unsigned long value;
+	char sign;
+	char type;
+	PointerItem pointer;
+	AddressItem() { address = 0; value = 0; sign = 0; }
+	AddressItem(unsigned long a, unsigned long v, char t, char s) { address = a; value = v; type = t; sign = s; } //a single address
+	AddressItem(unsigned long a, unsigned long v, char s) { address = a; value = v; type = SEARCH_VALUE_TYPE_4BYTE; sign = s; } //a single address
+	AddressItem(unsigned long a, PointerOffsets p, char t, char s) { address = a; value = v; type = t; sign = s; } //a pointer
+	AddressItem &operator=(AddressItem t) { address = t.address; value = t.value; sign = t.sign; type = t.type; return *this;}
+};
+#endif
+
 struct DumpHeader
 {
 	unsigned long begin, end;
@@ -141,7 +145,9 @@ struct _DumpData
 typedef shared_ptr<_DumpData> DumpData;
 typedef vector<DumpData> DumpDataList;
 
+#if 0
 typedef vector<AddressItem> AddressList;
+#endif
 typedef map<unsigned long, AddressList> ResultList;
 
 //typedef pair<long long, long long> RangePair;
@@ -160,11 +166,9 @@ struct RangePair
 typedef vector<RangePair> RangeList;
 
 struct MemoryReadItem{
-	unsigned int address;
-	char type;
-	char *memory;
+	AddressItem item;
 	bool keep;
-	MemoryReadItem(unsigned int a, char t, char *m, bool k) { address = a; type = t; memory = m; keep = k;}
+	MemoryReadItem(AddressItem i, bool k) { item = i; keep = k;}
 };
 
 struct MemoryChunkReadItem{
@@ -183,14 +187,14 @@ struct PointerReadItem{
 
 
 struct MemoryWriteItem{
-	unsigned int address;
+	AddressItem item;
 	long long value;
-	char type;
 	bool freeze;
-	MemoryWriteItem(unsigned int a, long long v, char t, bool f) { address = a; value = v; type = t; freeze = f;}
+	MemoryWriteItem(AddressItem i, long long v, bool f) { item = i; value = v; freeze = f;}
 };
 
 typedef list<shared_ptr<MemoryReadItem>> MemoryReadSet;
+typedef list<shared_ptr<MemoryWriteItem>> MemoryWriteSet;
 
 typedef list<shared_ptr<MemoryChunkReadItem>> MemoryChunkReadSet;
 
@@ -200,6 +204,7 @@ typedef list<shared_ptr<PointerReadItem>> PointerReadSet;
 typedef map<unsigned long, MemoryReadSet> MemoryReadItemList;
 typedef map<unsigned long, MemoryChunkReadSet> MemoryChunkReadItemList;
 typedef map<unsigned long, PointerReadSet> PointerReadItemList;
-typedef map<unsigned long, shared_ptr<MemoryWriteItem>> MemoryWriteItemList;
+
+typedef map<unsigned long, MemoryWriteSet> MemoryWriteItemList;
 
 #endif

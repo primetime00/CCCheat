@@ -7,64 +7,35 @@ void MemoryOperator::start()
 	m_thread = thread(&MemoryOperator::run, this);
 }
 
-void MemoryOperator::setReadMemoryOperation(unsigned long address, char type, char *memory, bool keep)
+void MemoryOperator::setReadMemoryOperation(AddressItem item, bool keep)
 {
-	m_mutex.lock();
-	if (memoryReadOperationList.count(address) > 0) //we already have it!
+	lock_guard<mutex> lock(m_mutex);
+	if (memoryReadOperationList.count(item->address) > 0) //we already have it!
 	{
 		bool found = false;
-		for (MemoryReadSet::iterator it = memoryReadOperationList[address].begin(); it != memoryReadOperationList[address].end(); ++it)
+		for (MemoryReadSet::iterator it = memoryReadOperationList[item->address].begin(); it != memoryReadOperationList[item->address].end(); ++it)
 		{
-			if ((*it)->memory == memory) //we have it!
+			if (item.get() == (*it)->item.get())
 			{
 				found = true;
-				(*it)->type = type;
 				(*it)->keep |= keep;
 				break;
 			}
 		}
 		if (!found) //this is a new memory location
 		{
-			memoryReadOperationList[address].push_back(make_shared<MemoryReadItem>(address, type, memory, keep));
+			memoryReadOperationList[item->address].push_back(make_shared<MemoryReadItem>(item, keep));
 		}
 	}
 	else
 	{
-		memoryReadOperationList[address].push_back(make_shared<MemoryReadItem>(address, type, memory, keep));
+		memoryReadOperationList[item->address].push_back(make_shared<MemoryReadItem>(item, keep));
 	}
-	m_mutex.unlock();
 }
-
-
-void MemoryOperator::setReadPointerOperation(PointerItem pointer, bool keep)
-{
-	m_mutex.lock();
-	unsigned long address = pointer->getBase();
-	bool found = false;
-	if (pointerReadOperationList.count(address) > 0) //we already have it!
-	{
-		auto item = pointerReadOperationList[address];
-		for (auto it = item.begin(); it != item.end(); ++it)
-		{
-			if ((*it)->pointer->equal(*pointer))
-			{
-				found = true;
-				break;
-			}
-		}
-	}
-	if (!found) //this is a new memory location
-	{
-		pointerReadOperationList[address].push_back(make_shared<PointerReadItem>(pointer, keep));
-	}
-	m_mutex.unlock();
-
-}
-
 
 void MemoryOperator::setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep)
 {
-	m_mutex.lock();
+	lock_guard<mutex> lock(m_mutex);
 	if (memoryChunkReadOperationList.count(start) > 0) //we already have it!
 	{
 		bool found = false;
@@ -86,66 +57,67 @@ void MemoryOperator::setChunkReadMemoryOperation(unsigned long start, unsigned l
 	{
 		memoryChunkReadOperationList[start].push_back(make_shared<MemoryChunkReadItem>(start, size, memory, keep));
 	}
-	m_mutex.unlock();
 }
 
-void MemoryOperator::setWriteMemoryOperation(unsigned long address, long long value, char type, bool freeze)
+void MemoryOperator::setWriteMemoryOperation(AddressItem item, long long value, bool freeze)
 {
-	m_mutex.lock();
-	if (memoryWriteOperationList.count(address) > 0) //we already have it!
+	lock_guard<mutex> lock(m_mutex);
+	bool found = false;
+	if (memoryWriteOperationList.count(item->address) > 0) //we already have it!
 	{
-		memoryWriteOperationList[address]->freeze = freeze;
-		memoryWriteOperationList[address]->type = type;
-		memoryWriteOperationList[address]->value = value;
-	}
-	else
-	{
-		memoryWriteOperationList[address] = make_shared<MemoryWriteItem>(address, value, type, freeze);
-	}
-	m_mutex.unlock();
-}
-
-void MemoryOperator::removeMemoryOperation(char command, unsigned long address)
-{
-	m_mutex.lock();
-	switch (command)
-	{
-	case MEMORY_COMMAND_WRITE:
-		memoryWriteOperationList.erase(address);
-		break;
-	case MEMORY_COMMAND_READCHUNK:
-		memoryChunkReadOperationList.erase(address);
-		break;
-	default:
-		memoryReadOperationList.erase(address);
-		break;
-	}
-	m_mutex.unlock();
-}
-
-void MemoryOperator::removePointerOperation(char command, PointerItem p)
-{
-	m_mutex.lock();
-	switch (command)
-	{
-	case MEMORY_COMMAND_WRITE:
-		//memoryWriteOperationList.erase(address);
-		break;
-	default:
-		auto item = pointerReadOperationList[p->getBase()];
-		for (auto it = item.begin(); it != item.end(); ++it)
+		for (auto it = memoryWriteOperationList[item->address].begin(); it != memoryWriteOperationList[item->address].end(); ++it)
 		{
-			if ((*it)->pointer->equal(*p))
+			if ((*it)->item.get() == item.get())
 			{
-				item.erase(it);
+				found = true;
+				(*it)->freeze = freeze;
+				(*it)->value = value;
 				break;
 			}
 		}
-		if (item.size() == 0)
-			pointerReadOperationList.erase(p->getBase());
+		if (!found) //we have a new address
+		{
+			memoryWriteOperationList[item->address].push_back(make_shared<MemoryWriteItem>(item, value, freeze));
+		}
+	}
+	else
+	{
+		memoryWriteOperationList[item->address].push_back(make_shared<MemoryWriteItem>(item, value, freeze));
+	}
+}
+
+void MemoryOperator::removeMemoryOperation(char command, AddressItem item)
+{
+	lock_guard<mutex> lock(m_mutex);
+	switch (command)
+	{
+	case MEMORY_COMMAND_WRITE:
+		if (memoryWriteOperationList.count(item->address) == 0) return;
+		for (auto it = memoryWriteOperationList[item->address].begin(); it != memoryWriteOperationList[item->address].end(); ++it)
+		{
+			if ((*it)->item.get() == item.get())
+			{
+				memoryWriteOperationList[item->address].erase(it);
+				break;
+			}
+		}
+		if (memoryWriteOperationList.count(item->address) > 0 && memoryWriteOperationList[item->address].size() == 0)
+			memoryWriteOperationList.erase(item->address);
+		break;
+	default:
+		if (memoryReadOperationList.count(item->address) == 0) return;
+		for (auto it = memoryReadOperationList[item->address].begin(); it != memoryReadOperationList[item->address].end(); ++it)
+		{
+			if ((*it)->item.get() == item.get())
+			{
+				memoryReadOperationList[item->address].erase(it);
+				break;
+			}
+		}
+		if (memoryReadOperationList.count(item->address) > 0 && memoryReadOperationList[item->address].size() == 0)
+			memoryReadOperationList.erase(item->address);
 		break;
 	}
-	m_mutex.unlock();
 }
 
 void MemoryOperator::run()
@@ -173,8 +145,6 @@ void MemoryOperator::process()
 			continue;
 		if (processChunkRead() != 0)
 			continue;
-		if (processPointers() != 0)
-			continue;
 	}
 }
 
@@ -182,36 +152,36 @@ int MemoryOperator::processRead()
 {
 	unsigned int length;
 	char *data;
-	m_mutex.lock();
+	lock_guard<mutex> lock(m_mutex);
 	for (MemoryReadItemList::iterator it = memoryReadOperationList.begin(); it != memoryReadOperationList.end();)
 	{
-		if (m_exit) { m_mutex.unlock(); return 1; }
+		if (m_exit) { return 1; }
 		for (MemoryReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
 		{
-			length = getLength((*setIT)->type);
-			if (m_ccapi->readMemory((*setIT)->address, length) == 0)
+			if ((*setIT)->item->isPointer()) //we are reading a pointer
 			{
-				data = m_ccapi->getData(length);
-				if ((*setIT)->type == SEARCH_VALUE_TYPE_2BYTE)
+				AddressOffsets *po = &(*setIT)->item->pointer->pointers;
+				unsigned long cAddress = (*setIT)->item->address;
+				for (auto offsetIT = po->begin(); offsetIT != po->end(); ++offsetIT)
 				{
-					short tmp = BSWAP16(*(short*)&data[0]);
-					((long long*)(*setIT)->memory)[0] = (long long)tmp;
+					offsetIT->address = cAddress;
+					cAddress = readAddress(cAddress, SEARCH_VALUE_TYPE_4BYTE);
+					if (cAddress > 0)
+						cAddress += offsetIT->offset;
+					else
+						break;
 				}
-				else if ((*setIT)->type == SEARCH_VALUE_TYPE_4BYTE)
-				{
-					long tmp = BSWAP32(*(long*)&data[0]);
-					((long long*)(*setIT)->memory)[0] = (long long)tmp;
-				}
-				else if ((*setIT)->type == SEARCH_VALUE_TYPE_FLOAT)
-				{
-					unsigned long tmp = BSWAP32(*(unsigned long*)&data[0]);
-					((long long*)(*setIT)->memory)[0] = *(unsigned long*)&tmp;
-				}
+				if (cAddress == 0)
+					(*setIT)->item->pointer->resolved = 0;
 				else
 				{
-					((long long*)(*setIT)->memory)[0] = (long long)data[0];
+					(*setIT)->item->pointer->resolved = cAddress;
+					(*setIT)->item->value = readAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type);
 				}
+				(*setIT)->item->pointer->update();
 			}
+			else
+				(*setIT)->item->value = readAddress((*setIT)->item->address, (*setIT)->item->type);
 			if ((*setIT)->keep == true)
 			{
 				++setIT;
@@ -230,7 +200,6 @@ int MemoryOperator::processRead()
 			++it;
 		}
 	}
-	m_mutex.unlock();
 	return 0;
 }
 
@@ -264,85 +233,16 @@ long long MemoryOperator::readAddress(unsigned long address, char type)
 	}
 }
 
-unsigned int MemoryOperator::readPointer(unsigned int address, unsigned int offset)
-{
-	char *data;
-	unsigned int length;
-	if (m_ccapi->readMemory(address, 4) == 0)
-	{
-		data = m_ccapi->getData(length);
-		long tmp = BSWAP32(*(long*)&data[0]);
-		tmp += offset;
-		return tmp;
-	}
-	return 0;
-}
-int MemoryOperator::processPointers()
-{
-	unsigned int length;
-	unsigned int cAddress, cOffset;
-	char *data;
-	m_mutex.lock();
-	for (PointerReadItemList::iterator it = pointerReadOperationList.begin(); it != pointerReadOperationList.end();) //read the map of pointers
-	{
-		if (m_exit) { m_mutex.unlock(); return 1; }
-		for (PointerReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();) //read the list of pointers with this base address probably just 1
-		{
-			cAddress = (*setIT)->pointer->getBase();
-			bool foundNull = false;
-			for (auto addressOffsetIT = (*setIT)->pointer->pointers.begin(); addressOffsetIT != (*setIT)->pointer->pointers.end(); ++addressOffsetIT) //read each offset of the pointer
-			{
-				if (cAddress == 0)
-				{
-					foundNull = true;
-					break;
-				}
-				addressOffsetIT->address = cAddress; 
-				cAddress = readPointer(cAddress, addressOffsetIT->offset);
-			}
-			if (foundNull)
-				(*setIT)->pointer->m_address.address = 0;
-			else
-			{
-				(*setIT)->pointer->m_address.address = cAddress;
-				(*setIT)->pointer->m_address.value = readAddress(cAddress, SEARCH_VALUE_TYPE_4BYTE);
-			}
-
-			(*setIT)->pointer->update();
-
-			if ((*setIT)->keep == true)
-			{
-				++setIT;
-			}
-			else
-			{
-				setIT = it->second.erase(setIT);
-			}
-		}
-		if (it->second.size() == 0)
-		{
-			it = pointerReadOperationList.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
-	m_mutex.unlock();
-	return 0;
-}
-
-
 int MemoryOperator::processChunkRead()
 {
 	unsigned int length;
 	char *data;
 	if (memoryChunkReadOperationList.size() == 0)
 		return 0;
-	m_mutex.lock();
+	lock_guard<mutex> lock(m_mutex);
 	for (MemoryChunkReadItemList::iterator it = memoryChunkReadOperationList.begin(); it != memoryChunkReadOperationList.end();)
 	{
-		if (m_exit) { m_mutex.unlock(); return 1; }
+		if (m_exit) { return 1; }
 		for (MemoryChunkReadSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
 		{
 			length = (*setIT)->length;
@@ -369,49 +269,75 @@ int MemoryOperator::processChunkRead()
 			++it;
 		}
 	}
-	m_mutex.unlock();
 	return 0;
 }
 
 
 int MemoryOperator::processWrite()
 {
-	unsigned int length;
-	char loc[20];
-	int res;
-	m_mutex.lock();
+	lock_guard<mutex> lock(m_mutex);
 	for (MemoryWriteItemList::iterator it = memoryWriteOperationList.begin(); it != memoryWriteOperationList.end();)
 	{
-		if (m_exit) { m_mutex.unlock(); return 1; }
-		length = getLength(it->second->type);
-		memcpy(loc, (char*)&it->second->value, 8);
-
-		if (it->second->type == SEARCH_VALUE_TYPE_2BYTE)
+		if (m_exit) { return 1; }
+		for (MemoryWriteSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
 		{
-			short tmp = BSWAP16(*(short*)&loc);
-			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
+			if ((*setIT)->item->isPointer() && (*setIT)->item->pointer->resolved != 0) //we are writing a pointer
+				writeAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type, (*setIT)->value);
+			else
+				writeAddress((*setIT)->item->address, (*setIT)->item->type, (*setIT)->value);
+			if ((*setIT)->freeze == true)
+			{
+				++setIT;
+			}
+			else
+			{
+				setIT = it->second.erase(setIT);
+			}
 		}
-		else if (it->second->type == SEARCH_VALUE_TYPE_4BYTE)
+		if (it->second.size() == 0)
 		{
-			long tmp = BSWAP32(*(long*)&loc);
-			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
-		}
-		else if (it->second->type == SEARCH_VALUE_TYPE_FLOAT)
-		{
-			unsigned long tmp = BSWAP32(*(unsigned long*)&loc);
-			res = m_ccapi->writeMemory(it->second->address, length, (char*)&tmp);
-		}
-		else
-		{
-			res = m_ccapi->writeMemory(it->second->address, length, loc);
-		}
-		if (it->second->freeze)
-			++it;
-		else
 			it = memoryWriteOperationList.erase(it);
+		}
+		else
+		{
+			++it;
+		}
 	}
-	m_mutex.unlock();
 	return 0;
+}
+
+
+void MemoryOperator::writeAddress(unsigned long address, char type, long long value)
+{
+	char loc[20];
+	unsigned int length = getLength(type);
+	int res = CCAPI_ERROR_NO_ERROR;
+	memcpy(loc, (char*)&value, 8);
+
+	if (type == SEARCH_VALUE_TYPE_2BYTE)
+	{
+		short tmp = BSWAP16(*(short*)&loc);
+		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
+	}
+	else if (type == SEARCH_VALUE_TYPE_4BYTE)
+	{
+		long tmp = BSWAP32(*(long*)&loc);
+		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
+	}
+	else if (type == SEARCH_VALUE_TYPE_FLOAT)
+	{
+		unsigned long tmp = BSWAP32(*(unsigned long*)&loc);
+		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
+	}
+	else
+	{
+		res = m_ccapi->writeMemory(address, length, loc);
+	}
+}
+
+void MemoryOperator::removeChunkReadOperation(unsigned long address)
+{
+	memoryChunkReadOperationList.erase(address);
 }
 
 int MemoryOperator::connect()

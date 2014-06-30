@@ -25,9 +25,11 @@ class PointerScannerWindow : public rkWindow
 public:
 	PointerScannerWindow(int X, int Y, int W, int H, const char *l=0) : rkWindow(X,Y,W,H,l) 
 	{
+		m_codeTable = 0;
 	}
 	PointerScannerWindow(int W, int H, const char *l=0) : rkWindow(W,H,l) 
 	{
+		m_codeTable = 0;
 	}
 
 	void reset();

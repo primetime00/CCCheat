@@ -151,7 +151,8 @@ switch (type)
     code {if (uiInstance->ui_searchType->isFuzzy())
 {
 	uiInstance->ui_valueInputGroup->deactivate();
-	uiInstance->ui_valueType->activate();
+	if (!uiInstance->m_inProgress)
+  		uiInstance->ui_valueType->activate();
 }
 else if (uiInstance->ui_searchType->isPointer())
 {
@@ -194,7 +195,8 @@ else //i have no value entered and not fuzzy
 		uiInstance->ui_buttonNewScan->deactivate();
 		uiInstance->ui_buttonNextScan->deactivate();		
 	}
-}} {}
+}} {selected
+    }
   }
   Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
@@ -428,15 +430,14 @@ case RESULT_TABLE_DELETE:
     code {uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
 uiInstance->m_valueviewer->show();} {}
   }
-  Function {rkCheatUI()} {open
-  } {
+  Function {rkCheatUI()} {} {
     code {uiInstance = this;
 m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat
-      xywh {148 119 1379 833} type Double align 80
-      class rkWindow visible
+      xywh {-32000 -32000 1379 833} type Double align 80 hide
+      class rkWindow
     } {
       Fl_Group searchGroup {
         label Search open
@@ -718,10 +719,10 @@ m_inProgress = false;} {}
       class InfoWindow
     } {}
     Fl_Window m_pointerScannerWindow {
-      label {Pointer Scanner} open selected
-      xywh {301 233 557 534} type Double
+      label {Pointer Scanner}
+      xywh {-32000 -32000 557 534} type Double hide
       code0 {m_pointerScannerWindow->reset();}
-      class PointerScannerWindow modal visible
+      class PointerScannerWindow modal
     } {
       Fl_Group m_psLoadNewGroup {open
         xywh {23 60 520 365} hide

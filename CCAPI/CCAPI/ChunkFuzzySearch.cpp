@@ -9,16 +9,16 @@ using namespace std;
 #define DO_COMPARE_FLOAT(val1, val2, loc, base)\
 	if (testFunction_Float(*((float*)val1), *((float*)val2)))\
 	{\
-		(*resultRef)[base].push_back(AddressItem(loc, *((unsigned long*)val1), TEST_SIGN_UNKNOWN));\
+		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, *((unsigned long*)val1), TEST_SIGN_UNKNOWN));\
 	}
 
 #define DO_COMPARE_FLOAT_NEXT(section, val, item)\
 	signage = TEST_SIGN_NULL;\
-	if (testFunction_Float(*((float*)val), *((float*)&(item.value))))\
+	if (testFunction_Float(*((float*)val), *((float*)&(item->value))))\
 	{\
 		signage = TEST_SIGN_UNKNOWN;\
-		(item.value) = *((unsigned long*)val);\
-		(item.sign) = signage;\
+		(item->value) = *((unsigned long*)val);\
+		(item->sign) = signage;\
 	}
 
 
@@ -30,25 +30,25 @@ using namespace std;
 		signage |= TEST_SIGN_NO;\
 	if (signage != TEST_SIGN_NULL)\
 	{\
-		(*resultRef)[base].push_back(AddressItem(loc, (_type) *((_type*)val1), signage));\
+		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, (_type) *((_type*)val1), signage));\
 	}
 
 #define DO_COMPARE_NEXT(_type, section, val, item)\
 	signage = TEST_SIGN_NULL;\
-	if ((item.sign) & TEST_SIGN_YES)\
+	if ((item->sign) & TEST_SIGN_YES)\
 	{\
-		if (CMP(_type, val, (_type*)&(item.value), (item.sign)))\
+		if (CMP(_type, val, (_type*)&(item->value), (item->sign)))\
 			signage |= TEST_SIGN_YES;\
 	}\
-	if ((item.sign) & TEST_SIGN_NO)\
+	if ((item->sign) & TEST_SIGN_NO)\
 	{\
-		if (CMP_UNSIGNED(_type, val, (_type*)&(item.value), (item.sign)))\
+		if (CMP_UNSIGNED(_type, val, (_type*)&(item->value), (item->sign)))\
 			signage |= TEST_SIGN_NO;\
 	}\
 	if (signage != TEST_SIGN_NULL)\
 	{\
-		(item.value) = (_type) *((_type*)val);\
-		(item.sign) = signage;\
+		(item->value) = (_type) *((_type*)val);\
+		(item->sign) = signage;\
 	}
 
 
@@ -244,7 +244,7 @@ void ChunkFuzzySearch::digest(char *newMemory, char *prevMemory, unsigned long l
 	prevAddress = address;
 }
 
-bool ChunkFuzzySearch::digestValue(char* memory, AddressItem &item, unsigned long section)
+bool ChunkFuzzySearch::digestValue(char* memory, AddressItem item, unsigned long section)
 {
 	char signage;
 	if (valueByteLength == 1)

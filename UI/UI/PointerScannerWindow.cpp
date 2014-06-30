@@ -112,12 +112,12 @@ void PointerScannerWindow::StartNewScanCB(Fl_Widget *w)
 
 void PointerScannerWindow::AddPointerToListCB(Fl_Widget *w)
 {
-	PointerOffsets po;
-	po.push_back(1);
-	po.push_back(2);
-	PointerItem b = uiInstance->m_peWindow->popup(0x5000, po);
-	if (b == nullptr || m_codeTable == 0)
+	AddressItem select = uiInstance->m_psNewScanTable->getSelectedPointer();
+	if (select != nullptr)
+		select = uiInstance->m_peWindow->popup(select);
+	if (select == nullptr || m_codeTable == 0)
 		return;
+	m_codeTable->addEntry("Pointer", select);
 
 }
 
@@ -253,7 +253,7 @@ void PointerScannerWindow::reset()
 		uiInstance->m_psOffset->value("");
 		uiInstance->m_psNewDumpProgress->hide();
 		setScanState(PS_STATE_NEWLOAD);
-		m_codeTable = 0;
+		uiInstance->m_psAddPointerButton->deactivate();
 }
 
 void PointerScannerWindow::show()
