@@ -71,9 +71,7 @@ public:
 				return (long) value;
 			if (newType == SEARCH_VALUE_TYPE_FLOAT)
 			{
-				unsigned long *pt = (unsigned long*)&value;
-				return 0;
-				//return *(unsigned long*)&value;
+				return *(unsigned long*)&value;
 			}
 			break;
 		case SEARCH_VALUE_TYPE_2BYTE:
