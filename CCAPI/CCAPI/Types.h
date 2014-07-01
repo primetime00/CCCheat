@@ -5,6 +5,7 @@ using namespace std;
 #include <memory>
 #include <list>
 #include <iostream>
+#include <memory>
 
 struct AddressOffset  //this is a pointer helper that contains an address and an offset
 {

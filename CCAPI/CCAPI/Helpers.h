@@ -70,7 +70,11 @@ public:
 			if (newType == SEARCH_VALUE_TYPE_4BYTE)
 				return (long) value;
 			if (newType == SEARCH_VALUE_TYPE_FLOAT)
-				return *(unsigned long*)&value;
+			{
+				unsigned long *pt = (unsigned long*)&value;
+				return 0;
+				//return *(unsigned long*)&value;
+			}
 			break;
 		case SEARCH_VALUE_TYPE_2BYTE:
 			if (newType == SEARCH_VALUE_TYPE_1BYTE) //2 to 1

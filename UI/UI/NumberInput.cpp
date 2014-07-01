@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <FL/Fl.H>
+#include <climits>
 #include "Common.h"
 
 
@@ -9,8 +10,8 @@ using namespace std;
 
 NumberInput::NumberInput(int x, int y, int w, int h, const char *l) : Fl_Input(x,y,w,h,l)
 {
-	m_max = (1 << 31) - 1;
-	m_min = ((1 << 31) - 1) * -1;
+	m_max = LONG_MAX;
+	m_min = LONG_MIN;
 }
 
 int NumberInput::handle(int e)

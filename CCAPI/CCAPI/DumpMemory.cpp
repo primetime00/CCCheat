@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <iostream>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 
 using namespace std;
