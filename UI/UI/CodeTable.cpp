@@ -466,7 +466,10 @@ bool CodeTable::loadData(string filename)
 	double v = stod(string(version));
 	int major = (int) v;
 	int minor = (int)((v*100)) % 100;
-	if (major != 1 || minor < 10)
+	v = stod(string(CCCHEAT_VERSION));
+	int this_major = (int) v;
+	int this_minor = (int)((v*100)) % 100;
+	if (major != 1 || minor < 10 || minor > this_minor)
 		return false;
 	while (true) 
 	{
@@ -563,7 +566,7 @@ void CodeTable::onCodeTypeChanged(rkCheat_Code *item, int type)
 	float float_val;
 	int oldtype = item->type;
 	item->type = type;
-	int_val = Helpers::convertValueType(item->m_address->value, type, oldtype, item->m_address->sign);
+	int_val = Helpers::convertValueType(item->m_address->value, type, oldtype, item->m_address->sign ? true : false);
 	Variant variant(int_val);
 	if (type != SEARCH_VALUE_TYPE_FLOAT)
 	{

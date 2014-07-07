@@ -154,7 +154,7 @@ int DumpTask::doDump()
 	unsigned long rounds, remains, bufferPos;
 	if (m_buffer)
 		delete [] m_buffer;
-	m_buffer = new char[m_length];
+	m_buffer = new char[(unsigned long)m_length];
 	char *data;
 	unsigned int readSize;
 	calculateReads(RANGE_INTERVAL, rounds, remains);
@@ -167,7 +167,7 @@ int DumpTask::doDump()
 			m_buffer = 0;
 			return TASK_ERROR_CANCEL;
 		}
-		if (m_ccapi->readMemory(m_offset+(i*RANGE_INTERVAL), RANGE_INTERVAL) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+(i*RANGE_INTERVAL)), RANGE_INTERVAL) == 0)
 		{
 			data = m_ccapi->getData(readSize);
 			memcpy(&m_buffer[bufferPos], data, readSize);
@@ -177,7 +177,7 @@ int DumpTask::doDump()
 	}
 	if (remains > 0)
 	{
-		if (m_ccapi->readMemory(m_offset+m_length-remains, remains) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+m_length-remains), remains) == 0)
 		{
 			data = m_ccapi->getData(readSize);
 			memcpy(&m_buffer[bufferPos], data, readSize);

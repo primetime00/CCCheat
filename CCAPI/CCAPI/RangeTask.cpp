@@ -70,7 +70,7 @@ void RangeTask::run()
 	{
 		if (m_cancel)
 			return;
-		int check = m_ccapi->validateMemory(i);
+		int check = m_ccapi->validateMemory((unsigned long)i);
 		if (check)
 		{
 			if (!m_lastGoodCheck)

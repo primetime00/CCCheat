@@ -3,6 +3,7 @@
 
 #if defined(_WIN32) || defined(WIN32)
 #include <winsock.h>
+typedef int ssize_t;
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

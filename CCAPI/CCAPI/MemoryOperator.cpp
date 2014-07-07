@@ -163,7 +163,7 @@ int MemoryOperator::processRead()
 				for (auto offsetIT = po->begin(); offsetIT != po->end(); ++offsetIT)
 				{
 					offsetIT->address = cAddress;
-					cAddress = readAddress(cAddress, SEARCH_VALUE_TYPE_4BYTE);
+					cAddress = (unsigned long)readAddress(cAddress, SEARCH_VALUE_TYPE_4BYTE);
 					if (cAddress > 0)
 						cAddress += offsetIT->offset;
 					else
@@ -174,12 +174,12 @@ int MemoryOperator::processRead()
 				else
 				{
 					(*setIT)->item->pointer->resolved = cAddress;
-					(*setIT)->item->value = readAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type);
+					(*setIT)->item->value = (unsigned long)readAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type);
 				}
 				(*setIT)->item->pointer->update();
 			}
 			else
-				(*setIT)->item->value = readAddress((*setIT)->item->address, (*setIT)->item->type);
+				(*setIT)->item->value = (unsigned long)readAddress((*setIT)->item->address, (*setIT)->item->type);
 			if ((*setIT)->keep == true)
 			{
 				++setIT;

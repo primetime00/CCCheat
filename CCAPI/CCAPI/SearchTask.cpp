@@ -225,12 +225,12 @@ int SearchTask::initialFuzzySearch() //THIS WILL GENERATE A DUMP FILE!
 			dumpFile.close();
 			return TASK_ERROR_CANCEL;
 		}
-		dumpDataToFile(dumpFile, m_offset+(i*RANGE_INTERVAL), RANGE_INTERVAL);
+		dumpDataToFile(dumpFile, (unsigned long)(m_offset+(i*RANGE_INTERVAL)), RANGE_INTERVAL);
 		progressCallback(this, i*RANGE_INTERVAL, m_length);
 	}
 	if (remains > 0)
 	{
-		dumpDataToFile(dumpFile, m_offset+m_length-remains, remains);
+		dumpDataToFile(dumpFile, (unsigned long)(m_offset+m_length-remains), remains);
 	}
 	dumpFile.close();
 	m_taskState = Task::COMPLETE;
@@ -274,19 +274,19 @@ int SearchTask::initialValueSearch() //this will generate a result file
 	{
 		if (m_cancel)
 			return TASK_ERROR_CANCEL;
-		if (m_ccapi->readMemory(m_offset+(i*RANGE_INTERVAL), RANGE_INTERVAL) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+(i*RANGE_INTERVAL)), RANGE_INTERVAL) == 0)
 		{
 			data = m_ccapi->getData(readSize);
-			m_valueSearcher.digest(data, readSize, m_offset+(i*RANGE_INTERVAL));
+			m_valueSearcher.digest(data, readSize, (unsigned long)(m_offset+(i*RANGE_INTERVAL)));
 			progressCallback(this, i*RANGE_INTERVAL, m_length);
 		}
 	}
 	if (remains > 0)
 	{
-		if (m_ccapi->readMemory(m_offset+m_length-remains, remains) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+m_length-remains), remains) == 0)
 		{
 			data = m_ccapi->getData(readSize);
-			m_valueSearcher.digest(data, readSize, m_offset+m_length-remains);
+			m_valueSearcher.digest(data, readSize, (unsigned long)(m_offset+m_length-remains));
 		}
 	}
 	//else if (rounds > 0)
@@ -342,21 +342,21 @@ int SearchTask::fuzzySearchDumpFile(ifstream &resFile)
 			resFile.close();
 			return TASK_ERROR_CANCEL;
 		}
-		if (m_ccapi->readMemory(m_offset+(i*RANGE_INTERVAL), RANGE_INTERVAL) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+(i*RANGE_INTERVAL)), RANGE_INTERVAL) == 0)
 		{
 			memData = m_ccapi->getData(length);
 			resFile.read(resData, RANGE_INTERVAL);
-			m_fuzzySearcher.digest(memData, resData, RANGE_INTERVAL, m_offset+(i*RANGE_INTERVAL));
+			m_fuzzySearcher.digest(memData, resData, RANGE_INTERVAL, (unsigned long)(m_offset+(i*RANGE_INTERVAL)));
 		}
 		progressCallback(this, i*RANGE_INTERVAL, m_length);
 	}
 	if (remains > 0)
 	{
-		if (m_ccapi->readMemory(m_offset+m_length-remains, remains) == 0)
+		if (m_ccapi->readMemory((unsigned long)(m_offset+m_length-remains), remains) == 0)
 		{
 			memData = m_ccapi->getData(length);
 			resFile.read(resData, length);
-			m_fuzzySearcher.digest(memData, resData, length, m_offset+m_length-remains);
+			m_fuzzySearcher.digest(memData, resData, length, (unsigned long)(m_offset+m_length-remains));
 		}
 	}
 	resFile.close();

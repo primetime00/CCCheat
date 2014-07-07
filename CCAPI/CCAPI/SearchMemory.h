@@ -30,7 +30,7 @@ public:
 
 	char getSearchType() { return m_searchType; }
 	char getSearchValueType() { return m_searchValueType; }
-	unsigned long getSearchValue() { return m_searchValue; }
+	long long getSearchValue() { return m_searchValue; }
 	vector<ResultList> *getResults() { return &m_threadResults; }
 	bool isDump() { return m_dump; }
 	bool isRunning() { return m_running; }

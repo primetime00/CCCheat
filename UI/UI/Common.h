@@ -13,7 +13,7 @@
 #include <iostream>
 #include <memory>
 
-#define CCCHEAT_VERSION "1.10"
+#define CCCHEAT_VERSION "1.11"
 
 #define SEARCH_STOPPED_CANCEL 0x00
 #define SEARCH_STOPPED_PROPER 0x01

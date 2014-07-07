@@ -159,7 +159,7 @@ void PointerEditorWindow::reset()
 void PointerEditorWindow::OnTypeChangedCB(Fl_Widget *w)
 {
 	char type = uiInstance->m_peValueType->getValue();
-	if (currentPointer != nullptr && currentPointer->type != type);
+	if (currentPointer != nullptr && currentPointer->type != type)
 	{
 		uiInstance->m_peResolvedValue->setLiteral(type != SEARCH_VALUE_TYPE_FLOAT);
 		long long nval = Helpers::convert4BytesToType(currentPointer->value, type);

@@ -69,28 +69,29 @@ int CCAPI::receiveData(void)
 {
 	const unsigned int bufferSize = 4096;
 	ssize_t numOfBytes = 0;
-	unsigned int i, size, command;
+	int i;
+	unsigned int size, command;
 
 	numOfBytes = recv(sock, dataBuffer, bufferSize, 0);
 	if (numOfBytes == -1) //we've disconnected
 		return -1;
-	for (i=0; i<numOfBytes; i++) { 
+	for (i=0; i<(int)numOfBytes; i++) { 
 		dataBuffer[i] = _conv8(dataBuffer[i]); 
 	}
 	while (numOfBytes < 16)
 	{
 		int _numOfBytes = recv(sock, &dataBuffer[numOfBytes], bufferSize, 0);
 		if (_numOfBytes == -1) return -1;//now we really disconnected!
-		for (i=numOfBytes; i<numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
+		for (i=(int)numOfBytes; i<(int)numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
 		numOfBytes += _numOfBytes;
 	}
 	size = getDataSize(dataBuffer);
 	command = getDataCommand(dataBuffer);
-	while (numOfBytes < size)
+	while ((unsigned int)numOfBytes < size)
 	{
 		int _numOfBytes = recv(sock, &dataBuffer[numOfBytes], bufferSize, 0);
 		if (_numOfBytes == -1) return -1;//now we really disconnected!
-		for (i=numOfBytes; i<numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
+		for (i=(int)numOfBytes; i<(int)numOfBytes+_numOfBytes; i++) { dataBuffer[i] = _conv8(dataBuffer[i]); }
 		numOfBytes += _numOfBytes;
 	}
 	switch (command)

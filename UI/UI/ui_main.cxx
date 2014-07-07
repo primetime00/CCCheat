@@ -599,7 +599,7 @@ void rkCheatUI::ConnectButtonCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::CanConnectCB(Fl_Widget *w, void *data) {
-  bool valid = data;
+  bool valid = data ? true : false;
     if (valid && uiInstance)
   	  uiInstance->ui_connectButton->activate();
     else if (!valid && uiInstance)
@@ -823,10 +823,7 @@ rkCheatUI::rkCheatUI() {
       ui_codeGroup->end();
     } // Fl_Group* ui_codeGroup
     { ui_connectButton = new Fl_Light_Button(20, 20, 100, 30, "Connect");
-      ui_connectButton->type(1);
-      ui_connectButton->selection_color(FL_YELLOW);
       ui_connectButton->callback((Fl_Callback*)ConnectButtonCB);
-      ui_connectButton->align(Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE));
       ui_connectButton->deactivate();
     } // Fl_Light_Button* ui_connectButton
     { ui_ipInput = new IPInput(135, 20, 255, 30);

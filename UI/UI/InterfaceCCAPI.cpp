@@ -3,6 +3,7 @@
 #include "FL/Fl.H"
 #include <sstream>
 
+#pragma warning(disable:4503)
 InterfaceCCAPI *InterfaceCCAPI::instance = 0;
 
 
@@ -152,7 +153,7 @@ void InterfaceCCAPI::_processAddresses()
 	m_ui->clearRanges();
 	for ( RangeList::iterator it = ranges.begin(); it != ranges.end(); ++it)
 	{
-		m_ui->addRange(it->first(), it->second());
+		m_ui->addRange((unsigned long)it->first(), (unsigned long)it->second());
 	}
 }
 

@@ -19,6 +19,10 @@ using namespace std;
 #define BSWAP16(x) __bswap_16(x)
 #endif
 
+#if defined(_WIN32) || defined(WIN32)
+#define __attribute__(x)
+#endif
+
 
 #define TEST_TYPE_FIND_RANGE	0x00
 #define TEST_TYPE_FIND_SEARCH	0x01

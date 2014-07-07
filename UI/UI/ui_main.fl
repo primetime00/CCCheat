@@ -146,7 +146,7 @@ switch (type)
   		break;		
 }} {}
   }
-  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
     code {if (uiInstance->ui_searchType->isFuzzy())
 {
@@ -195,10 +195,9 @@ else //i have no value entered and not fuzzy
 		uiInstance->ui_buttonNewScan->deactivate();
 		uiInstance->ui_buttonNextScan->deactivate();		
 	}
-}} {selected
-    }
+}} {}
   }
-  Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  Function {SearchValueChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
     code {if (uiInstance->canStartScan()) //i have a value
   {
@@ -237,7 +236,7 @@ uiInstance->ui_valueInput->setHex(value == 1);} {}
     code {int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
 uiInstance->ui_valueInput->setValueType(value);} {}
   }
-  Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  Function {StartSearchButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
     code {if (uiInstance->ui_searchType->isPointer())
 {
@@ -417,13 +416,14 @@ case RESULT_TABLE_DELETE:
   	  }
       }} {}
   }
-  Function {CanConnectCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {CanConnectCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
-    code {bool valid = data;
+    code {bool valid = data ? true : false;
   if (valid && uiInstance)
 	  uiInstance->ui_connectButton->activate();
   else if (!valid && uiInstance)
-	  uiInstance->ui_connectButton->deactivate();} {}
+	  uiInstance->ui_connectButton->deactivate();} {selected
+    }
   }
   Function {ViewerCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
@@ -655,7 +655,7 @@ m_inProgress = false;} {}
       Fl_Light_Button ui_connectButton {
         label Connect
         callback ConnectButtonCB
-        xywh {20 20 100 30} type Toggle selection_color 95 align 20 deactivate
+        xywh {20 20 100 30} deactivate
       }
       Fl_Group ui_ipInput {
         callback CanConnectCB open

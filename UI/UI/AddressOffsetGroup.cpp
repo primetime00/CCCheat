@@ -11,14 +11,14 @@ AddressOffsetGroup::AddressOffsetGroup(int X, int Y, int W, int H, const char *l
 	const int labelSpace = 50;
 	int addressX = X+pad+labelSpace;
 	float addresBoxWidth = (W - pad*2 - space - labelSpace*2) * 0.6f;
-	int offsetX = addressX + addresBoxWidth + space + labelSpace;
+	int offsetX = (int)(addressX + addresBoxWidth + space + labelSpace);
 	float offsetBoxWidth = (W - pad*2 - space - labelSpace*2) * 0.4f;
 	const int regHeight = 25;
 	const int regY = Y+(int)((H - regHeight)/2.0f);
 
 	begin();
-	m_address = new ValueInput(addressX, regY, addresBoxWidth, regHeight, "Address:");
-	m_offset = new ValueInput(offsetX, regY, offsetBoxWidth, regHeight, "Offset:");
+	m_address = new ValueInput(addressX, regY, (int)addresBoxWidth, regHeight, "Address:");
+	m_offset = new ValueInput(offsetX, regY, (int)offsetBoxWidth, regHeight, "Offset:");
 	end();
 	m_address->setHex(true);
 	m_offset->setHex(true);

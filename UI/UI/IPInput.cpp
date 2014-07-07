@@ -8,7 +8,7 @@ using namespace std;
 IPInput::IPInput(int X, int Y, int W, int H, const char *l) : Fl_Group(X,Y,W,H,l)
 {
 	const int gap = 5;
-	const int bWidth = (W/4.0f) - (gap*3);
+	const int bWidth = (int)((W/4.0f) - (gap*3));
 	const int inc = bWidth + gap;
 	begin();
 	inp_box[0] = new NumberInput(X,Y,bWidth,H,0); X+=inc;

@@ -82,7 +82,7 @@ class AddressObj
 {
 public:
 	unsigned long address; //this is our base address
-	unsigned long value; //this is the memory from either our base address or our resolved address
+	long long value; //this is the memory from either our base address or our resolved address
 	char sign; //signed or unsigned
 	char type; //1-4byte, float
 	PointerItem pointer; //our pointer info if we are using one

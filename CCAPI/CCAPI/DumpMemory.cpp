@@ -211,17 +211,17 @@ DumpData DumpMemory::consolideDump()
 	unsigned long totalSize = 0;
 	unsigned long pos=0;
 	for (int i = 0; i<m_threadCount; i++)
-		totalSize += m_threadList.at(i)->getLength();
+		totalSize += (unsigned long)m_threadList.at(i)->getLength();
 	DumpData dd = DumpData(new _DumpData);
 
 	dd->data = new char[totalSize];
 	for (int i = 0; i<m_threadCount; i++)
 	{
 		char *b = m_threadList.at(i)->getBuffer();
-		memcpy(&dd->data[pos], b, m_threadList.at(i)->getLength());
-		pos+=m_threadList.at(i)->getLength();
+		memcpy(&dd->data[pos], b, (unsigned long)m_threadList.at(i)->getLength());
+		pos+=(unsigned long)m_threadList.at(i)->getLength();
 	}
-	dd->header.begin=m_offset;
-	dd->header.end=m_offset+m_length;
+	dd->header.begin=(unsigned long)m_offset;
+	dd->header.end=(unsigned long)(m_offset+m_length);
 	return dd;
 }
