@@ -3,7 +3,10 @@
 #include "FL/Fl.H"
 #include <sstream>
 
+#if defined(_WIN32) || defined(WIN32)
 #pragma warning(disable:4503)
+#endif
+
 InterfaceCCAPI *InterfaceCCAPI::instance = 0;
 
 

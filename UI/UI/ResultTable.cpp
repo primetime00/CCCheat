@@ -155,16 +155,16 @@ void ResultTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y
 					else
 						sprintf(s, "%lu", (unsigned long)(data[ROW].item->value)); 
 					break;
-				default: sprintf(s,"%ld", (data[ROW].item->value)); break;
+				default: sprintf(s,"%lld", (data[ROW].item->value)); break;
 				} break;
 			case 2: 
 				switch (resultType)
 				{
-				case SEARCH_VALUE_TYPE_4BYTE: sprintf(s,"%lX", *((unsigned long*)&(data[ROW].item->value))); break;
-				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%lX", *((unsigned long*)&(data[ROW].item->value))); break;
+				case SEARCH_VALUE_TYPE_4BYTE: sprintf(s,"%lX", (unsigned long) variant.asLong()); break;
+				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%lX", (unsigned long) variant.asLong()); break;
 				case SEARCH_VALUE_TYPE_2BYTE: sprintf(s,"%X", variant.asShort()); break;
 				case SEARCH_VALUE_TYPE_1BYTE: sprintf(s,"%X", *((unsigned char*)&(data[ROW].item->value))); break;
-				default: sprintf(s,"%ld", (data[ROW].item->value)); break;
+				default: sprintf(s,"%lld", (data[ROW].item->value)); break;
 				} break;
 			default: break;
 			}

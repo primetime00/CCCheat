@@ -467,7 +467,6 @@ bool CodeTable::loadData(string filename)
 	int major = (int) v;
 	int minor = (int)((v*100)) % 100;
 	v = stod(string(CCCHEAT_VERSION));
-	int this_major = (int) v;
 	int this_minor = (int)((v*100)) % 100;
 	if (major != 1 || minor < 10 || minor > this_minor)
 		return false;
@@ -547,7 +546,7 @@ void CodeTable::onAddressChanged(rkCheat_Code *item, unsigned long value)
 
 void CodeTable::onValueChanged(rkCheat_Code *item, long long value)
 {
-	if (item->m_address->value != (unsigned long)value)
+	if (item->m_address->value != (long long)value)
 	{
 		item->m_address->value = value;
 		if (value < 0)
