@@ -18,7 +18,6 @@ void RangeTask::run()
 {
 	m_pair = RangePair(-1,-1);//make_pair(-1,-1);
 	m_firstValidOffset = -1;
-	unsigned long long currentLength = m_length;
 	m_status = "CONNECT";
 	m_ccapi = make_shared<CCAPI>(m_ip);
 	m_ccapi->setHostVersion(m_ccapiHostVersion);

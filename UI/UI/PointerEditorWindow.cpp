@@ -83,7 +83,7 @@ void PointerEditorWindow::refreshTimeout()
 {
 	if (currentPointer != nullptr && currentPointer->isPointer() && currentPointer->pointer->updateCount != pointerUpdateCounter)
 	{
-		int i=0;
+		unsigned int i=0;
 		Fl::remove_timeout(refreshTimeout, this);
 		pointerUpdateCounter = currentPointer->pointer->updateCount;
 		for (auto it = currentPointer->pointer->pointers.begin(); it != currentPointer->pointer->pointers.end(); ++it, ++i)
@@ -118,7 +118,7 @@ void PointerEditorWindow::readPointers()
 	PointerOffsets po;
 	address = uiInstance->m_peAddressSet0->getAddress();
 	po.push_back(uiInstance->m_peAddressSet0->getOffset());
-	for (int i=1; i<groups.size(); ++i)
+	for (unsigned int i=1; i<groups.size(); ++i)
 	{
 		if (!groups[i]->visible())
 			break;
@@ -200,7 +200,7 @@ void PointerEditorWindow::hide()
 
 void PointerEditorWindow::setPointer(unsigned long address, PointerOffsets offsets)
 {
-	int i=0;
+	unsigned int i=0;
 	for (auto it = offsets.begin(); it!=offsets.end(); ++it, ++i)
 	{
 		if (i == 0)

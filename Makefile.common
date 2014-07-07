@@ -8,7 +8,8 @@ LIBS := -L$(TOP_DIR)/FLTK -L$(CCAPI_DIR)/CCAPI/lib -lccapi -lfltk -lGLU -lXrandr
 
 CC = g++
 DEBUG = -O3
-CFLAGS = -Wall -std=c++11 $(DEBUG) $(INCLUDES) -Wno-sign-compare -Wno-int-to-pointer-cast -Wno-parentheses -Wno-format
+CFLAGS = -Wall -std=c++11 $(DEBUG) $(INCLUDES)
+#CFLAGS = -Wall -std=c++11 $(DEBUG) $(INCLUDES) -Wno-sign-compare -Wno-int-to-pointer-cast -Wno-parentheses -Wno-format
 #LFLAGS = -Wall $(DEBUG)
 #LFLAGS = -Wall $(DEBUG) $(LIBS)
 #INCLUDES = -I. -I../../CCAPI -I../../../../fltk/fltk

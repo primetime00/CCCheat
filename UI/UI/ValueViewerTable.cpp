@@ -78,7 +78,6 @@ bool ValueViewerTable::hasSelection()
 
 void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, int W, int H){
     static char s[40];
-	int x,y,w,h;
     switch ( context ) {
       case CONTEXT_STARTPAGE:                   // before page is drawn..
         fl_font(FL_HELVETICA, 14);              // set the font for our drawing operations
@@ -122,7 +121,7 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 	    fl_push_clip(X, Y, W, H);
 	    {
 	        // BG COLOR
-		if (ROW == (m_focusAddress - m_startAddress) )
+		if ((unsigned)ROW == (m_focusAddress - m_startAddress) )
 			fl_color( row_selected(ROW) ? selection_color() : FL_GREEN);
 		else
 			fl_color( row_selected(ROW) ? selection_color() : FL_WHITE);
@@ -132,16 +131,18 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 		fl_color(FL_BLACK);
 		if ((unsigned int)ROW < DEFAULT_ROWS)
 		{
-			unsigned long tmpLong = BSWAP32(*(unsigned long*)(&m_memory[ROW]));
-			unsigned short tmpShort = BSWAP16(*(unsigned short*)(&m_memory[ROW]));
+			Variant variant;
+			unsigned long tmpLong = BSWAP32((unsigned long)variant.convertToLong((char*)(&m_memory[ROW])));
+			unsigned short tmpShort = BSWAP16((unsigned short)variant.convertToShort((char*)(&m_memory[ROW])));
+			Variant var2((long)tmpLong);
 			switch(COL)
 			{
-			case ADDRESS_COL: sprintf(s,"0x%08X",m_startAddress+ROW); break;
+			case ADDRESS_COL: sprintf(s,"0x%08lX",m_startAddress+ROW); break;
 			case VALUE_COL: 
 				switch (m_selectedType)
 				{
 				case SEARCH_VALUE_TYPE_FLOAT: 
-					sprintf(s,"%f", *(float*)(&tmpLong) ); break;
+					sprintf(s,"%f", var2.asFloat() ); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
 					if (m_signed)
 						sprintf(s,"%hd", (char)m_memory[ROW]); 
@@ -156,16 +157,16 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 					 break;					
 				default:
 					if (m_signed) 
-						sprintf(s,"%d", (long) tmpLong); 
+						sprintf(s,"%ld", (long) tmpLong); 
 					else
-						sprintf(s,"%u", (unsigned long) tmpLong); 
+						sprintf(s,"%lu", (unsigned long) tmpLong); 
 					break;
 				} break;
 			case HEX_COL: 
 				switch (m_selectedType)
 				{
 				case SEARCH_VALUE_TYPE_FLOAT: 
-					sprintf(s,"%X", tmpLong); break;
+					sprintf(s,"%lX", tmpLong); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
 						 sprintf(s,"%X", (unsigned char)m_memory[ROW]); 
 						 break;					
@@ -173,7 +174,7 @@ void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, 
 						 sprintf(s,"%X", tmpShort); 
 						 break;					
 				default:
-						 sprintf(s,"%X", tmpLong); 
+						 sprintf(s,"%lX", tmpLong); 
 						 break;
 				} break;
 			default: break;

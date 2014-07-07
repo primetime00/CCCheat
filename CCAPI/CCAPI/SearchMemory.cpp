@@ -221,10 +221,10 @@ void SearchMemory::cancel()
 unsigned long SearchMemory::getNumberOfResults()
 {
 	unsigned long res = 0;
-	unsigned long threadSize = 0;
+	long long threadSize = 0;
 	long long min = -1;
 	long long max = 0;
-	for (int i=0; i<m_threadResults.size(); i++)
+	for (unsigned int i=0; i<m_threadResults.size(); i++)
 	{
 		threadSize = 0;
 		for (ResultList::iterator it = m_threadResults[i].begin(); it != m_threadResults[i].end(); ++it)
@@ -259,7 +259,7 @@ void SearchMemory::reOrganizeResults()
 	float avg = resTotal / (float)m_threadCount;
 	map<unsigned long, ResultList> resMap; //map of a group of addresses (sections)
 	unsigned long size = 0;
-	unsigned long thread = 0;
+	int thread = 0;
 	for (unsigned long i=0; i<m_threadResults.size(); i++) //each thread (vector of ResultList)
 	{
 		for (ResultList::iterator it = m_threadResults[i].begin(); it != m_threadResults[i].end(); ++it) //Each section of a ResultList

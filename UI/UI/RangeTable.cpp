@@ -80,7 +80,6 @@ void RangeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y,
 	    fl_push_clip(X, Y, W, H);
 	    {
 	        // BG COLOR
-		int rs = row_selected(ROW);
 		fl_color( row_selected(ROW) ? selection_color() : FL_WHITE);
 		fl_rectf(X, Y, W, H);
 
@@ -89,9 +88,9 @@ void RangeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y,
 		if ((unsigned int)ROW < data.size())
 		{
 			if (COL == 0)
-				sprintf(s,"0x%08X",data[ROW].first);
+				sprintf(s,"0x%08lX",data[ROW].first);
 			else
-				sprintf(s,"0x%08X",data[ROW].second);
+				sprintf(s,"0x%08lX",data[ROW].second);
 			DrawData(s,X,Y,W,H);
 		}
 		// BORDER

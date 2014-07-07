@@ -29,7 +29,7 @@ public:
 	int process(DumpDataList::iterator startDump, unsigned long startByte);
 	int startProcess();
 	int continueProcess();
-	int getDepth() { return m_offsets.size()+1; }
+	unsigned int getDepth() { return m_offsets.size()+1; }
 	ScanResultList getResults() { return m_results; }
 	void cancel() { m_cancel = true; }
 

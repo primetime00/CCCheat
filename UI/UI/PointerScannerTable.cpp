@@ -40,7 +40,7 @@ PointerScannerTable::PointerScannerTable(int X, int Y, int W, int H, const char 
 	m_resultAddress = 0;
 
 	type(SELECT_SINGLE);
-	for (unsigned int i=0; i<cols(); ++i)
+	for (int i=0; i<cols(); ++i)
 		width += col_width(i);
 	resize(x(), y(), width+16, h());
 	end();
@@ -57,9 +57,7 @@ bool PointerScannerTable::hasSelection()
 
 void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, int W, int H){
     static char s[40];
-	unsigned int index;
 	stringstream str;
-	int x,y,w,h;
     switch ( context ) {
       case CONTEXT_STARTPAGE:                   // before page is drawn..
         fl_font(FL_HELVETICA, 14);              // set the font for our drawing operations
@@ -100,7 +98,7 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
       case CONTEXT_CELL:    // Draw data in cells
 		if (ROW > DEFAULT_PT_ROWS)
 			break;
-		if (m_pointerList.size() == 0 || ROW >= m_pointerList.size())
+		if (m_pointerList.size() == 0 || (unsigned)ROW >= m_pointerList.size())
 			break;
 		fl_font(FL_HELVETICA, 14);              // set the font for our drawing operations
 	    fl_push_clip(X, Y, W, H);
@@ -113,7 +111,7 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
 		fl_color(FL_BLACK);
 		switch(COL)
 		{
-		case ADDRESS_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->address); break;
+		case ADDRESS_COL: sprintf(s,"0x%08lX",m_pointerList[ROW]->address); break;
 		case OFFSET_COL:
 			str.clear();
 			for (auto it=m_pointerList[ROW]->pointer->pointers.begin(); it != m_pointerList[ROW]->pointer->pointers.end(); ++it)
@@ -122,8 +120,8 @@ void PointerScannerTable::draw_cell(TableContext context, int ROW, int COL, int 
 			}
 			sprintf(s, "%s", str.str().c_str());
 			break;
-		case DEPTH_COL: sprintf(s,"%u",m_pointerList[ROW]->pointer->pointers.size()); break;
-		case RESULT_COL: sprintf(s,"0x%08X",m_pointerList[ROW]->pointer->resolved); break;
+		case DEPTH_COL: sprintf(s,"%lu",m_pointerList[ROW]->pointer->pointers.size()); break;
+		case RESULT_COL: sprintf(s,"0x%08lX",m_pointerList[ROW]->pointer->resolved); break;
 		default: break;
 		}
 		DrawData(s,X,Y,W,H);

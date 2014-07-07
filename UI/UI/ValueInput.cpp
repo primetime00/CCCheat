@@ -46,8 +46,8 @@ void ValueInput::setValueType(char type)
 				unsigned int val;
 				if (m_hex)
 				{
-					val = stoull(text, nullptr, 16);
-					val = (unsigned int) *((float*)&val);
+					Variant variant((long long)stoull(text, nullptr, 16));
+					val = (unsigned int) variant.asFloat();
 				}
 				else
 				{
@@ -77,17 +77,16 @@ void ValueInput::setValueType(char type)
 		{
 			if (!m_literal)
 			{
-				long long val;
 				float res;
 				if (m_hex)
 				{
-					val = stoull(text, nullptr, 16);
-					res = *(float*)&val;
+					Variant variant((long long)stoull(text, nullptr, 16));
+					res = variant.asFloat();
 				}
 				else
 				{
-					val = stoull(text, nullptr, 10);
-					res = *(float*)&val;
+					Variant variant((long long)stoull(text, nullptr, 10));
+					res = variant.asFloat();
 				}
 				value(to_string(res).c_str());
 			}
@@ -115,7 +114,6 @@ void ValueInput::setValueType(char type)
 
 void ValueInput::setHex(bool hex)
 { 
-	unsigned int x;
 	string text = value();
 	if (text.length() == 0)
 	{
@@ -153,10 +151,9 @@ string ValueInput::convertHexToInt(string hex)
 }
 string ValueInput::convertHexToFloat(string hex)
 {
-	long long x;
 	float v;
-	x = stoull(hex, nullptr, 16);
-	v = *(float*)&x;
+	Variant variant((long long)stoull(hex, nullptr, 16));
+	v = variant.asFloat();
 #if defined(_WIN32) || defined(WIN32)
 	if (_isnan(v))
 #else
@@ -168,16 +165,14 @@ string ValueInput::convertHexToFloat(string hex)
 string ValueInput::convertIntToHex(string val)
 {
 	char buf[50];
-	sprintf(buf, "%X", stoul(val, nullptr, 10));
+	sprintf(buf, "%lX", stoul(val, nullptr, 10));
 	return string(buf);
 }
 string ValueInput::convertFloatToHex(string val)
 {
 	char buf[50];
-	float v;
-	long long x;
-	v = stof(val);
-	sprintf(buf, "%X", *((unsigned int*)&v));
+	Variant variant(stof(val));
+	sprintf(buf, "%X", (unsigned int)variant.asLong());
 	return string(buf);
 }
 
@@ -198,7 +193,7 @@ int ValueInput::handle(int e)
 				val.erase( remove_if(val.begin(), val.end(), isNotHex), val.end() );
 			else
 				val.erase( remove_if(val.begin(), val.end(), isNotDigit), val.end() );
-			if (val.length() > maximum_size())
+			if ((signed)val.length() > maximum_size())
 				val.erase(val.begin()+maximum_size(), val.end());
 			value(val.c_str());
 			if (m_codeType)

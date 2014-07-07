@@ -393,7 +393,7 @@ bool InterfaceCCAPI::_searchProgress(SearchMemory *search)
 	unsigned long numResults;
 	stringstream searchString;
 	if (search == 0)
-		false;
+		return false;
 	string status = search->getStatus();
 	float progress = search->getProgress();
 	if (searchList.size() > 1)
@@ -460,12 +460,11 @@ void InterfaceCCAPI::dumpProgress(void *dump)
 
 bool InterfaceCCAPI::_dumpProgress(DumpMemory* dump)
 {
-	unsigned long numResults;
 	unsigned int i;
 	stringstream dumpString;
 	DumpMemoryItem s = getDumpMemoryItem(dump);
 	if (s == nullptr)
-		false;
+		return false;
 	string status = s->getStatus();
 	float progress = s->getProgress();
 	for (i=0; i<dumpList.size(); ++i)

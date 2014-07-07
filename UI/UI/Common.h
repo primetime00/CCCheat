@@ -146,7 +146,9 @@ typedef shared_ptr<rkCheat_Code> rkCheat_CodeItem;
 typedef deque<rkCheat_CodeItem> rkCheat_CodeList;
 
 
+static bool isNotHex(int c) __attribute__ ((unused));
 static bool isNotHex(int c) { return !isxdigit(c); }
+static bool isNotDigit(int c) __attribute__ ((unused));
 static bool isNotDigit(int c) { return !isdigit(c); }
 
 

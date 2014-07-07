@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <mutex>
+#include "Types.h"
 #include "Helpers.h"
 #include "Common.h"
 #include "CCAPI.h"
@@ -47,7 +48,7 @@ private:
 
 	unsigned int getLength(char type) { return Helpers::getTypeLength(type); }
 	long long readAddress(unsigned long address, char type);
-	void writeAddress(unsigned long address, char type, long long value);
+	int writeAddress(unsigned long address, char type, Variant value);
 
 	int connect();
 

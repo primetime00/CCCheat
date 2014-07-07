@@ -5,7 +5,48 @@ using namespace std;
 #include <memory>
 #include <list>
 #include <iostream>
+#include <vector>
 #include <memory>
+
+class Variant
+{
+public:
+	Variant(float v);
+	Variant(short v);
+	Variant(char v);
+	Variant(long v);
+	Variant(long long v);
+	Variant() { pt_obj.cPt = (char*)&value;}
+
+
+	float asFloat() { return *pt_obj.fPt; }
+	long asLong() { return *pt_obj.lPt; }
+	short asShort() { return *pt_obj.sPt; }
+	char asChar() { return *pt_obj.cPt; }
+	long long asLongLong() { return *pt_obj.llPt; }
+	char * asPointer() { return pt_obj.cPt; }
+
+	short *convertToShortPointer(char *pt) { pt_obj.cPt = pt; return pt_obj.sPt; }
+	long *convertToLongPointer(char *pt) { pt_obj.cPt = pt; return pt_obj.lPt; }
+	long long *convertToLongLongPointer(char *pt) { pt_obj.cPt = pt; return pt_obj.llPt; }
+	float *convertToFloatPointer(char *pt) { pt_obj.cPt = pt; return pt_obj.fPt; }
+
+	short convertToShort(char *pt) { pt_obj.cPt = pt; return *pt_obj.sPt; }
+	long convertToLong(char *pt) { pt_obj.cPt = pt; return *pt_obj.lPt; }
+	long long convertToLongLong(char *pt) { pt_obj.cPt = pt; return *pt_obj.llPt; }
+	float convertToFloat(char *pt) { pt_obj.cPt = pt; return *pt_obj.fPt; }
+
+private:
+	union pointer
+	{
+		char *cPt;
+		short *sPt;
+		long *lPt;
+		long long *llPt;
+		float *fPt;
+	} pt_obj;
+	char value[8];
+};
 
 struct AddressOffset  //this is a pointer helper that contains an address and an offset
 {

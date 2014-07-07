@@ -150,8 +150,6 @@ void MemoryOperator::process()
 
 int MemoryOperator::processRead()
 {
-	unsigned int length;
-	char *data;
 	lock_guard<mutex> lock(m_mutex);
 	for (MemoryReadItemList::iterator it = memoryReadOperationList.begin(); it != memoryReadOperationList.end();)
 	{
@@ -231,6 +229,7 @@ long long MemoryOperator::readAddress(unsigned long address, char type)
 			return (long long)data[0];
 		}
 	}
+	return 0;
 }
 
 int MemoryOperator::processChunkRead()
@@ -281,10 +280,11 @@ int MemoryOperator::processWrite()
 		if (m_exit) { return 1; }
 		for (MemoryWriteSet::iterator setIT = it->second.begin(); setIT != it->second.end();)
 		{
+			Variant val((*setIT)->value);
 			if ((*setIT)->item->isPointer() && (*setIT)->item->pointer->resolved != 0) //we are writing a pointer
-				writeAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type, (*setIT)->value);
+				writeAddress((*setIT)->item->pointer->resolved, (*setIT)->item->type, val);
 			else
-				writeAddress((*setIT)->item->address, (*setIT)->item->type, (*setIT)->value);
+				writeAddress((*setIT)->item->address, (*setIT)->item->type, val);
 			if ((*setIT)->freeze == true)
 			{
 				++setIT;
@@ -307,32 +307,31 @@ int MemoryOperator::processWrite()
 }
 
 
-void MemoryOperator::writeAddress(unsigned long address, char type, long long value)
+int MemoryOperator::writeAddress(unsigned long address, char type, Variant value)
 {
-	char loc[20];
+	int res = CCAPI_ERROR_NO_ERROR; 
 	unsigned int length = getLength(type);
-	int res = CCAPI_ERROR_NO_ERROR;
-	memcpy(loc, (char*)&value, 8);
 
 	if (type == SEARCH_VALUE_TYPE_2BYTE)
 	{
-		short tmp = BSWAP16(*(short*)&loc);
+		short tmp = BSWAP16(value.asShort());
 		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
 	}
 	else if (type == SEARCH_VALUE_TYPE_4BYTE)
 	{
-		long tmp = BSWAP32(*(long*)&loc);
+		long tmp = BSWAP32(value.asLong());
 		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
 	}
 	else if (type == SEARCH_VALUE_TYPE_FLOAT)
 	{
-		unsigned long tmp = BSWAP32(*(unsigned long*)&loc);
+		unsigned long tmp = BSWAP32(value.asLong());
 		res = m_ccapi->writeMemory(address, length, (char*)&tmp);
 	}
 	else
 	{
-		res = m_ccapi->writeMemory(address, length, loc);
+		res = m_ccapi->writeMemory(address, length, value.asPointer());
 	}
+	return res;
 }
 
 void MemoryOperator::removeChunkReadOperation(unsigned long address)

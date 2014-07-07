@@ -121,23 +121,22 @@ void ResultTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y
 	    fl_push_clip(X, Y, W, H);
 	    {
 	        // BG COLOR
-		int rs = row_selected(ROW);
 		fl_color( row_selected(ROW) ? selection_color() : FL_WHITE);
 		fl_rectf(X, Y, W, H);
 
 		// TEXT
 		fl_color(FL_BLACK);
-		unsigned long v = (data[ROW].item->value);
 		sprintf(s, (data[ROW].item->sign) == TEST_SIGN_YES ? "%hd" : "%hu",  (unsigned char)(data[ROW].item->value));
 		if ((unsigned int)ROW < data.size())
 		{
+			Variant variant((long long)data[ROW].item->value);
 			switch(COL)
 			{
-			case 0: sprintf(s,"0x%08X",(data[ROW].item->address)); break;
+			case 0: sprintf(s,"0x%08lX",(data[ROW].item->address)); break;
 			case 1: 
 				switch (resultType)
 				{
-				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%.4f", *((float*)&(data[ROW].item->value))); break;
+				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%.4f", variant.asFloat()); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
 					if ((data[ROW].item->sign) == TEST_SIGN_YES)
 						sprintf(s, "%hd", (char)(data[ROW].item->value)); 
@@ -161,9 +160,9 @@ void ResultTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y
 			case 2: 
 				switch (resultType)
 				{
-				case SEARCH_VALUE_TYPE_4BYTE: sprintf(s,"%X", *((unsigned long*)&(data[ROW].item->value))); break;
-				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%X", *((unsigned long*)&(data[ROW].item->value))); break;
-				case SEARCH_VALUE_TYPE_2BYTE: sprintf(s,"%X", *((unsigned short*)&(data[ROW].item->value))); break;
+				case SEARCH_VALUE_TYPE_4BYTE: sprintf(s,"%lX", *((unsigned long*)&(data[ROW].item->value))); break;
+				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%lX", *((unsigned long*)&(data[ROW].item->value))); break;
+				case SEARCH_VALUE_TYPE_2BYTE: sprintf(s,"%X", variant.asShort()); break;
 				case SEARCH_VALUE_TYPE_1BYTE: sprintf(s,"%X", *((unsigned char*)&(data[ROW].item->value))); break;
 				default: sprintf(s,"%ld", (data[ROW].item->value)); break;
 				} break;
@@ -247,7 +246,7 @@ fl_pop_clip();
 vector<AddressItem> ResultTable::getSelectedResults()
 {
 	vector<AddressItem> res;
-	for (int i=0; i<data.size(); ++i)
+	for (unsigned int i=0; i<data.size(); ++i)
 	{
 		if (row_selected(i))
 		{
@@ -260,7 +259,7 @@ vector<AddressItem> ResultTable::getSelectedResults()
 vector<int> ResultTable::getSelectedRows()
 {
 	vector<int> res;
-	for (int i=0; i<data.size(); ++i)
+	for (unsigned int i=0; i<data.size(); ++i)
 	{
 		if (row_selected(i))
 		{

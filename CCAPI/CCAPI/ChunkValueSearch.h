@@ -2,6 +2,7 @@
 #define _CHUNKVALUESEARCH_
 
 #include <functional>
+#include "Helpers.h"
 #include "Common.h"
 
 using namespace std;
@@ -29,29 +30,30 @@ private:
 	bool test(T val);
 
 	template<typename T>
-	bool testEqual(T val) { return val == value; }
+	bool testEqual(T val) { return val == (T)value; }
 
 	template<typename T>
-	bool testNotEqual(T val) { return val != value; }
+	bool testNotEqual(T val) { return val != (T)value; }
 
 	template<typename T>
-	bool testGreater(T val) { return val > value; }
+	bool testGreater(T val) { return val > (T)value; }
 
 	template<typename T>
-	bool testLess(T val) { return val < value; }
+	bool testLess(T val) { return val < (T)value; }
 
-	bool testFloatEqual(float val) { return val == *(float*)&value; }
+	bool testFloatEqual(float val) { return val == m_variant.convertToFloat((char*)&value); }
 
-	bool testFloatNotEqual(float val) { return val != *(float*)&value; }
+	bool testFloatNotEqual(float val) { return val != m_variant.convertToFloat((char*)&value); }
 
-	bool testFloatGreater(float val) { return val > *(float*)&value; }
+	bool testFloatGreater(float val) { return val > m_variant.convertToFloat((char*)&value); }
 
-	bool testFloatLess(float val) { return val < *(float*)&value; }
+	bool testFloatLess(float val) { return val < m_variant.convertToFloat((char*)&value); }
 
 
 
 	char valueByteLength;
-	char comparison;
+	Variant m_variant;
+	unsigned char comparison;
 	long long value;
 	bool isUnsigned;
 

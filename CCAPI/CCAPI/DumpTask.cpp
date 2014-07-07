@@ -15,7 +15,8 @@ DumpTask::DumpTask(string ip, unsigned long long offset, unsigned long long leng
 	m_length = length;
 	m_ip = ip;
 	m_connected = false;
-	GetCurrentDir(buf, 255);
+	char *pt __attribute__((unused));
+	pt = GetCurrentDir(buf, 255);
 	m_buffer = 0;
 }
 

@@ -86,7 +86,7 @@ private:
 	}
 	unsigned short _conv16(unsigned short val) {
 		//return BSWAP16(  (bitConv[((char*)val)[0]] << 8) + (bitConv[((char*)val)[1]] << 0) );
-		return (  (bitConv[((unsigned char*)val)[0]] << 8) + (bitConv[((unsigned char*)val)[1]] << 0) );
+		return (  (bitConv[((unsigned char*)&val)[0]] << 8) + (bitConv[((unsigned char*)&val)[1]] << 0) );
 	}
 	unsigned char _conv8(unsigned char val) {
 		return bitConv[(unsigned char)val];

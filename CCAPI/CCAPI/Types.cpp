@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Types.h"
+#include <cstring>
 
 using namespace std;
 
@@ -83,4 +84,28 @@ AddressObj & AddressObj::operator=(AddressObj t)
 	return *this;
 }
 
-
+Variant::Variant(float v) 
+{
+	memcpy((char*)&value, (char*)&v, sizeof(float));
+	pt_obj.cPt = (char*)&value;
+}
+Variant::Variant(char v) 
+{
+	memcpy((char*)&value, (char*)&v, sizeof(char));
+	pt_obj.cPt = (char*)&value;
+}
+Variant::Variant(short v) 
+{
+	memcpy((char*)&value, (char*)&v, sizeof(short));
+	pt_obj.cPt = (char*)&value;
+}
+Variant::Variant(long v) 
+{
+	memcpy((char*)&value, (char*)&v, sizeof(long));
+	pt_obj.cPt = (char*)&value;
+}
+Variant::Variant(long long v) 
+{
+	memcpy((char*)&value, (char*)&v, sizeof(long long));
+	pt_obj.cPt = (char*)&value;
+}

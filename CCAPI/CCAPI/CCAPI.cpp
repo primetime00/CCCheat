@@ -34,10 +34,6 @@ CCAPI::CCAPI(string ip)
 
 int CCAPI::connect(void)
 {
-	struct timeval tv;
-	tv.tv_sec = 3;       /* Timeout in seconds */
-	//setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO,(char *)&tv,sizeof(struct timeval));
-	//setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval));
 	if (hostVersion == 20)
 		destination.sin_port = htons(CCAPI_PORT_20);
 	else
@@ -72,13 +68,8 @@ int CCAPI::disconnect(void)
 int CCAPI::receiveData(void) 
 {
 	const unsigned int bufferSize = 4096;
-	unsigned int numOfBytes = 0;
+	ssize_t numOfBytes = 0;
 	unsigned int i, size, command;
-	//Set the socket timeout
-	struct timeval tv;
-	//tv.tv_sec = 15;       /* Timeout in seconds */
-	//setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO,(char *)&tv,sizeof(struct timeval));
-	//setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval));
 
 	numOfBytes = recv(sock, dataBuffer, bufferSize, 0);
 	if (numOfBytes == -1) //we've disconnected
@@ -116,7 +107,6 @@ int CCAPI::parseProcessIDs(char *data)
 {
 	unsigned int *intData = (unsigned int*)data;
 	unsigned int numberOfProcs = BSWAP32( intData[4] );
-	unsigned int startLocation = 5;
 	processIDs.clear();
 	if (numberOfProcs > 20)
 		return -1;
@@ -127,7 +117,6 @@ int CCAPI::parseProcessIDs(char *data)
 
 int CCAPI::parseProcessName(char *data)
 {
-	unsigned int startLocation = 16;
 	processName = "";
 	for (int i=0, startLocation=16; i<5000; i++, startLocation++) //we will look for a string with a max length of 5000 characters
 	{
@@ -141,7 +130,6 @@ int CCAPI::parseProcessName(char *data)
 
 int CCAPI::parseProcessMemory(char *data)
 {
-	unsigned int startLocation = 16;
 	return 0;
 }
 
@@ -256,7 +244,7 @@ int CCAPI::requestWriteMemory(unsigned int processID, unsigned int offset, unsig
 	constructHeader(header, size, CCAPI_SIZE_WRITEPROCESSMEMORY+length, CCAPI_COMMAND_WRITEPROCESSMEMORY);
 	unsigned int pack[] = { _conv32(processID), 0, _conv32(offset), _conv32(length) };
 	memcpy(&header[size], pack, PS3_INT_SIZE*4); size+=PS3_INT_SIZE*4;
-	for (int i=0; i<length; i++)
+	for (unsigned int i=0; i<length; i++)
 		data[i] = bitConv[(unsigned char)data[i]];
 	memcpy(&header[size], data, length); size+=length;
 	if (send(sock, header, size, 0) != size)

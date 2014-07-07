@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 template <typename T>
 string NumberToString ( T Number )
 {
@@ -14,6 +15,7 @@ string NumberToString ( T Number )
 	ss << Number;
 	return ss.str();
 }
+
 
 class Helpers
 {
@@ -36,7 +38,7 @@ public:
 		if (value < 0)
 			return true;
 		int len = getTypeLength(type) * 8;
-		if ( value < (unsigned long)((1 << len-1)) )
+		if ( (unsigned long)value < (unsigned long)((1 << (len-1))) )
 			return true;
 		return false;
 	}
@@ -62,6 +64,7 @@ public:
 
 	static long long convertValueType(long long value, char newType, char oldType, bool sign)
 	{
+		Variant variant(value);
 		switch (oldType)
 		{
 		case SEARCH_VALUE_TYPE_1BYTE:
@@ -70,42 +73,46 @@ public:
 			if (newType == SEARCH_VALUE_TYPE_4BYTE)
 				return (long) value;
 			if (newType == SEARCH_VALUE_TYPE_FLOAT)
-			{
-				return *(unsigned long*)&value;
-			}
+				return variant.asLong();
 			break;
 		case SEARCH_VALUE_TYPE_2BYTE:
 			if (newType == SEARCH_VALUE_TYPE_1BYTE) //2 to 1
+			{
 				if (sign)
 					return (char) value;
 				else
 					return (unsigned char) value;
+			}
 			if (newType == SEARCH_VALUE_TYPE_4BYTE)
 				return (long) value;
 			if (newType == SEARCH_VALUE_TYPE_FLOAT)
-				return *(unsigned long*)&value;
+				return variant.asLong();
 			break;
 		case SEARCH_VALUE_TYPE_4BYTE:
 			if (newType == SEARCH_VALUE_TYPE_1BYTE) //4 to 1
+			{
 				if (sign)
 					return (char) value;
 				else
 					return (unsigned char) value;
+			}
 			if (newType == SEARCH_VALUE_TYPE_2BYTE) //4 to 2
+			{
 				if (sign)
 					return (short) value;
 				else
 					return (unsigned short) value;
+			}
 			if (newType == SEARCH_VALUE_TYPE_FLOAT)
-				return *(unsigned long*)&value;
+				return variant.asLong();
 			break;
 		default:
 			if (newType == SEARCH_VALUE_TYPE_1BYTE) //float to 1
 				return *(char*)&value;
 			if (newType == SEARCH_VALUE_TYPE_2BYTE) //float to 2
-				return *(short*)&value;
+				return variant.asShort();
 			if (newType == SEARCH_VALUE_TYPE_4BYTE) //float to 4
-				return *(long*)&value;
+				return variant.asLong();
 			break;
 		}
 		return 0;

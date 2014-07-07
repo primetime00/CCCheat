@@ -104,18 +104,18 @@ void ChunkValueSearch::setup(char len, char comp, long long val)
 	}
 }
 
-#define DO_COMPARE_FLOAT(val, loc, base)\
-	if (testFunction_Float(*((float*)val)))\
+#define DO_COMPARE_FLOAT(vari, val, loc, base)\
+	if (testFunction_Float(vari.convertToFloat((char*)val)))\
 	{\
-		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, *((unsigned long*)val), TEST_SIGN_UNKNOWN));\
+		(*resultRef)[base].push_back(make_shared<AddressObj>(loc, (unsigned long)vari.convertToLong((char*)val), TEST_SIGN_UNKNOWN));\
 	}
 
-#define DO_COMPARE_FLOAT_NEXT(section, val, item)\
+#define DO_COMPARE_FLOAT_NEXT(section, vari, val, item)\
 	signage = TEST_SIGN_NULL;\
-	if (testFunction_Float(*((float*)val)))\
+	if (testFunction_Float(vari.convertToFloat((char*)val)))\
 	{\
 		signage = TEST_SIGN_UNKNOWN;\
-		(item->value) = *((unsigned long*)val);\
+		(item->value) = (unsigned long) vari.convertToLong((char*)val);\
 		(item->sign) = signage;\
 	}
 
@@ -155,6 +155,7 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 {
 	unsigned long i;
 	char signage;
+	Variant variant;
 	if (valueByteLength == 1) //we are a character search, we good
 	{
 		for (i=0; i<length; i++)
@@ -171,12 +172,12 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 		else
 		{
 			prev[1] = memory[0];
-			short tmp = BSWAP16(*(short*)&prev[0]);	
+			short tmp = BSWAP16(variant.convertToShort((char*)&prev[0]));	
 			DO_COMPARE(short, &tmp, address-1, prevAddress);
 		}
 		for (i=0; i<length-1; i++)
 		{
-			short tmp = BSWAP16(*(short*)&memory[i]);
+			short tmp = BSWAP16(variant.convertToShort(&memory[i]));
 			DO_COMPARE(short, &tmp, address+i, address);
 		}
 		prev[0] = memory[length-1];
@@ -194,10 +195,10 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 			prev[5] = memory[2];
 			for (int j=0; j<3; j++)
 			{
-				long tmp = BSWAP32(*(long*)&prev[j]);
+				long tmp = BSWAP32(variant.convertToLong((char*)&prev[j]));
 				if (isFloat)
 				{
-					DO_COMPARE_FLOAT(&tmp, address-3+j, prevAddress);
+					DO_COMPARE_FLOAT(variant, &tmp, address-3+j, prevAddress);
 				}
 				else
 				{
@@ -207,10 +208,10 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 		}
 		for (i=0; i<length-3; i++)
 		{
-			long tmp = BSWAP32(*(long*)&memory[i]);
+			long tmp = BSWAP32(variant.convertToLong(&memory[i]));
 			if (isFloat)
 			{
-				DO_COMPARE_FLOAT(&tmp, address+i, address);
+				DO_COMPARE_FLOAT(variant, &tmp, address+i, address);
 			}
 			else
 			{
@@ -229,6 +230,7 @@ void ChunkValueSearch::digest(char *memory, unsigned long length, unsigned long 
 bool ChunkValueSearch::digestValue(char *memory, AddressItem item, unsigned long section)
 {
 	char signage;
+	Variant variant;
 	if (valueByteLength == 1)
 	{
 		DO_COMPARE_NEXT(char, section, &memory[0], item);
@@ -241,7 +243,7 @@ bool ChunkValueSearch::digestValue(char *memory, AddressItem item, unsigned long
 	else if (valueByteLength == 4 && isFloat)
 	{
 		long tmp = BSWAP32(*(long*)&memory[0]);
-		DO_COMPARE_FLOAT_NEXT(section, &tmp, item);
+		DO_COMPARE_FLOAT_NEXT(section, variant, &tmp, item);
 	}
 	else
 	{

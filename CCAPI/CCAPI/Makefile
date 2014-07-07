@@ -5,7 +5,7 @@ src := $(wildcard *.cpp)
 libccapi.a : $(objects)
 	\mkdir -p ./lib
 	ar rcs ./lib/libccapi.a $(objects)
-	\rm *.o
+#	\rm *.o
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@

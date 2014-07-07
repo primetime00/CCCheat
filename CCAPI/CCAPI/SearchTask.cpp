@@ -20,7 +20,8 @@ SearchTask::SearchTask(string ip, unsigned long long offset, unsigned long long 
 	m_searchValueType = SEARCH_VALUE_TYPE_4BYTE;
 	m_compareType = SEARCH_FUZZY_NOTEQUAL;
 	m_connected = false;
-	GetCurrentDir(buf, 255);
+	char *pt __attribute__((unused));
+	pt = GetCurrentDir(buf, 255);
 	m_dumpDir = string(buf) + "/";
 }
 
@@ -214,8 +215,6 @@ int SearchTask::initialFuzzySearch() //THIS WILL GENERATE A DUMP FILE!
 	}
 	unsigned long rounds, remains;
 	unsigned char resFileType = RESULT_FILE_TYPE_DUMP;
-	char *memData;
-	unsigned int length;
 	calculateReads(RANGE_INTERVAL, rounds, remains);
 	dumpFile.open(m_dumpDir+m_dumpFile, ios::out | ios::binary | ios::trunc);
 	dumpFile.write((char*)&resFileType, sizeof(unsigned char));
@@ -254,14 +253,7 @@ int SearchTask::initialValueSearch() //this will generate a result file
 	unsigned int readSize; 
 	unsigned long i;
 	char *data;
-	bool isUnsigned = false;
 	m_results->clear();
-	switch (m_searchValueType)
-	{
-	case SEARCH_VALUE_TYPE_1BYTE: isUnsigned = ((unsigned char)m_searchValue > 0x7F); break;
-	case SEARCH_VALUE_TYPE_2BYTE: isUnsigned = ((unsigned short)m_searchValue > 0x7FFF); break;
-	case SEARCH_VALUE_TYPE_4BYTE: isUnsigned = ((unsigned long)m_searchValue > 0x7FFFFFFF); break;
-	}
 	m_dumpFile = NumberToString(m_offset)+"-"+NumberToString(m_length)+".bin";
 	if (m_offset+m_length-3 < 0x100000000)
 	{
@@ -277,9 +269,6 @@ int SearchTask::initialValueSearch() //this will generate a result file
 		}
 	}
 	unsigned long rounds, remains;
-	unsigned char resFileType = RESULT_FILE_TYPE_LIST;
-	char *memData;
-	unsigned int length;
 	calculateReads(RANGE_INTERVAL, rounds, remains);
 	for (i=0; i<rounds; i++)
 	{

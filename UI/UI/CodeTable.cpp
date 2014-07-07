@@ -38,7 +38,7 @@ CodeTable::CodeTable(int X, int Y, int W, int H, const char *l) : Fl_Table_Row(X
 	col_width(FREEZE_COL, 90);
 	col_resize(1);
 	unsigned int width=0;
-	for (unsigned int i=0; i<cols(); ++i)
+	for (int i=0; i<cols(); ++i)
 		width += col_width(i);
 	w(width+3);
 
@@ -272,7 +272,6 @@ bool CodeTable::hasSelection()
 
 void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, int W, int H){
     static char s[40];
-	int x,y,w,h;
     switch ( context ) {
       case CONTEXT_STARTPAGE:                   // before page is drawn..
         fl_font(FL_HELVETICA, 14);              // set the font for our drawing operations
@@ -329,7 +328,6 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 	    fl_push_clip(X, Y, W, H);
 	    {
 	        // BG COLOR
-		int rs = row_selected(ROW);
 		fl_color( row_selected(ROW) ? selection_color() : FL_WHITE);
 		fl_rectf(X, Y, W, H);
 
@@ -337,6 +335,7 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 		fl_color(FL_BLACK);
 		if ((unsigned int)ROW < data.size())
 		{
+			Variant variant((long long)data[ROW]->m_address->value);
 			switch(COL)
 			{
 			case DESC_COL: 
@@ -347,25 +346,25 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 				break;
 			case ADDRESS_COL: 
 				if (data[ROW]->m_address->isPointer())
-					sprintf(s,"0x%08X -> 0x%08X",data[ROW]->m_address->address, data[ROW]->m_address->pointer->resolved);
+					sprintf(s,"0x%08lX -> 0x%08lX",data[ROW]->m_address->address, data[ROW]->m_address->pointer->resolved);
 				else
-					sprintf(s,"0x%08X",data[ROW]->m_address->address);
+					sprintf(s,"0x%08lX",data[ROW]->m_address->address);
 				break;
 			case VALUE_COL: 
 				switch (data[ROW]->m_address->type)
 				{
-				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%f", *(float*)&data[ROW]->m_address->value); break;
+				case SEARCH_VALUE_TYPE_FLOAT: sprintf(s,"%f", variant.asFloat()); break;
 				case SEARCH_VALUE_TYPE_1BYTE: 
 						if (data[ROW]->m_address->sign) 
-							 sprintf(s,"%ld", (char)data[ROW]->m_address->value); 
+							 sprintf(s,"%d", (char)data[ROW]->m_address->value); 
 						 else
-							 sprintf(s,"%lu", (unsigned char)data[ROW]->m_address->value); 
+							 sprintf(s,"%u", (unsigned char)data[ROW]->m_address->value); 
 						 break;					
 				case SEARCH_VALUE_TYPE_2BYTE: 
 						if (data[ROW]->m_address->sign) 
-							 sprintf(s,"%ld", (short)data[ROW]->m_address->value); 
+							 sprintf(s,"%d", (short)data[ROW]->m_address->value); 
 						 else
-							 sprintf(s,"%lu", (unsigned short)data[ROW]->m_address->value); 
+							 sprintf(s,"%u", (unsigned short)data[ROW]->m_address->value); 
 						 break;					
 				default:
 						if (data[ROW]->m_address->sign) 
@@ -545,7 +544,7 @@ void CodeTable::onAddressChanged(rkCheat_Code *item, unsigned long value)
 
 void CodeTable::onValueChanged(rkCheat_Code *item, long long value)
 {
-	if (item->m_address->value != value)
+	if (item->m_address->value != (unsigned long)value)
 	{
 		item->m_address->value = value;
 		if (value < 0)
@@ -565,13 +564,14 @@ void CodeTable::onCodeTypeChanged(rkCheat_Code *item, int type)
 	int oldtype = item->type;
 	item->type = type;
 	int_val = Helpers::convertValueType(item->m_address->value, type, oldtype, item->m_address->sign);
+	Variant variant(int_val);
 	if (type != SEARCH_VALUE_TYPE_FLOAT)
 	{
 		item->widget->value_input->value(to_string(int_val).c_str());
 	}
 	else
 	{
-		float_val = *(float*)&int_val;
+		float_val = variant.asFloat();
 		item->widget->value_input->value(to_string(float_val).c_str());
 	}
 	item->widget->value_input->setValueType(type);
@@ -603,8 +603,9 @@ void CodeTable::onCellDoubleClicked(int row, int col)
 	else
 		int_val = (unsigned long) data[row]->m_address->value;
 	unsigned long address = data[row]->m_address->address;
+	Variant variant((long long)data[row]->m_address->value);
 	char hex[50];
-	float float_val = *(float*)&data[row]->m_address->value;
+	float float_val = variant.asFloat();
 	switch (col)
 	{
 	case DESC_COL:
@@ -643,7 +644,7 @@ void CodeTable::onCellDoubleClicked(int row, int col)
 			{
 				if (last_cell_widget) last_cell_widget->hide();
 				data[row]->widget->address_input->show();
-				sprintf(hex, "%.8X", address);
+				sprintf(hex, "%.8lX", address);
 				data[row]->widget->address_input->value(hex);
 				data[row]->widget->address_input->take_focus();
 			}
@@ -761,22 +762,6 @@ void CodeTable::addResults(vector<AddressItem> &items, char type)
 {
 	for (vector<AddressItem>::iterator it = items.begin(); it != items.end(); ++it)
 	{
-		long long v;
-		switch (type)
-		{
-		case SEARCH_VALUE_TYPE_1BYTE:
-			v = ((*it)->sign) == TEST_SIGN_YES ? (char)((*it)->value) : (unsigned char)((*it)->value);
-			break;
-		case SEARCH_VALUE_TYPE_2BYTE:
-			v = ((*it)->sign) == TEST_SIGN_YES ? (short)((*it)->value) : (unsigned short)((*it)->value);
-			break;
-		case SEARCH_VALUE_TYPE_4BYTE:
-			v = ((*it)->sign) == TEST_SIGN_YES ? (long)((*it)->value) : (unsigned long)((*it)->value);
-			break;
-		default:
-			v = *(unsigned int*)&((*it)->value);
-			break;
-		}
 		(*it)->type = type;
 		addEntry("", *it);
 	}
