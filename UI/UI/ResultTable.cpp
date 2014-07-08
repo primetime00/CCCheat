@@ -84,7 +84,9 @@ void ResultTable::setResults(rkCheat_Results &r)
 			{
 				for (AddressList::iterator ait = it->second.begin(); ait != it->second.end(); ++ait) //each address list
 				{
-					data.push_back(ResultRow(*ait, it->first, thread, id));
+					AddressItem cpItem = make_shared<AddressObj>((*ait)->address,(*ait)->value,(*ait)->type,(*ait)->sign);
+					//data.push_back(ResultRow(*ait, it->first, thread, id));
+					data.push_back(ResultRow(cpItem, it->first, thread, id));
 					rounds++;
 					if (rounds > MAX_RESULTS)
 					{
