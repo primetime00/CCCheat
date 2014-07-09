@@ -99,6 +99,7 @@ private:
 	RangeMemory *ranger;
 	SearchMemory *searcher;
 	MemoryOperator *memoryOperator;
+	shared_ptr<ConnectionManager> connection;
 	
 	vector<SearchMemory*> searchList;
 

@@ -8,6 +8,8 @@ using namespace std;
 void windowCallback(Fl_Widget*, void*) {
   if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape) 
     return; // ignore Escape
+  if (InterfaceCCAPI::instance != 0)
+	  InterfaceCCAPI::instance->disconnect();
   exit(0);
 }
 

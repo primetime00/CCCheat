@@ -41,6 +41,7 @@ public:
   void addResults(vector<AddressItem> &items, char type);
   void setMemoryOperator(MemoryOperator *op);
   void setViewer(Fl_Callback *cb) { viewer = cb; }
+  void unFreezeAll();
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)

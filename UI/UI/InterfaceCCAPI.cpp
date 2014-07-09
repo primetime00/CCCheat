@@ -13,6 +13,8 @@ InterfaceCCAPI *InterfaceCCAPI::instance = 0;
 void InterfaceCCAPI::connect(string ip)
 {
 	m_ip = ip;
+	ConnectionManager::startUp();
+	connection = make_shared<ConnectionManager>();
 	memoryOperator = new MemoryOperator(ip);
 	int ver = get_user_data(int, uiInstance->ui_ccapiChoice->mvalue()->user_data());
 	memoryOperator->setHostCCAPIVersion(ver);
@@ -57,6 +59,9 @@ void InterfaceCCAPI::disconnect()
 	uiInstance->m_peWindow->setMemoryOperator(0);
 	uiInstance->m_valueTable->setCodeTable(0);
 	uiInstance->m_pointerScannerWindow->setCodeTable(0);
+	uiInstance->searchStopped(SEARCH_STOPPED_RESET);
+	_resetSearch();
+	uiInstance->ui_codeTable->unFreezeAll();
 	if (memoryOperator != 0)
 	{
 		delete memoryOperator;
@@ -70,6 +75,7 @@ void InterfaceCCAPI::disconnect()
 	{
 		(*it)->cancel();
 	}
+	connection = nullptr;
 }
 
 void InterfaceCCAPI::findAddressProgress(void *)

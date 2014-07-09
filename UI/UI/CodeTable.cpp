@@ -788,3 +788,12 @@ void CodeTable::setMemoryOperator(MemoryOperator *op)
 		}
 	}
 }
+
+void CodeTable::unFreezeAll()
+{
+	for (unsigned int i=0; i<data.size(); i++)
+	{
+		data[i]->widget->freeze->value(0);
+		data[i]->freeze = false;
+	}
+}

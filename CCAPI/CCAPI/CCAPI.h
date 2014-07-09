@@ -42,6 +42,38 @@ typedef int ssize_t;
 
 using namespace std;
 
+#define MAX_CONNECTIONS 10
+
+class ConnectionManager
+{
+public:
+	ConnectionManager() { connectionManager = this; }
+	~ConnectionManager() { 
+		killAllConnections();
+		connectionManager = 0; 
+	}
+
+	struct Connection {
+		int sock;
+		bool available;
+		Connection() { sock = 0; available = true; }
+	};
+	
+	bool requestConnection(int &sock, string ipAddress, int hostVersion);
+	void releaseConnection(int sock);
+	void killAllConnections();
+	static ConnectionManager *connectionManager;
+	static void startUp() { 
+#if defined(_WIN32) || defined(WIN32)
+			WSADATA wsaData;
+			WSAStartup(0x0202, &wsaData);
+#endif
+	}
+
+private:
+		Connection connection[MAX_CONNECTIONS];
+};
+
 class CCAPI
 {
 public:

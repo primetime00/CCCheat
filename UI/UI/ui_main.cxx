@@ -340,8 +340,11 @@ void rkCheatUI::SearchTypeChangeCB(Fl_Widget *w, void *data) {
   	uiInstance->ui_valueInputGroup->activate();
   	uiInstance->ui_isHex->value(1);
   	uiInstance->ui_valueType->value(uiInstance->getMenuIndex(SEARCH_VALUE_TYPE_4BYTE));
-  	int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
-  	uiInstance->ui_valueInput->setValueType(value);
+	if (w != 0)
+	{
+  		int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
+  		uiInstance->ui_valueInput->setValueType(value);
+	}
   	uiInstance->ui_valueInput->setHex(true);	
   	uiInstance->ui_valueType->deactivate();
   }
