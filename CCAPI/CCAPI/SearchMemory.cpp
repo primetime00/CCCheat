@@ -131,7 +131,7 @@ unsigned int SearchMemory::process()
 			searchTask->setProgressCallback(bind(&SearchMemory::progressCallBack, this, searchTask.get(), placeholders::_2, placeholders::_3));
 			searchTask->setErrorCallback(bind(&SearchMemory::getError, this));
 			searchTask->start();
-			::this_thread::sleep_for(::chrono::milliseconds(500));
+			::this_thread::sleep_for(::chrono::milliseconds(100));
 		}
 	}
 	else

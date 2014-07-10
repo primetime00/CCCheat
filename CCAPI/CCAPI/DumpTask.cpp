@@ -191,6 +191,7 @@ int DumpTask::doDump()
 		return TASK_ERROR_CANCEL;
 	}
 	m_fire = false;
+	disconnect();
 	m_taskState = Task::COMPLETE;
 	progressCallback(this, m_length, m_length);
 	return TASK_ERROR_NONE;

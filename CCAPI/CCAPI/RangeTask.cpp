@@ -101,5 +101,6 @@ void RangeTask::run()
 	{
 		m_callback(this, m_length, m_length);
 	}
+	m_ccapi->disconnect();
 	m_status = "DONE";
 }
