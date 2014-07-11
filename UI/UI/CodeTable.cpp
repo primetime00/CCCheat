@@ -660,11 +660,11 @@ void CodeTable::onCellDoubleClicked(int row, int col)
 			if (last_cell_widget) last_cell_widget->hide();
 			data[row]->widget->value_input->show();
 			data[row]->widget->value_input->take_focus();
-			if (data[row]->type == SEARCH_VALUE_TYPE_FLOAT)
+			if (data[row]->m_address->type == SEARCH_VALUE_TYPE_FLOAT)
 				data[row]->widget->value_input->value(to_string(float_val).c_str());
 			else
 			{
-				switch (data[row]->type)
+				switch (data[row]->m_address->type)
 				{
 				case SEARCH_VALUE_TYPE_1BYTE:
 					data[row]->widget->value_input->value(data[row]->m_address->sign ? to_string((char)int_val).c_str() : to_string((unsigned char)int_val).c_str());
