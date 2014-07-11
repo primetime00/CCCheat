@@ -10,12 +10,12 @@ using namespace std;
 ValueInput::ValueInput(int x, int y, int w, int h, const char *l) : Fl_Input(x,y,w,h,l)
 {
 	setLiteral(true);
-	setHex(false);
 	setValueType(SEARCH_VALUE_TYPE_1BYTE);
 	setCodeType(false);
-	setValueType(VAL_TYPE_MISC);
+	setHex(false);
 }
 
+#define MAX_NON_HEX(t) maximum_size( (t == SEARCH_VALUE_TYPE_FLOAT) ? 20 : 10 )
 
 void ValueInput::setValueType(char type)
 {
@@ -23,6 +23,7 @@ void ValueInput::setValueType(char type)
 	if (text.length() == 0)
 	{
 		m_type = type;
+		if (!m_hex) MAX_NON_HEX(type);
 		return;
 	}
 	if (type != m_type) //we have a different type!
@@ -109,6 +110,7 @@ void ValueInput::setValueType(char type)
 			}
 		}
 	}
+	if (!m_hex) MAX_NON_HEX(type);
 	m_type = type;
 }
 
@@ -121,12 +123,12 @@ void ValueInput::setHex(bool hex)
 		if (m_hex)
 			maximum_size(8);
 		else
-			maximum_size(10);
+			MAX_NON_HEX(m_type);
 		return;
 	}
 	if (m_hex && !hex) //hex to int/float
 	{
-		maximum_size(10);
+		MAX_NON_HEX(m_type);
 		if (m_type == SEARCH_VALUE_TYPE_FLOAT)
 			value(convertHexToFloat(text).c_str());
 		else
@@ -299,6 +301,7 @@ void ValueInput::setValue(unsigned long ivalue)
 		strVal = convertIntToHex(to_string(ivalue));
 	else
 	{
+		MAX_NON_HEX(m_type);
 		if (m_type == SEARCH_VALUE_TYPE_PT_FLOAT)
 		{
 			setValue(*(float*) (&ivalue)[0]);
@@ -317,6 +320,7 @@ void ValueInput::setValue(long long ivalue)
 		strVal = convertIntToHex(to_string(ivalue));
 	else
 	{
+		MAX_NON_HEX(m_type);
 		if (m_type == SEARCH_VALUE_TYPE_PT_FLOAT)
 		{
 			setValue(*(float*) (&ivalue)[0]);
@@ -334,7 +338,10 @@ void ValueInput::setValue(float ivalue)
 	if (m_hex)
 		strVal = convertFloatToHex(to_string(ivalue));
 	else
+	{
+		MAX_NON_HEX(m_type);
 		strVal = to_string(ivalue);
+	}
 
 	value(strVal.c_str());
 }

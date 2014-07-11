@@ -38,5 +38,25 @@ void ValueViewerWindow::hide()
 {
 	if (visible())
 		uiInstance->m_valueTable->stopMemoryRead();
+	reset();
 	rkWindow::hide();
+}
+
+void ValueViewerWindow::reset()
+{
+	uiInstance->m_valueTable->clearSelection();
+	uiInstance->m_valueTable->setType(SEARCH_VALUE_TYPE_4BYTE);
+	uiInstance->m_valueTable->setAddress(0);
+	uiInstance->m_valueTable->setSigned(false);
+	Fl_Menu_Item *it = &uiInstance->menu_ui_valueType[0];
+	while (it->label() != 0)
+	{
+		if (get_user_data(int, it->user_data()) == SEARCH_VALUE_TYPE_4BYTE)
+		{
+			uiInstance->m_viewerTypeChoice->value(it);
+			break;
+		}
+		it++;
+	}
+	uiInstance->m_viewerSignedButton->value(0);
 }

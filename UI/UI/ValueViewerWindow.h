@@ -20,6 +20,9 @@ public:
 	void show();
 	void hide();
 
+private:
+	void reset();
+
 };
 
 
