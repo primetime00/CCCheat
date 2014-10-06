@@ -6,6 +6,7 @@
 #include <FL/Fl_Native_File_Chooser.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/fl_ask.H>
+#include <FL/Fl_Select_Browser.H>
 #include <fstream>
 #include "InterfaceCCAPI.h"
 #include "rkWindow.h"
@@ -24,6 +25,9 @@
 #include "PointerScannerTable.h"
 #include "AddressOffsetGroup.h"
 #include "PointerEditorWindow.h"
+#include "TrainerMakerWindow.h"
+#include "TrainerItemWindow.h"
+#include "TrainerItemCodeTable.h"
 #define RANGE_SAVE 0
 #define RANGE_LOAD 1
 #define RANGE_CLEAR 2
@@ -39,6 +43,8 @@ class InterfaceCCAPI;
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Spinner.H>
+#include <FL/Fl_Input.H>
+#include <FL/Fl_Text_Editor.H>
 
 class rkCheatUI {
 public:
@@ -94,6 +100,7 @@ public:
   Fl_Button *ui_ButtonDeleteCode;
   Fl_Button *ui_ButtonSaveCodes;
   Fl_Button *ui_ButtonLoadCodes;
+  Fl_Button *ui_ButtonCreateTrainer;
   Fl_Light_Button *ui_connectButton;
   IPInput *ui_ipInput;
   Fl_Box *ui_versionText;
@@ -208,6 +215,97 @@ private:
   static void cb_m_peDeletePointerButton(Fl_Button*, void*);
 public:
   ValueInput *m_peResolvedValue;
+  TrainerMakerWindow *m_trainerMakerWindow;
+  Fl_Input *m_tcTrainerTitle;
+private:
+  inline void cb_m_tcTrainerTitle_i(Fl_Input*, void*);
+  static void cb_m_tcTrainerTitle(Fl_Input*, void*);
+public:
+  Fl_Input *m_tcAuthorName;
+private:
+  inline void cb_m_tcAuthorName_i(Fl_Input*, void*);
+  static void cb_m_tcAuthorName(Fl_Input*, void*);
+public:
+  Fl_Input *m_tcGameTitle;
+private:
+  inline void cb_m_tcGameTitle_i(Fl_Input*, void*);
+  static void cb_m_tcGameTitle(Fl_Input*, void*);
+public:
+  Fl_Input *m_tcGameRegion;
+private:
+  inline void cb_m_tcGameRegion_i(Fl_Input*, void*);
+  static void cb_m_tcGameRegion(Fl_Input*, void*);
+public:
+  Fl_Text_Editor *m_tcInformation;
+  Fl_Button *m_tcCreateButton;
+private:
+  inline void cb_m_tcCreateButton_i(Fl_Button*, void*);
+  static void cb_m_tcCreateButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_tcCancelButton;
+private:
+  inline void cb_m_tcCancelButton_i(Fl_Button*, void*);
+  static void cb_m_tcCancelButton(Fl_Button*, void*);
+public:
+  Fl_Group *m_tcCodeGroup;
+  Fl_Select_Browser *m_tcCodeBrowser;
+private:
+  inline void cb_m_tcCodeBrowser_i(Fl_Select_Browser*, void*);
+  static void cb_m_tcCodeBrowser(Fl_Select_Browser*, void*);
+public:
+  Fl_Button *m_tcNewCodeButton;
+private:
+  inline void cb_m_tcNewCodeButton_i(Fl_Button*, void*);
+  static void cb_m_tcNewCodeButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_tcEditCodeButton;
+private:
+  inline void cb_m_tcEditCodeButton_i(Fl_Button*, void*);
+  static void cb_m_tcEditCodeButton(Fl_Button*, void*);
+public:
+  TrainerItemWindow *m_trainerItem;
+  Fl_Input *m_tciCodeName;
+private:
+  inline void cb_m_tciCodeName_i(Fl_Input*, void*);
+  static void cb_m_tciCodeName(Fl_Input*, void*);
+public:
+  Fl_Check_Button *m_tciConditionalCheck;
+private:
+  inline void cb_m_tciConditionalCheck_i(Fl_Check_Button*, void*);
+  static void cb_m_tciConditionalCheck(Fl_Check_Button*, void*);
+public:
+  Fl_Group *m_tciConditionGroup;
+  Fl_Choice *m_tciConditionalOperator;
+  static Fl_Menu_Item menu_m_tciConditionalOperator[];
+  ValueInput *m_tciConditionalValue;
+  Fl_Choice *m_tciConditionalCode;
+private:
+  inline void cb_m_tciConditionalCode_i(Fl_Choice*, void*);
+  static void cb_m_tciConditionalCode(Fl_Choice*, void*);
+  static Fl_Menu_Item menu_m_tciConditionalCode[];
+public:
+  static Fl_Menu_Item *m_tciDefaultMenuItem;
+  TrainerItemCodeTable *m_tciCodeTable;
+  Fl_Button *m_tciAddCodeButton;
+private:
+  inline void cb_m_tciAddCodeButton_i(Fl_Button*, void*);
+  static void cb_m_tciAddCodeButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_tciOKButton;
+private:
+  inline void cb_m_tciOKButton_i(Fl_Button*, void*);
+  static void cb_m_tciOKButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_tciCancelButton;
+private:
+  inline void cb_m_tciCancelButton_i(Fl_Button*, void*);
+  static void cb_m_tciCancelButton(Fl_Button*, void*);
+public:
+  Fl_Button *m_tciDeleteCodeButton;
+private:
+  inline void cb_m_tciDeleteCodeButton_i(Fl_Button*, void*);
+  static void cb_m_tciDeleteCodeButton(Fl_Button*, void*);
+public:
   void setInterface(InterfaceCCAPI *iface);
 private:
   InterfaceCCAPI *m_interface; 

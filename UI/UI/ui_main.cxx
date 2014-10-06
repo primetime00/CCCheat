@@ -273,6 +273,132 @@ void rkCheatUI::cb_m_peDeletePointerButton(Fl_Button* o, void* v) {
   ((rkCheatUI*)(o->parent()->user_data()))->cb_m_peDeletePointerButton_i(o,v);
 }
 
+void rkCheatUI::cb_m_tcTrainerTitle_i(Fl_Input* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->checkButtonStatus();
+}
+void rkCheatUI::cb_m_tcTrainerTitle(Fl_Input* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcTrainerTitle_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcAuthorName_i(Fl_Input* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->checkButtonStatus();
+}
+void rkCheatUI::cb_m_tcAuthorName(Fl_Input* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcAuthorName_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcGameTitle_i(Fl_Input* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->checkButtonStatus();
+}
+void rkCheatUI::cb_m_tcGameTitle(Fl_Input* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcGameTitle_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcGameRegion_i(Fl_Input* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->checkButtonStatus();
+}
+void rkCheatUI::cb_m_tcGameRegion(Fl_Input* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcGameRegion_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcCreateButton_i(Fl_Button* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->onCreate();
+}
+void rkCheatUI::cb_m_tcCreateButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcCreateButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcCancelButton_i(Fl_Button* o, void*) {
+  ((TrainerMakerWindow*)o->parent())->hide();
+}
+void rkCheatUI::cb_m_tcCancelButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tcCancelButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcCodeBrowser_i(Fl_Select_Browser* o, void*) {
+  ((TrainerMakerWindow*)o->parent()->parent())->onSelectCode();
+}
+void rkCheatUI::cb_m_tcCodeBrowser(Fl_Select_Browser* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_tcCodeBrowser_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcNewCodeButton_i(Fl_Button* o, void*) {
+  ((TrainerMakerWindow*)o->parent()->parent())->createNewCode();
+}
+void rkCheatUI::cb_m_tcNewCodeButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_tcNewCodeButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tcEditCodeButton_i(Fl_Button* o, void*) {
+  ((TrainerMakerWindow*)o->parent()->parent())->onEdit();
+}
+void rkCheatUI::cb_m_tcEditCodeButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_tcEditCodeButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tciCodeName_i(Fl_Input* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onNameChanged();
+}
+void rkCheatUI::cb_m_tciCodeName(Fl_Input* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciCodeName_i(o,v);
+}
+
+void rkCheatUI::cb_m_tciConditionalCheck_i(Fl_Check_Button* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onConditionChanged();
+}
+void rkCheatUI::cb_m_tciConditionalCheck(Fl_Check_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciConditionalCheck_i(o,v);
+}
+
+Fl_Menu_Item rkCheatUI::menu_m_tciConditionalOperator[] = {
+ {"=", 0,  0, (void*)(SEARCH_VALUE_EXACT), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"!=", 0,  0, (void*)(SEARCH_VALUE_NOTEXACT), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {">", 0,  0, (void*)(SEARCH_VALUE_GREATER), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"<", 0,  0, (void*)(SEARCH_VALUE_LESS), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
+
+void rkCheatUI::cb_m_tciConditionalCode_i(Fl_Choice* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onConditionCodeChanged();
+}
+void rkCheatUI::cb_m_tciConditionalCode(Fl_Choice* o, void* v) {
+  ((rkCheatUI*)(o->parent()->parent()->user_data()))->cb_m_tciConditionalCode_i(o,v);
+}
+
+Fl_Menu_Item rkCheatUI::menu_m_tciConditionalCode[] = {
+ {"Code...", 0,  0, 0, 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0}
+};
+Fl_Menu_Item* rkCheatUI::m_tciDefaultMenuItem = rkCheatUI::menu_m_tciConditionalCode + 0;
+
+void rkCheatUI::cb_m_tciAddCodeButton_i(Fl_Button* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onAddCode();
+}
+void rkCheatUI::cb_m_tciAddCodeButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciAddCodeButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tciOKButton_i(Fl_Button* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onOK();
+}
+void rkCheatUI::cb_m_tciOKButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciOKButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tciCancelButton_i(Fl_Button* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onCancel();
+}
+void rkCheatUI::cb_m_tciCancelButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciCancelButton_i(o,v);
+}
+
+void rkCheatUI::cb_m_tciDeleteCodeButton_i(Fl_Button* o, void*) {
+  ((TrainerItemWindow*)o->parent())->onDeleteCode();
+}
+void rkCheatUI::cb_m_tciDeleteCodeButton(Fl_Button* o, void* v) {
+  ((rkCheatUI*)(o->parent()->user_data()))->cb_m_tciDeleteCodeButton_i(o,v);
+}
+
 void rkCheatUI::RangeButtonCB(Fl_Widget *w, void *data) {
   int type = (int)(unsigned long)data;
   string fname;
@@ -340,11 +466,11 @@ void rkCheatUI::SearchTypeChangeCB(Fl_Widget *w, void *data) {
   	uiInstance->ui_valueInputGroup->activate();
   	uiInstance->ui_isHex->value(1);
   	uiInstance->ui_valueType->value(uiInstance->getMenuIndex(SEARCH_VALUE_TYPE_4BYTE));
-	if (w != 0)
-	{
+  	if (w != 0)
+  	{
   		int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
   		uiInstance->ui_valueInput->setValueType(value);
-	}
+  	}
   	uiInstance->ui_valueInput->setHex(true);	
   	uiInstance->ui_valueType->deactivate();
   }
@@ -549,6 +675,9 @@ void rkCheatUI::CodeTableButtonCB(Fl_Widget *w, void *data) {
   	case CODE_TABLE_DELETE:
   		uiInstance->ui_codeTable->deleteCodes();
   		break;
+  	case CODE_TABLE_TRAIN:
+  		uiInstance->ui_codeTable->launchTrain();
+  		break;
     	case CODE_TABLE_SAVE:
     		fnfc.title("Save Code Table");
     		fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
@@ -577,7 +706,8 @@ void rkCheatUI::CodeTableButtonCB(Fl_Widget *w, void *data) {
     		  case  1: printf("CANCEL\n");                      break;  // CANCEL
     		  default: 
     		  	fname = fnfc.filename();
-    		  	printf("PICKED: %s\n",fname.c_str()); uiInstance->ui_codeTable->loadData(fname); break;  // FILE CHOSEN
+    		  	printf("PICKED: %s\n",fname.c_str()); uiInstance->ui_codeTable->loadData(fname); // FILE CHOSEN
+    		  	uiInstance->ui_codeTable->writeMemoryOnce(); break;
     		}	
     		break;
     }
@@ -610,6 +740,7 @@ void rkCheatUI::CanConnectCB(Fl_Widget *w, void *data) {
 }
 
 void rkCheatUI::ViewerCB(Fl_Widget *w, void *data) {
+  uiInstance->m_valueviewer->hide();
   uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
   uiInstance->m_valueviewer->show();
 }
@@ -618,7 +749,7 @@ rkCheatUI::rkCheatUI() {
   uiInstance = this;
   m_interface = 0;
   m_inProgress = false;
-  { mainWindow = new rkWindow(1379, 833, "CCCheat");
+  { mainWindow = new rkWindow(1417, 757, "CCCheat");
     mainWindow->box(FL_FLAT_BOX);
     mainWindow->color(FL_BACKGROUND_COLOR);
     mainWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -630,8 +761,7 @@ rkCheatUI::rkCheatUI() {
     mainWindow->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     mainWindow->when(FL_WHEN_RELEASE);
     { searchGroup = new Fl_Group(10, 70, 380, 274, "Search");
-      searchGroup->box(FL_BORDER_BOX);
-      searchGroup->color(FL_DARK1);
+      searchGroup->box(FL_ENGRAVED_FRAME);
       { ui_searchType = new SearchOperationChoice(104, 96, 281, 23, "Search Type:");
         ui_searchType->box(FL_FLAT_BOX);
         ui_searchType->down_box(FL_BORDER_BOX);
@@ -682,9 +812,8 @@ rkCheatUI::rkCheatUI() {
       searchGroup->end();
     } // Fl_Group* searchGroup
     { ui_resultGroup = new Fl_Group(805, 70, 560, 274, "Results");
-      ui_resultGroup->box(FL_BORDER_BOX);
-      ui_resultGroup->color(FL_DARK1);
-      { ui_resultTable = new ResultTable(810, 99, 423, 240);
+      ui_resultGroup->box(FL_THIN_DOWN_FRAME);
+      { ui_resultTable = new ResultTable(810, 99, 423, 236);
         ui_resultTable->box(FL_THIN_DOWN_FRAME);
         ui_resultTable->color(FL_BACKGROUND_COLOR);
         ui_resultTable->selection_color((Fl_Color)6);
@@ -715,8 +844,7 @@ rkCheatUI::rkCheatUI() {
       ui_resultGroup->end();
     } // Fl_Group* ui_resultGroup
     { ui_rangeGroup = new Fl_Group(410, 70, 375, 275, "Range");
-      ui_rangeGroup->box(FL_BORDER_BOX);
-      ui_rangeGroup->color(FL_DARK1);
+      ui_rangeGroup->box(FL_ENGRAVED_FRAME);
       { ui_rangeTable = new RangeTable(418, 75, 242, 215);
         ui_rangeTable->box(FL_THIN_UP_FRAME);
         ui_rangeTable->color(FL_BACKGROUND_COLOR);
@@ -743,7 +871,6 @@ rkCheatUI::rkCheatUI() {
         ui_buttonClearRanges->callback((Fl_Callback*)RangeButtonCB, (void*)(RANGE_CLEAR));
       } // Fl_Button* ui_buttonClearRanges
       { ui_addRangeGrp = new Fl_Group(410, 295, 367, 50);
-        ui_addRangeGrp->color(FL_DARK1);
         { ui_addRangeInput_Start = new ValueInput(420, 308, 100, 24);
           ui_addRangeInput_Start->box(FL_DOWN_BOX);
           ui_addRangeInput_Start->color(FL_BACKGROUND2_COLOR);
@@ -784,20 +911,18 @@ rkCheatUI::rkCheatUI() {
       ui_rangeGroup->end();
     } // Fl_Group* ui_rangeGroup
     { ui_statusbar = new Fl_Group(1, 775, 1364, 35);
-      ui_statusbar->box(FL_BORDER_BOX);
       { ui_opProgress = new Fl_Progress(10, 782, 1220, 20);
         ui_opProgress->minimum(0.0f);
         ui_opProgress->maximum(1.0f);
       } // Fl_Progress* ui_opProgress
       { ui_opStatus = new Fl_Box(1225, 784, 135, 16, "Ready");
       } // Fl_Box* ui_opStatus
-      ui_statusbar->size(mainWindow->w()-12, 35);
-      ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);
+      //ui_statusbar->size(mainWindow->w()-12, 35);
+      //ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);
       ui_statusbar->end();
     } // Fl_Group* ui_statusbar
     { ui_codeGroup = new Fl_Group(114, 395, 1120, 360, "Codes");
-      ui_codeGroup->box(FL_BORDER_BOX);
-      ui_codeGroup->color(FL_DARK1);
+      ui_codeGroup->box(FL_ENGRAVED_FRAME);
       { ui_codeTable = new CodeTable(119, 425, 985, 325);
         ui_codeTable->box(FL_THIN_DOWN_FRAME);
         ui_codeTable->color(FL_DARK1);
@@ -814,15 +939,19 @@ rkCheatUI::rkCheatUI() {
       { ui_ButtonNewCode = new Fl_Button(1124, 465, 100, 30, "New Code");
         ui_ButtonNewCode->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_NEW));
       } // Fl_Button* ui_ButtonNewCode
-      { ui_ButtonDeleteCode = new Fl_Button(1124, 511, 100, 30, "Delete Code");
+      { ui_ButtonDeleteCode = new Fl_Button(1124, 509, 100, 30, "Delete Code");
         ui_ButtonDeleteCode->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_DELETE));
       } // Fl_Button* ui_ButtonDeleteCode
-      { ui_ButtonSaveCodes = new Fl_Button(1124, 558, 100, 30, "Save Codes");
+      { ui_ButtonSaveCodes = new Fl_Button(1124, 554, 100, 30, "Save Codes");
         ui_ButtonSaveCodes->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_SAVE));
       } // Fl_Button* ui_ButtonSaveCodes
-      { ui_ButtonLoadCodes = new Fl_Button(1124, 605, 100, 30, "Load Codes");
+      { ui_ButtonLoadCodes = new Fl_Button(1124, 599, 100, 30, "Load Codes");
         ui_ButtonLoadCodes->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_LOAD));
       } // Fl_Button* ui_ButtonLoadCodes
+      { ui_ButtonCreateTrainer = new Fl_Button(1124, 644, 100, 30, "Create Trainer");
+        ui_ButtonCreateTrainer->callback((Fl_Callback*)CodeTableButtonCB, (void*)(CODE_TABLE_TRAIN));
+        ui_ButtonCreateTrainer->deactivate();
+      } // Fl_Button* ui_ButtonCreateTrainer
       ui_codeGroup->end();
     } // Fl_Group* ui_codeGroup
     { ui_connectButton = new Fl_Light_Button(20, 20, 100, 30, "Connect");
@@ -855,9 +984,10 @@ rkCheatUI::rkCheatUI() {
       ui_ccapiChoice->down_box(FL_BORDER_BOX);
       ui_ccapiChoice->menu(menu_ui_ccapiChoice);
     } // Fl_Choice* ui_ccapiChoice
+    mainWindow->manual_resize(ui_resultGroup->x()+ui_resultGroup->w()+10, ui_statusbar->y() + ui_statusbar->h() + 5);
     mainWindow->end();
   } // rkWindow* mainWindow
-  { m_valueviewer = new ValueViewerWindow(526, 695, "Value Viewer");
+  { m_valueviewer = new ValueViewerWindow(486, 655, "Value Viewer");
     m_valueviewer->box(FL_FLAT_BOX);
     m_valueviewer->color(FL_BACKGROUND_COLOR);
     m_valueviewer->selection_color(FL_BACKGROUND_COLOR);
@@ -893,9 +1023,10 @@ rkCheatUI::rkCheatUI() {
     { m_valueAddCodeButton = new Fl_Button(395, 15, 100, 30, "Add Code");
       m_valueAddCodeButton->callback((Fl_Callback*)cb_m_valueAddCodeButton);
     } // Fl_Button* m_valueAddCodeButton
+    //m_valueviewer->manual_resize(m_valueAddCodeButton->x()+m_valueAddCodeButton->w()+10, m_valueTable->y() + m_valueTable->h() + 5);
     m_valueviewer->end();
   } // ValueViewerWindow* m_valueviewer
-  { m_infoWindow = new InfoWindow(476, 336, "CCCheat Information");
+  { m_infoWindow = new InfoWindow(482, 335, "CCCheat Information");
     m_infoWindow->box(FL_FLAT_BOX);
     m_infoWindow->color(FL_BACKGROUND_COLOR);
     m_infoWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -1002,7 +1133,7 @@ rkCheatUI::rkCheatUI() {
     m_pointerScannerWindow->set_modal();
     m_pointerScannerWindow->end();
   } // PointerScannerWindow* m_pointerScannerWindow
-  { m_peWindow = new PointerEditorWindow(426, 476, "Pointer Editor");
+  { m_peWindow = new PointerEditorWindow(416, 466, "Pointer Editor");
     m_peWindow->box(FL_FLAT_BOX);
     m_peWindow->color(FL_BACKGROUND_COLOR);
     m_peWindow->selection_color(FL_BACKGROUND_COLOR);
@@ -1014,7 +1145,7 @@ rkCheatUI::rkCheatUI() {
     m_peWindow->align(Fl_Align(FL_ALIGN_TOP));
     m_peWindow->when(FL_WHEN_RELEASE);
     { m_peAddressSet0 = new AddressOffsetGroup(15, 14, 395, 37);
-      m_peAddressSet0->box(FL_BORDER_BOX);
+      m_peAddressSet0->box(FL_NO_BOX);
       m_peAddressSet0->color(FL_BACKGROUND_COLOR);
       m_peAddressSet0->selection_color(FL_BACKGROUND_COLOR);
       m_peAddressSet0->labeltype(FL_NORMAL_LABEL);
@@ -1026,7 +1157,7 @@ rkCheatUI::rkCheatUI() {
       m_peAddressSet0->end();
     } // AddressOffsetGroup* m_peAddressSet0
     { m_peAddressSet1 = new AddressOffsetGroup(15, 62, 395, 37);
-      m_peAddressSet1->box(FL_BORDER_BOX);
+      m_peAddressSet1->box(FL_NO_BOX);
       m_peAddressSet1->color(FL_BACKGROUND_COLOR);
       m_peAddressSet1->selection_color(FL_BACKGROUND_COLOR);
       m_peAddressSet1->labeltype(FL_NORMAL_LABEL);
@@ -1038,7 +1169,7 @@ rkCheatUI::rkCheatUI() {
       m_peAddressSet1->end();
     } // AddressOffsetGroup* m_peAddressSet1
     { m_peAddressSet2 = new AddressOffsetGroup(15, 111, 395, 37);
-      m_peAddressSet2->box(FL_BORDER_BOX);
+      m_peAddressSet2->box(FL_NO_BOX);
       m_peAddressSet2->color(FL_BACKGROUND_COLOR);
       m_peAddressSet2->selection_color(FL_BACKGROUND_COLOR);
       m_peAddressSet2->labeltype(FL_NORMAL_LABEL);
@@ -1050,7 +1181,7 @@ rkCheatUI::rkCheatUI() {
       m_peAddressSet2->end();
     } // AddressOffsetGroup* m_peAddressSet2
     { m_peAddressSet3 = new AddressOffsetGroup(15, 159, 395, 37);
-      m_peAddressSet3->box(FL_BORDER_BOX);
+      m_peAddressSet3->box(FL_NO_BOX);
       m_peAddressSet3->color(FL_BACKGROUND_COLOR);
       m_peAddressSet3->selection_color(FL_BACKGROUND_COLOR);
       m_peAddressSet3->labeltype(FL_NORMAL_LABEL);
@@ -1062,7 +1193,7 @@ rkCheatUI::rkCheatUI() {
       m_peAddressSet3->end();
     } // AddressOffsetGroup* m_peAddressSet3
     { m_peAddressSet4 = new AddressOffsetGroup(15, 208, 395, 37);
-      m_peAddressSet4->box(FL_BORDER_BOX);
+      m_peAddressSet4->box(FL_NO_BOX);
       m_peAddressSet4->color(FL_BACKGROUND_COLOR);
       m_peAddressSet4->selection_color(FL_BACKGROUND_COLOR);
       m_peAddressSet4->labeltype(FL_NORMAL_LABEL);
@@ -1135,6 +1266,136 @@ rkCheatUI::rkCheatUI() {
     m_peWindow->set_modal();
     m_peWindow->end();
   } // PointerEditorWindow* m_peWindow
+  { m_trainerMakerWindow = new TrainerMakerWindow(631, 665, "Trainer Maker");
+    m_trainerMakerWindow->box(FL_FLAT_BOX);
+    m_trainerMakerWindow->color(FL_BACKGROUND_COLOR);
+    m_trainerMakerWindow->selection_color(FL_BACKGROUND_COLOR);
+    m_trainerMakerWindow->labeltype(FL_NO_LABEL);
+    m_trainerMakerWindow->labelfont(0);
+    m_trainerMakerWindow->labelsize(14);
+    m_trainerMakerWindow->labelcolor(FL_FOREGROUND_COLOR);
+    m_trainerMakerWindow->user_data((void*)(this));
+    m_trainerMakerWindow->align(Fl_Align(FL_ALIGN_TOP));
+    m_trainerMakerWindow->when(FL_WHEN_RELEASE);
+    { m_tcTrainerTitle = new Fl_Input(100, 26, 445, 24, "Trainer Name");
+      m_tcTrainerTitle->callback((Fl_Callback*)cb_m_tcTrainerTitle);
+      m_tcTrainerTitle->when(FL_WHEN_CHANGED);
+    } // Fl_Input* m_tcTrainerTitle
+    { m_tcAuthorName = new Fl_Input(100, 72, 445, 24, "Author:");
+      m_tcAuthorName->callback((Fl_Callback*)cb_m_tcAuthorName);
+      m_tcAuthorName->when(FL_WHEN_CHANGED);
+    } // Fl_Input* m_tcAuthorName
+    { m_tcGameTitle = new Fl_Input(100, 119, 445, 24, "Game Title:");
+      m_tcGameTitle->callback((Fl_Callback*)cb_m_tcGameTitle);
+      m_tcGameTitle->when(FL_WHEN_CHANGED);
+    } // Fl_Input* m_tcGameTitle
+    { m_tcGameRegion = new Fl_Input(100, 166, 445, 24, "Game Region:");
+      m_tcGameRegion->callback((Fl_Callback*)cb_m_tcGameRegion);
+      m_tcGameRegion->when(FL_WHEN_CHANGED);
+    } // Fl_Input* m_tcGameRegion
+    { m_tcInformation = new Fl_Text_Editor(100, 215, 445, 175, "Trainer Information");
+    } // Fl_Text_Editor* m_tcInformation
+    { m_tcCreateButton = new Fl_Button(211, 645, 65, 25, "Create");
+      m_tcCreateButton->callback((Fl_Callback*)cb_m_tcCreateButton);
+    } // Fl_Button* m_tcCreateButton
+    { m_tcCancelButton = new Fl_Button(311, 645, 65, 25, "Cancel");
+      m_tcCancelButton->callback((Fl_Callback*)cb_m_tcCancelButton);
+    } // Fl_Button* m_tcCancelButton
+    { m_tcCodeGroup = new Fl_Group(5, 415, 575, 215, "Codes");
+      m_tcCodeGroup->box(FL_DOWN_BOX);
+      { m_tcCodeBrowser = new Fl_Select_Browser(15, 425, 560, 165);
+        m_tcCodeBrowser->box(FL_NO_BOX);
+        m_tcCodeBrowser->color(FL_BACKGROUND2_COLOR);
+        m_tcCodeBrowser->selection_color(FL_SELECTION_COLOR);
+        m_tcCodeBrowser->labeltype(FL_NORMAL_LABEL);
+        m_tcCodeBrowser->labelfont(0);
+        m_tcCodeBrowser->labelsize(14);
+        m_tcCodeBrowser->labelcolor(FL_FOREGROUND_COLOR);
+        m_tcCodeBrowser->callback((Fl_Callback*)cb_m_tcCodeBrowser);
+        m_tcCodeBrowser->align(Fl_Align(FL_ALIGN_BOTTOM));
+        m_tcCodeBrowser->when(3);
+      } // Fl_Select_Browser* m_tcCodeBrowser
+      { m_tcNewCodeButton = new Fl_Button(55, 605, 64, 20, "New");
+        m_tcNewCodeButton->callback((Fl_Callback*)cb_m_tcNewCodeButton);
+      } // Fl_Button* m_tcNewCodeButton
+      { m_tcEditCodeButton = new Fl_Button(451, 605, 64, 20, "Edit");
+        m_tcEditCodeButton->callback((Fl_Callback*)cb_m_tcEditCodeButton);
+      } // Fl_Button* m_tcEditCodeButton
+      m_tcCodeGroup->end();
+    } // Fl_Group* m_tcCodeGroup
+    m_trainerMakerWindow->set_modal();
+    m_trainerMakerWindow->end();
+  } // TrainerMakerWindow* m_trainerMakerWindow
+  { m_trainerItem = new TrainerItemWindow(639, 452, "Trainer Item");
+    m_trainerItem->box(FL_FLAT_BOX);
+    m_trainerItem->color(FL_BACKGROUND_COLOR);
+    m_trainerItem->selection_color(FL_BACKGROUND_COLOR);
+    m_trainerItem->labeltype(FL_NO_LABEL);
+    m_trainerItem->labelfont(0);
+    m_trainerItem->labelsize(14);
+    m_trainerItem->labelcolor(FL_FOREGROUND_COLOR);
+    m_trainerItem->user_data((void*)(this));
+    m_trainerItem->align(Fl_Align(FL_ALIGN_TOP));
+    m_trainerItem->when(FL_WHEN_RELEASE);
+    { m_tciCodeName = new Fl_Input(90, 16, 470, 24, "Code Name:");
+      m_tciCodeName->callback((Fl_Callback*)cb_m_tciCodeName);
+      m_tciCodeName->when(FL_WHEN_CHANGED);
+    } // Fl_Input* m_tciCodeName
+    { m_tciConditionalCheck = new Fl_Check_Button(84, 55, 25, 15, "Conditional");
+      m_tciConditionalCheck->down_box(FL_DOWN_BOX);
+      m_tciConditionalCheck->callback((Fl_Callback*)cb_m_tciConditionalCheck);
+      m_tciConditionalCheck->align(Fl_Align(FL_ALIGN_LEFT));
+    } // Fl_Check_Button* m_tciConditionalCheck
+    { m_tciConditionGroup = new Fl_Group(10, 75, 555, 35);
+      { m_tciConditionalOperator = new Fl_Choice(348, 85, 71, 20);
+        m_tciConditionalOperator->down_box(FL_BORDER_BOX);
+        m_tciConditionalOperator->menu(menu_m_tciConditionalOperator);
+      } // Fl_Choice* m_tciConditionalOperator
+      { m_tciConditionalValue = new ValueInput(423, 81, 137, 24);
+        m_tciConditionalValue->box(FL_DOWN_BOX);
+        m_tciConditionalValue->color(FL_BACKGROUND2_COLOR);
+        m_tciConditionalValue->selection_color(FL_SELECTION_COLOR);
+        m_tciConditionalValue->labeltype(FL_NORMAL_LABEL);
+        m_tciConditionalValue->labelfont(0);
+        m_tciConditionalValue->labelsize(14);
+        m_tciConditionalValue->labelcolor(FL_FOREGROUND_COLOR);
+        m_tciConditionalValue->align(Fl_Align(FL_ALIGN_LEFT));
+        m_tciConditionalValue->when(FL_WHEN_RELEASE);
+      } // ValueInput* m_tciConditionalValue
+      { m_tciConditionalCode = new Fl_Choice(41, 85, 304, 20, "IF");
+        m_tciConditionalCode->down_box(FL_BORDER_BOX);
+        m_tciConditionalCode->callback((Fl_Callback*)cb_m_tciConditionalCode);
+        m_tciConditionalCode->menu(menu_m_tciConditionalCode);
+      } // Fl_Choice* m_tciConditionalCode
+      m_tciConditionGroup->end();
+    } // Fl_Group* m_tciConditionGroup
+    { m_tciCodeTable = new TrainerItemCodeTable(20, 145, 530, 200, "Set Codes");
+      m_tciCodeTable->box(FL_THIN_DOWN_FRAME);
+      m_tciCodeTable->color(FL_BACKGROUND_COLOR);
+      m_tciCodeTable->selection_color((Fl_Color)6);
+      m_tciCodeTable->labeltype(FL_NORMAL_LABEL);
+      m_tciCodeTable->labelfont(0);
+      m_tciCodeTable->labelsize(14);
+      m_tciCodeTable->labelcolor(FL_FOREGROUND_COLOR);
+      m_tciCodeTable->align(Fl_Align(FL_ALIGN_TOP));
+      m_tciCodeTable->when(FL_WHEN_RELEASE);
+      m_tciCodeTable->end();
+    } // TrainerItemCodeTable* m_tciCodeTable
+    { m_tciAddCodeButton = new Fl_Button(485, 350, 64, 20, "Add");
+      m_tciAddCodeButton->callback((Fl_Callback*)cb_m_tciAddCodeButton);
+    } // Fl_Button* m_tciAddCodeButton
+    { m_tciOKButton = new Fl_Button(160, 385, 64, 20, "OK");
+      m_tciOKButton->callback((Fl_Callback*)cb_m_tciOKButton);
+    } // Fl_Button* m_tciOKButton
+    { m_tciCancelButton = new Fl_Button(270, 385, 64, 20, "Cancel");
+      m_tciCancelButton->callback((Fl_Callback*)cb_m_tciCancelButton);
+    } // Fl_Button* m_tciCancelButton
+    { m_tciDeleteCodeButton = new Fl_Button(409, 350, 64, 20, "Delete");
+      m_tciDeleteCodeButton->callback((Fl_Callback*)cb_m_tciDeleteCodeButton);
+    } // Fl_Button* m_tciDeleteCodeButton
+    m_trainerItem->set_modal();
+    m_trainerItem->end();
+  } // TrainerItemWindow* m_trainerItem
 }
 
 void rkCheatUI::setInterface(InterfaceCCAPI *iface) {

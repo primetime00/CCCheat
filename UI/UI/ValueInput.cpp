@@ -346,6 +346,14 @@ void ValueInput::setValue(float ivalue)
 	value(strVal.c_str());
 }
 
+void ValueInput::setValue(long long value, char type, bool lit)
+{
+	auto tmp_lit = m_literal;
+	setLiteral(lit);
+	setValue(value);
+	setValueType(type);
+	setLiteral(tmp_lit);
+}
 
 ValueInput::~ValueInput(void)
 {

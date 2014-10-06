@@ -232,3 +232,13 @@ void PointerEditorWindow::createGroup()
 	groups.push_back(uiInstance->m_peAddressSet3);
 	groups.push_back(uiInstance->m_peAddressSet4);
 }
+
+void PointerEditorWindow::capture()
+{
+	rkWindow::capture();
+	createdW = uiInstance->m_peValueType->x() + uiInstance->m_peValueType->w() + 10;
+	createdH = uiInstance->m_peOKButton->y() + uiInstance->m_peOKButton->h() + 20;
+	int btnX = (createdW - uiInstance->m_peOKButton->w())/2;
+	uiInstance->m_peOKButton->position( btnX - ( (uiInstance->m_peOKButton->w()/2) + 10) , uiInstance->m_peOKButton->y());
+	uiInstance->m_peCancelButton->position( btnX + ((uiInstance->m_peCancelButton->w()/2) + 10) , uiInstance->m_peCancelButton->y());
+}

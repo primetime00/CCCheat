@@ -11,9 +11,10 @@
 #include <FL/Fl_Input.H>
 #include "ValueInput.h"
 #include <iostream>
+#include <string>
 #include <memory>
 
-#define CCCHEAT_VERSION "1.12"
+#define CCCHEAT_VERSION "1.20"
 
 #define SEARCH_STOPPED_CANCEL 0x00
 #define SEARCH_STOPPED_PROPER 0x01
@@ -93,6 +94,9 @@ struct rkCheat_Code
 		description = d;
 		_delete = 0;
 	}
+	rkCheat_Code(rkCheat_Code &item){
+		*this = item;
+	}
 	~rkCheat_Code() {
 		if (widget)
 		{
@@ -102,6 +106,8 @@ struct rkCheat_Code
 	}
 	void operator=(rkCheat_Code &item) {
 		description = item.description;
+		if (m_address == nullptr)
+			m_address = make_shared<AddressObj>();
 		m_address->address = item.m_address->address;
 		m_address->value = item.m_address->value;
 		if (item.m_address->pointer != nullptr)
@@ -110,6 +116,7 @@ struct rkCheat_Code
 		freeze = item.freeze;
 		widget = item.widget;
 		m_address->sign = item.m_address->sign;
+		m_address->type = item.m_address->type;
 		_delete = item._delete;
 	}
 	void setSign(bool s) { m_address->sign = s; }
@@ -124,6 +131,98 @@ struct ResultRow {
 };
 
 typedef vector<ResultRow> Results;
+
+struct rkTrainerCodeObj
+{
+	string name;
+	bool condition;
+	int  conditionType;
+	long long conditionValue;
+	AddressItem m_conditionAddress;
+	AddressList m_addresses;
+
+	rkTrainerCodeObj(rkTrainerCodeObj &item) {
+		*this = item;
+	}
+
+	~rkTrainerCodeObj() { }
+	rkTrainerCodeObj() {
+		name = "";
+		conditionType = 0;
+		condition = false;
+		conditionValue = 0;
+		m_addresses.clear();
+	}
+
+	void operator=(rkTrainerCodeObj &item) {
+		name = item.name;
+		condition = item.condition;
+		conditionType = item.conditionType;
+		conditionValue = item.conditionValue;
+		m_conditionAddress = make_shared<AddressObj>(item.m_conditionAddress->address, item.m_conditionAddress->pointer, item.m_conditionAddress->type, item.m_conditionAddress->sign);
+		m_addresses.clear();
+		for (auto i = item.m_addresses.begin(); i != item.m_addresses.end(); ++i)
+			m_addresses.push_back(make_shared<AddressObj>((*i)->address, (*i)->pointer, (*i)->type, (*i)->sign));
+	}
+
+	int write(char *buf) {
+		int pos = 0;
+		buf[pos] = name.length(); pos+=1;
+		memcpy(&buf[pos], name.c_str(), (int)name.length()); pos += (int)name.length();
+		buf[pos] = condition; pos+=1;
+		if (condition)
+		{
+			buf[pos] = conditionType; pos+=1;
+			m_conditionAddress->value = m_conditionAddress->store = conditionValue;
+			pos += m_conditionAddress->write(&buf[pos]);
+		}
+		buf[pos] = m_addresses.size(); pos+=1;
+		for (auto i=m_addresses.begin(); i != m_addresses.end(); ++i)
+		{
+			pos += (*i)->write(&buf[pos]);
+		}
+		return pos;
+	}
+
+	int read(char *buf) {
+		int pos = 0;
+		int nameLen = buf[pos]; pos+=1;
+		name = string(&buf[pos], nameLen); pos += (int)nameLen;
+		condition = buf[pos] > 0 ? true : false; pos+=1;
+		if (condition)
+		{
+			conditionType = buf[pos]; pos+=1;
+			m_conditionAddress = make_shared<AddressObj>();
+			pos += m_conditionAddress->read(&buf[pos]);
+			conditionValue = m_conditionAddress->value;
+		}
+		int numOfCodes = buf[pos]; pos+=1;
+		for (int i=0; i< numOfCodes; ++i)
+		{
+			auto code = make_shared<AddressObj>();
+			pos += code->read(&buf[pos]);
+			m_addresses.push_back(code);
+		}
+		return pos;
+	}
+
+	void debug() {
+		cout << "Code Info: " << endl;
+		cout << "Name: " << name << endl;
+		cout << "Condition? " << (condition ? "true" : "false") << endl;
+		if (condition)
+		{
+			cout << "Condition Type: " << conditionType << endl;
+			cout << "Condition Value: " << conditionValue << endl;
+			m_conditionAddress->debug();
+		}
+		cout << "Number of inside codes: " << m_addresses.size() << endl << endl;
+		for (auto i = m_addresses.begin(); i!=m_addresses.end(); ++i)
+			(*i)->debug();
+	}
+};
+
+typedef shared_ptr<rkTrainerCodeObj> rkTrainerCode;
 
 
 #ifdef _WIN32

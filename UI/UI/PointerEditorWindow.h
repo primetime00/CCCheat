@@ -51,6 +51,8 @@ public:
 	void setResolvedAddress(unsigned long address) { m_resAddress = address; }
 	void setMemoryOperator(MemoryOperator *op) { m_operator = op; }
 
+	void capture();
+
 private:
 	void readPointers();
 	void createGroup();

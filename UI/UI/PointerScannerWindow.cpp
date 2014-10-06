@@ -308,3 +308,4 @@ void PointerScannerWindow::setNumberOfResults(unsigned long res)
 	uiInstance->m_psScanningNumberLabel->damage(FL_DAMAGE_ALL);
 
 }
+

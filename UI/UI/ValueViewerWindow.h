@@ -20,6 +20,8 @@ public:
 	void show();
 	void hide();
 
+	void capture();
+
 private:
 	void reset();
 

@@ -11,6 +11,9 @@ decl {\#include <FL/Fl_Menu_Button.H>} {public global
 decl {\#include <FL/fl_ask.H>} {public global
 } 
 
+decl {\#include <FL/Fl_Select_Browser.H>} {public global
+} 
+
 decl {\#include <fstream>} {public global
 } 
 
@@ -63,6 +66,15 @@ decl {\#include "AddressOffsetGroup.h"} {public global
 } 
 
 decl {\#include "PointerEditorWindow.h"} {public global
+} 
+
+decl {\#include "TrainerMakerWindow.h"} {public global
+} 
+
+decl {\#include "TrainerItemWindow.h"} {public global
+} 
+
+decl {\#include "TrainerItemCodeTable.h"} {public global
 } 
 
 decl {\#define RANGE_SAVE 0} {public global
@@ -146,7 +158,7 @@ switch (type)
   		break;		
 }} {}
   }
-  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {SearchTypeChangeCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
     code {if (uiInstance->ui_searchType->isFuzzy())
 {
@@ -159,8 +171,11 @@ else if (uiInstance->ui_searchType->isPointer())
 	uiInstance->ui_valueInputGroup->activate();
 	uiInstance->ui_isHex->value(1);
 	uiInstance->ui_valueType->value(uiInstance->getMenuIndex(SEARCH_VALUE_TYPE_4BYTE));
-	int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
-	uiInstance->ui_valueInput->setValueType(value);
+	if (w != 0)
+	{
+		int value = get_user_data(int, ((Fl_Menu_Button*)w)->mvalue()->user_data());
+		uiInstance->ui_valueInput->setValueType(value);
+	}
 	uiInstance->ui_valueInput->setHex(true);	
 	uiInstance->ui_valueType->deactivate();
 }
@@ -352,7 +367,7 @@ case RESULT_TABLE_DELETE:
     	break;
 \#endif} {}
   }
-  Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {CodeTableButtonCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
     code {int command = (int)(unsigned long)data;
   string fname;
@@ -364,6 +379,9 @@ case RESULT_TABLE_DELETE:
 		break;
 	case CODE_TABLE_DELETE:
 		uiInstance->ui_codeTable->deleteCodes();
+		break;
+	case CODE_TABLE_TRAIN:
+		uiInstance->ui_codeTable->launchTrain();
 		break;
   	case CODE_TABLE_SAVE:
   		fnfc.title("Save Code Table");
@@ -394,9 +412,11 @@ case RESULT_TABLE_DELETE:
   		  default: 
   		  	fname = fnfc.filename();
   		  	printf("PICKED: %s\\n",fname.c_str()); uiInstance->ui_codeTable->loadData(fname); break;  // FILE CHOSEN
+  		  	uiInstance->ui_codeTable->writeMemoryOnce();
   		}	
   		break;
-  }} {}
+  }} {selected
+    }
   }
   Function {ConnectButtonCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
@@ -416,32 +436,34 @@ case RESULT_TABLE_DELETE:
   	  }
       }} {}
   }
-  Function {CanConnectCB(Fl_Widget *w, void *data)} {open return_type {static void}
+  Function {CanConnectCB(Fl_Widget *w, void *data)} {return_type {static void}
   } {
     code {bool valid = data ? true : false;
   if (valid && uiInstance)
 	  uiInstance->ui_connectButton->activate();
   else if (!valid && uiInstance)
-	  uiInstance->ui_connectButton->deactivate();} {selected
-    }
+	  uiInstance->ui_connectButton->deactivate();} {}
   }
-  Function {ViewerCB(Fl_Widget *w, void *data)} {return_type {static void}
+  Function {ViewerCB(Fl_Widget *w, void *data)} {open return_type {static void}
   } {
-    code {uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
+    code {uiInstance->m_valueviewer->hide();
+uiInstance->m_valueviewer->setCodeData((rkCheat_Code*)data);
 uiInstance->m_valueviewer->show();} {}
   }
-  Function {rkCheatUI()} {} {
+  Function {rkCheatUI()} {open
+  } {
     code {uiInstance = this;
 m_interface = 0;
 m_inProgress = false;} {}
     Fl_Window mainWindow {
       label CCCheat
-      xywh {-32000 -32000 1379 833} type Double align 80 hide
-      class rkWindow
+      xywh {297 190 1417 757} type Double align 80
+      code0 {mainWindow->manual_resize(ui_resultGroup->x()+ui_resultGroup->w()+10, ui_statusbar->y() + ui_statusbar->h() + 5);}
+      class rkWindow visible
     } {
       Fl_Group searchGroup {
         label Search open
-        xywh {10 70 380 274} box BORDER_BOX color 47
+        xywh {10 70 380 274} box ENGRAVED_FRAME
       } {
         Fl_Choice ui_searchType {
           label {Search Type:}
@@ -503,10 +525,10 @@ m_inProgress = false;} {}
       }
       Fl_Group ui_resultGroup {
         label Results open
-        xywh {805 70 560 274} box BORDER_BOX color 47
+        xywh {805 70 560 274} box THIN_DOWN_FRAME
       } {
         Fl_Table ui_resultTable {open
-          xywh {810 99 423 240} selection_color 6
+          xywh {810 99 423 236} selection_color 6
           class ResultTable
         } {}
         Fl_Box ui_numOfResults {
@@ -540,8 +562,8 @@ m_inProgress = false;} {}
         }
       }
       Fl_Group ui_rangeGroup {
-        label Range
-        xywh {410 70 375 275} box BORDER_BOX color 47
+        label Range open
+        xywh {410 70 375 275} box ENGRAVED_FRAME
       } {
         Fl_Table ui_rangeTable {
           callback RangeTableCB open
@@ -573,7 +595,7 @@ m_inProgress = false;} {}
           xywh {672 216 100 30}
         }
         Fl_Group ui_addRangeGrp {open
-          xywh {410 295 367 50} color 47
+          xywh {410 295 367 50}
         } {
           Fl_Input ui_addRangeInput_Start {
             callback RangeInputCB
@@ -604,9 +626,9 @@ m_inProgress = false;} {}
         }
       }
       Fl_Group ui_statusbar {open
-        xywh {1 775 1364 35} box BORDER_BOX
-        code0 {ui_statusbar->size(mainWindow->w()-12, 35);}
-        code1 {ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);}
+        xywh {1 775 1364 35}
+        code0 {//ui_statusbar->size(mainWindow->w()-12, 35);}
+        code1 {//ui_statusbar->position(0, mainWindow->h() - ui_statusbar->h() - 12);}
       } {
         Fl_Progress ui_opProgress {
           xywh {10 782 1220 20}
@@ -620,7 +642,7 @@ m_inProgress = false;} {}
       }
       Fl_Group ui_codeGroup {
         label Codes open
-        xywh {114 395 1120 360} box BORDER_BOX color 47
+        xywh {114 395 1120 360} box ENGRAVED_FRAME
       } {
         Fl_Table ui_codeTable {open
           xywh {119 425 985 325} color 47 selection_color 6 labeltype NO_LABEL
@@ -637,19 +659,26 @@ m_inProgress = false;} {}
           label {Delete Code}
           user_data CODE_TABLE_DELETE
           callback CodeTableButtonCB
-          xywh {1124 511 100 30}
+          xywh {1124 509 100 30}
         }
         Fl_Button ui_ButtonSaveCodes {
           label {Save Codes}
           user_data CODE_TABLE_SAVE
           callback CodeTableButtonCB
-          xywh {1124 558 100 30}
+          xywh {1124 554 100 30}
         }
         Fl_Button ui_ButtonLoadCodes {
           label {Load Codes}
           user_data CODE_TABLE_LOAD
           callback CodeTableButtonCB
-          xywh {1124 605 100 30}
+          xywh {1124 599 100 30}
+        }
+        Fl_Button ui_ButtonCreateTrainer {
+          label {Create Trainer}
+          user_data CODE_TABLE_TRAIN
+          callback CodeTableButtonCB
+          xywh {1124 644 100 30}
+          code0 {ui_ButtonCreateTrainer->deactivate();}
         }
       }
       Fl_Light_Button ui_connectButton {
@@ -689,7 +718,8 @@ m_inProgress = false;} {}
     }
     Fl_Window m_valueviewer {
       label {Value Viewer}
-      xywh {-32000 -32000 526 695} type Double hide
+      xywh {783 260 486 655} type Double hide
+      code0 {//m_valueviewer->manual_resize(m_valueAddCodeButton->x()+m_valueAddCodeButton->w()+10, m_valueTable->y() + m_valueTable->h() + 5);}
       class ValueViewerWindow
     } {
       Fl_Table m_valueTable {
@@ -714,8 +744,8 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_infoWindow {
-      label {CCCheat Information}
-      xywh {39 66 476 336} type Double hide
+      label {CCCheat Information} open
+      xywh {-32000 -32000 482 335} type Double hide
       class InfoWindow
     } {}
     Fl_Window m_pointerScannerWindow {
@@ -807,29 +837,29 @@ m_inProgress = false;} {}
       }
     }
     Fl_Window m_peWindow {
-      label {Pointer Editor}
-      xywh {-32000 -32000 426 476} type Double hide
+      label {Pointer Editor} open
+      xywh {-32000 -32000 416 466} type Double hide
       code0 {m_peWindow->reset();}
       class PointerEditorWindow modal
     } {
       Fl_Group m_peAddressSet0 {
-        xywh {15 14 395 37} box BORDER_BOX
+        xywh {15 14 395 37}
         class AddressOffsetGroup
       } {}
       Fl_Group m_peAddressSet1 {
-        xywh {15 62 395 37} box BORDER_BOX
+        xywh {15 62 395 37}
         class AddressOffsetGroup
       } {}
       Fl_Group m_peAddressSet2 {
-        xywh {15 111 395 37} box BORDER_BOX
+        xywh {15 111 395 37}
         class AddressOffsetGroup
       } {}
       Fl_Group m_peAddressSet3 {
-        xywh {15 159 395 37} box BORDER_BOX
+        xywh {15 159 395 37}
         class AddressOffsetGroup
       } {}
       Fl_Group m_peAddressSet4 {
-        xywh {15 208 395 37} box BORDER_BOX
+        xywh {15 208 395 37}
         class AddressOffsetGroup
       } {}
       Fl_Input m_peResolvedAddress {
@@ -878,6 +908,149 @@ m_inProgress = false;} {}
       Fl_Box {} {
         label {Resolved Value:}
         xywh {15 341 125 16} align 20
+      }
+    }
+    Fl_Window m_trainerMakerWindow {
+      label {Trainer Maker}
+      xywh {14 41 631 665} type Double hide
+      class TrainerMakerWindow modal
+    } {
+      Fl_Input m_tcTrainerTitle {
+        label {Trainer Name}
+        callback {((TrainerMakerWindow*)o->parent())->checkButtonStatus()}
+        xywh {100 26 445 24} when 1
+      }
+      Fl_Input m_tcAuthorName {
+        label {Author:}
+        callback {((TrainerMakerWindow*)o->parent())->checkButtonStatus()}
+        xywh {100 72 445 24} when 1
+      }
+      Fl_Input m_tcGameTitle {
+        label {Game Title:}
+        callback {((TrainerMakerWindow*)o->parent())->checkButtonStatus()}
+        xywh {100 119 445 24} when 1
+      }
+      Fl_Input m_tcGameRegion {
+        label {Game Region:}
+        callback {((TrainerMakerWindow*)o->parent())->checkButtonStatus()}
+        xywh {100 166 445 24} when 1
+      }
+      Fl_Text_Editor m_tcInformation {
+        label {Trainer Information}
+        xywh {100 215 445 175}
+      }
+      Fl_Button m_tcCreateButton {
+        label Create
+        callback {((TrainerMakerWindow*)o->parent())->onCreate()}
+        xywh {211 645 65 25}
+      }
+      Fl_Button m_tcCancelButton {
+        label Cancel
+        callback {((TrainerMakerWindow*)o->parent())->hide()}
+        xywh {311 645 65 25}
+      }
+      Fl_Group m_tcCodeGroup {
+        label Codes
+        xywh {5 415 575 215} box DOWN_BOX
+      } {
+        Fl_Browser m_tcCodeBrowser {
+          callback {((TrainerMakerWindow*)o->parent()->parent())->onSelectCode()}
+          xywh {15 425 560 165} when 3
+          class Fl_Select_Browser
+        }
+        Fl_Button m_tcNewCodeButton {
+          label New
+          callback {((TrainerMakerWindow*)o->parent()->parent())->createNewCode()}
+          xywh {55 605 64 20}
+        }
+        Fl_Button m_tcEditCodeButton {
+          label Edit
+          callback {((TrainerMakerWindow*)o->parent()->parent())->onEdit()}
+          xywh {451 605 64 20}
+        }
+      }
+    }
+    Fl_Window m_trainerItem {
+      label {Trainer Item}
+      xywh {-1598 161 639 452} type Double hide
+      class TrainerItemWindow modal
+    } {
+      Fl_Input m_tciCodeName {
+        label {Code Name:}
+        callback {((TrainerItemWindow*)o->parent())->onNameChanged()}
+        xywh {90 16 470 24} when 1
+      }
+      Fl_Check_Button m_tciConditionalCheck {
+        label Conditional
+        callback {((TrainerItemWindow*)o->parent())->onConditionChanged()}
+        xywh {84 55 25 15} down_box DOWN_BOX align 4
+      }
+      Fl_Group m_tciConditionGroup {open
+        xywh {10 75 555 35}
+      } {
+        Fl_Choice m_tciConditionalOperator {
+          xywh {348 85 71 20} down_box BORDER_BOX
+        } {
+          MenuItem {} {
+            label {=}
+            user_data SEARCH_VALUE_EXACT
+            xywh {0 0 30 20}
+          }
+          MenuItem {} {
+            label {!=}
+            user_data SEARCH_VALUE_NOTEXACT
+            xywh {10 10 30 20}
+          }
+          MenuItem {} {
+            label {>}
+            user_data SEARCH_VALUE_GREATER
+            xywh {20 20 30 20}
+          }
+          MenuItem {} {
+            label {<}
+            user_data SEARCH_VALUE_LESS
+            xywh {30 30 30 20}
+          }
+        }
+        Fl_Input m_tciConditionalValue {
+          xywh {423 81 137 24}
+          class ValueInput
+        }
+        Fl_Choice m_tciConditionalCode {
+          label IF
+          callback {((TrainerItemWindow*)o->parent())->onConditionCodeChanged()} open
+          xywh {41 85 304 20} down_box BORDER_BOX
+        } {
+          MenuItem m_tciDefaultMenuItem {
+            label {Code...}
+            xywh {0 0 30 20}
+          }
+        }
+      }
+      Fl_Table m_tciCodeTable {
+        label {Set Codes}
+        xywh {20 145 530 200} selection_color 6
+        class TrainerItemCodeTable
+      } {}
+      Fl_Button m_tciAddCodeButton {
+        label Add
+        callback {((TrainerItemWindow*)o->parent())->onAddCode()}
+        xywh {485 350 64 20}
+      }
+      Fl_Button m_tciOKButton {
+        label OK
+        callback {((TrainerItemWindow*)o->parent())->onOK()}
+        xywh {160 385 64 20}
+      }
+      Fl_Button m_tciCancelButton {
+        label Cancel
+        callback {((TrainerItemWindow*)o->parent())->onCancel()}
+        xywh {270 385 64 20}
+      }
+      Fl_Button m_tciDeleteCodeButton {
+        label Delete
+        callback {((TrainerItemWindow*)o->parent())->onDeleteCode()}
+        xywh {409 350 64 20}
       }
     }
   }

@@ -292,6 +292,7 @@ bool ConnectionManager::requestConnection(int &sock, string ipAddress, int hostV
 			return true;
 		}
 	}
+	return true;
 }
 
 void ConnectionManager::releaseConnection(int sock)

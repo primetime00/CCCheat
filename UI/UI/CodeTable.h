@@ -18,6 +18,7 @@
 #define CODE_TABLE_DELETE	0x01
 #define CODE_TABLE_SAVE		0x02
 #define CODE_TABLE_LOAD		0x03
+#define CODE_TABLE_TRAIN	0x04
 
 using namespace std;
 
@@ -42,6 +43,10 @@ public:
   void setMemoryOperator(MemoryOperator *op);
   void setViewer(Fl_Callback *cb) { viewer = cb; }
   void unFreezeAll();
+  void launchTrain();
+  void writeMemoryOnce();
+
+  rkCheat_CodeList getCodes() { return data; }
 
   static void tableClickedCB(Fl_Widget *w, void *data) {
 	  if (((Fl_Table*)w)->callback_context() == CONTEXT_CELL)
@@ -65,6 +70,8 @@ public:
   }
 
   static void redraw(void*);
+
+
   
 protected:
   void draw_cell(TableContext context, int ROW=0, int COL=0, int X=0, int Y=0, int W=0, int H=0);

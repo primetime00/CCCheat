@@ -83,16 +83,25 @@ class AddressObj
 public:
 	unsigned long address; //this is our base address
 	long long value; //this is the memory from either our base address or our resolved address
+	long long store; //this is the value we will write to memory
 	char sign; //signed or unsigned
 	char type; //1-4byte, float
 	PointerItem pointer; //our pointer info if we are using one
 	AddressObj();
+	AddressObj(AddressObj &item);
 	AddressObj(unsigned long a, unsigned long v, char t, char s); //a single address
 	AddressObj(unsigned long a, unsigned long v, char s); //a single address
 	AddressObj(unsigned long a, PointerOffsets p, char t, char s); //a pointer
+	AddressObj(unsigned long a, PointerOffsets p, unsigned long v, char t, char s); //a pointer and value
+	AddressObj(unsigned long a, PointerItem p, char t, char s); //a pointer
 	void init(unsigned long a, unsigned long v, char t, char s);
-	AddressObj &operator=(AddressObj t);	
+	AddressObj &operator=(const AddressObj& t);	
+	bool operator==(const AddressObj &t);
+	bool operator!=(const AddressObj &t);
 	bool isPointer() { return pointer != nullptr; }
+	int read(char *buf);
+	int write(char *buf);
+	void debug();
 };
 typedef shared_ptr<AddressObj> AddressItem;
 

@@ -99,6 +99,7 @@ void CodeTable::addEntry(string desc, AddressItem item, bool freeze)
 			address_input->maximum_size(8);
 			address_input->callback((Fl_Callback*)codeAddressChangedCB);
 			address_input->when(FL_WHEN_RELEASE);
+			address_input->setCodeType(true);
 			address_input->hide();
 		}
 
@@ -144,17 +145,20 @@ void CodeTable::addEntry(string desc, AddressItem item, bool freeze)
 		freeze_check->user_data(cItem.get());
 		value_input->user_data(cItem.get());
 
-		cItem->setSign(Helpers::isSigned(item->type, item->value));
+		//cItem->setSign(Helpers::isSigned(item->type, item->value));
+		item->store = item->value;
 	
 		if (m_operator != 0)
 		{
 			m_operator->setReadMemoryOperation(item, true);
 		}
 		rebuildTable();
-
-
 	}
 
+	if (rows() > 0)
+		uiInstance->ui_ButtonCreateTrainer->activate();
+	else
+		uiInstance->ui_ButtonCreateTrainer->deactivate();
 }
 
 void CodeTable::deleteEntry(unsigned int row)
@@ -182,6 +186,11 @@ void CodeTable::deleteEntry(unsigned int row)
 		rebuildTable();
 		rows(data.size());
 	}
+	if (rows() > 0)
+		uiInstance->ui_ButtonCreateTrainer->activate();
+	else
+		uiInstance->ui_ButtonCreateTrainer->deactivate();
+
 }
 
 void CodeTable::deleteEntry(vector<int> &indexRows)
@@ -226,6 +235,11 @@ void CodeTable::deleteEntry(vector<int> &indexRows)
 		rebuildTable();
 		rows(data.size());
 	}
+	if (rows() > 0)
+		uiInstance->ui_ButtonCreateTrainer->activate();
+	else
+		uiInstance->ui_ButtonCreateTrainer->deactivate();
+
 }
 
 void CodeTable::reInsert()
@@ -286,6 +300,8 @@ void CodeTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, 
 			{
 				if ( index >= children() ) break;
 				find_cell(CONTEXT_TABLE, r, c, X, Y, W, H);
+				if (c == ADDRESS_COL && data[r]->m_address->isPointer())
+					continue;
 				if (c == FREEZE_COL)
 					child(index)->resize(X+(W-20)/2,Y, W, H);
 				else
@@ -448,7 +464,7 @@ void CodeTable::saveData(string filename)
 		else
 			f << "0 ";
 
-		f << hex << (*it)->m_address->address << " " << dec << (*it)->m_address->value << " " << (*it)->m_address->type << " " << (*it)->freeze << "\n";
+		f << hex << (*it)->m_address->address << " " << hex << (unsigned long)(*it)->m_address->value << " " << (int)(*it)->m_address->type << " " << (int)(*it)->m_address->sign << " "<< (int)(*it)->freeze << "\n";
 	}
 	f.close();
 }
@@ -463,7 +479,7 @@ bool CodeTable::loadData(string filename)
 	char version[255];
 	char desc[255];
 	f.getline(version, 255);
-	double v = stod(string(version));
+	float v = stof(string(version));
 	int major = (int) v;
 	int minor = (int)((v*100)) % 100;
 	v = stod(string(CCCHEAT_VERSION));
@@ -472,8 +488,10 @@ bool CodeTable::loadData(string filename)
 		return false;
 	while (true) 
 	{
-		unsigned long addr, value;
+		unsigned long addr;
+		long long value;
 		char type;
+		char sign;
 		bool froze;
 		PointerOffsets po;
 		f.getline(desc, 255);
@@ -484,17 +502,31 @@ bool CodeTable::loadData(string filename)
 			f >> hex >> val;
 			po.push_back(val);
 		}
-		f >> hex >> addr >> dec >> value >> type >> froze;
+		if (major == 1 && minor <= 12)
+		{
+			f >> hex >> addr >> dec >> value >> type >> froze;
+			sign = 0;
+		}
+		else
+		{
+			int tmpType = 0;
+			int tmpSign = 0;
+			f >> hex >> addr >> hex >> value >> tmpType >> tmpSign >> froze;
+			type = (char)tmpType;
+			sign = (char)tmpSign;
+		}
 		froze = false; //for now, we don't save the freeze status.
 		f.ignore();
 		if( f.eof() ) break;
+		AddressItem it;
 		if (po.size() > 0)
-			addEntry(desc, make_shared<AddressObj>(addr, po, type, 0), froze);
+			it = make_shared<AddressObj>(addr, po, value, type, 0);
 		else
-			addEntry(desc, make_shared<AddressObj>(addr, value, type, 0), froze);
+			it = make_shared<AddressObj>(addr, value, type, 0);
+		it->sign = sign;
+		addEntry(desc, it, froze);
 	}
 	f.close();
-	//rows(data.size());
 	return true;
 }
 
@@ -546,14 +578,13 @@ void CodeTable::onAddressChanged(rkCheat_Code *item, unsigned long value)
 
 void CodeTable::onValueChanged(rkCheat_Code *item, long long value)
 {
-	if (item->m_address->value != (long long)value)
+	if (item->m_address->store != (long long)value)
 	{
-		item->m_address->value = value;
+		item->m_address->store = value;
 		if (value < 0)
 			item->setSign(true);
 		else
 			item->setSign(false);
-		//item->setSign(Helpers::isSigned(item->type, value));
 		if (m_operator != 0)
 			m_operator->setWriteMemoryOperation(item->m_address, value, item->freeze);
 	}
@@ -591,7 +622,10 @@ void CodeTable::onCodeFreezeChanged(rkCheat_Code *item, int value)
 	if (m_operator != 0)
 	{
 		if (item->freeze)
+		{
+			item->m_address->store = item->m_address->value;
 			m_operator->setWriteMemoryOperation(item->m_address, item->m_address->value, true);
+		}
 		else
 			m_operator->removeMemoryOperation(MEMORY_COMMAND_WRITE, item->m_address);
 	}
@@ -795,5 +829,21 @@ void CodeTable::unFreezeAll()
 	{
 		data[i]->widget->freeze->value(0);
 		data[i]->freeze = false;
+	}
+}
+
+void CodeTable::launchTrain()
+{
+	uiInstance->m_trainerMakerWindow->popup();
+}
+
+void CodeTable::writeMemoryOnce()
+{
+	if (m_operator == 0)
+		return;
+	for (auto it = data.begin(); it != data.end(); ++it)
+	{
+		auto item = *it;
+		m_operator->setWriteMemoryOperation(item->m_address, item->m_address->store, false);
 	}
 }

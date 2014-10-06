@@ -6,6 +6,10 @@ void ValueViewerWindow::TypeChangedCB(Fl_Widget *w)
 {
 	char type = uiInstance->m_viewerTypeChoice->value();
 	uiInstance->m_valueTable->setType(type);
+	if (uiInstance->m_viewerTypeChoice->value() == SEARCH_VALUE_TYPE_FLOAT)
+		uiInstance->m_viewerSignedButton->deactivate();
+	else
+		uiInstance->m_viewerSignedButton->activate();
 }
 void ValueViewerWindow::SignedChangedCB(Fl_Widget *w)
 {
@@ -20,11 +24,13 @@ void ValueViewerWindow::AddCodeCB(Fl_Widget *w)
 
 void ValueViewerWindow::setCodeData(rkCheat_Code *item)
 {
-	uiInstance->m_viewerTypeChoice->value(item->type);
-	if (visible() && uiInstance->m_valueTable->getAddress() != item->m_address->address)
+	uiInstance->m_viewerTypeChoice->value(item->m_address->type);
+	auto resolved = item->m_address->isPointer() ? item->m_address->pointer->resolved : item->m_address->address;
+	if (visible() && uiInstance->m_valueTable->getAddress() != resolved)
 		hide();
-	uiInstance->m_valueTable->setAddress(item->m_address->address);
-	uiInstance->m_valueTable->setType(item->type);
+	uiInstance->m_valueTable->setAddress(resolved);
+	uiInstance->m_valueTable->setType(item->m_address->type);
+	TypeChangedCB(this);
 }
 
 void ValueViewerWindow::show()
@@ -59,4 +65,14 @@ void ValueViewerWindow::reset()
 		it++;
 	}
 	uiInstance->m_viewerSignedButton->value(0);
+}
+
+void ValueViewerWindow::capture()
+{
+	Fl_Window::show();
+	createdX = x();
+	createdY = y();
+	createdW = uiInstance->m_valueAddCodeButton->x()+uiInstance->m_valueAddCodeButton->w()+20;
+	createdH = uiInstance->m_valueTable->y() + uiInstance->m_valueTable->h() + 20;
+	Fl_Window::hide();
 }

@@ -42,7 +42,7 @@ PointerScannerTable::PointerScannerTable(int X, int Y, int W, int H, const char 
 	type(SELECT_SINGLE);
 	for (int i=0; i<cols(); ++i)
 		width += col_width(i);
-	resize(x(), y(), width+16, h());
+	resize(x(), y(), width+4, h());
 	end();
 	callback(tableClickedCB);
 

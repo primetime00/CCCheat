@@ -55,7 +55,7 @@ public:
 	void show();
 	void hide();
 	void setCodeTable(CodeTable *t) { m_codeTable = t; }
-
+	
 private:
 	void setScanState(char v);
 	void setNumberOfResults(unsigned long res);

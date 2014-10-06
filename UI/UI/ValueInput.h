@@ -29,6 +29,7 @@ public:
 	void setValue(unsigned long ivalue);
 	void setValue(long long ivalue);
 	void setValue(float ivalue);
+	void setValue(long long value, char type, bool lit);
 
 private:
 	string convertHexToInt(string hex);

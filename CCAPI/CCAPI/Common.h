@@ -65,6 +65,7 @@ using namespace std;
 
 #define MEMORY_COMMAND_READ			0x00
 #define MEMORY_COMMAND_WRITE		0x01
+#define MEMORY_COMMAND_CONDITIONAL	0x02
 
 #if 0
 struct AddressOffset
@@ -210,5 +211,18 @@ typedef map<unsigned long, MemoryChunkReadSet> MemoryChunkReadItemList;
 typedef map<unsigned long, PointerReadSet> PointerReadItemList;
 
 typedef map<unsigned long, MemoryWriteSet> MemoryWriteItemList;
+
+struct MemoryConditionalWriteItem{
+	AddressItem conditionItem;
+	char conditionType;
+	long long conditionValue;
+	bool hasRead;
+	AddressList writeItems;
+	MemoryConditionalWriteItem(AddressItem i, long long condValue, char con, AddressList wItems) { conditionItem = i; conditionType = con, conditionValue = condValue; writeItems = wItems; hasRead = false;}
+};
+
+typedef list<shared_ptr<MemoryConditionalWriteItem>> ConditionalMemoryWriteSet;
+typedef map<unsigned long, ConditionalMemoryWriteSet> ConditionalMemoryWriteList;
+
 
 #endif

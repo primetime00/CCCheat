@@ -31,6 +31,8 @@ public:
 	void setReadMemoryOperation(AddressItem item, bool keep);
 	void setChunkReadMemoryOperation(unsigned long start, unsigned long size, char *memory, bool keep);
 
+	void setConditionalWriteMemoryOperation(AddressItem item, char conditionType, long long conditionValue, AddressList writeItems);
+
 	void removeMemoryOperation(char command, AddressItem item);
 	void removePointerOperation(char command, PointerItem p);
 	void removeChunkReadOperation(unsigned long address);
@@ -45,10 +47,13 @@ private:
 	int processPointers();
 	int processChunkRead();
 	int processWrite();
+	int processConditional();
 
 	unsigned int getLength(char type) { return Helpers::getTypeLength(type); }
 	long long readAddress(unsigned long address, char type);
 	int writeAddress(unsigned long address, char type, Variant value);
+
+	int doWrite(AddressItem, long long value);
 
 	int connect();
 
@@ -58,6 +63,7 @@ private:
 	MemoryReadItemList memoryReadOperationList;
 	MemoryChunkReadItemList memoryChunkReadOperationList;
 	MemoryWriteItemList memoryWriteOperationList;
+	ConditionalMemoryWriteList memoryConditionalWriteOperationList;
 	bool m_exit;
 	string m_status;
 	mutex m_mutex;
