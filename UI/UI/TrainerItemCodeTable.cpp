@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
-#include <FL/fl.H>
+#include <FL/Fl.H>
 #include <FL/fl_draw.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Menu_.H>

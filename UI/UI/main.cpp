@@ -37,7 +37,6 @@ void exportTrainer(string name, string filename)
 
 int main() {
 	CCAPI ccapi("127.0.0.1");
-	exportTrainer("Ryan's Trainer", "blah.exe");
 	rkCheatUI ui;
 	InterfaceCCAPI m_interface(&ccapi, &ui);
 	ui.mainWindow->callback(windowCallback);

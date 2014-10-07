@@ -12,6 +12,7 @@
 #include "ValueInput.h"
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <memory>
 
 #define CCCHEAT_VERSION "1.20"

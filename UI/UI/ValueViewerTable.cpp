@@ -77,7 +77,7 @@ bool ValueViewerTable::hasSelection()
 }
 
 void ValueViewerTable::draw_cell(TableContext context, int ROW, int COL, int X, int Y, int W, int H){
-    static char s[40];
+    static char s[400];
     switch ( context ) {
       case CONTEXT_STARTPAGE:                   // before page is drawn..
         fl_font(FL_HELVETICA, 14);              // set the font for our drawing operations

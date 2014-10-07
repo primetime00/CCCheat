@@ -47325,4 +47325,5 @@ unsigned char trainSrc[567808] = {
 };
 
 #else
+unsigned char trainSrc[5] = { 0x00, 0x00, 0x00, 0x00, 0x00 };
 #endif
