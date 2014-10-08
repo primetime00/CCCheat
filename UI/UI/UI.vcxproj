@@ -54,8 +54,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;_VARIADIC_MAX=6;%(PreprocessorDefinitions);_VARIADIC_MAX=6</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\CCAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;_VARIADIC_MAX=6;%(PreprocessorDefinitions);_VARIADIC_MAX=6;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\CCAPI;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\Trainer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -72,8 +72,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);_VARIADIC_MAX=6</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\CCAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions);_VARIADIC_MAX=6;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\keg45397\Documents\Visual Studio 2012\Projects\fltk;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\CCAPI;C:\Users\keg45397\Documents\Visual Studio 2012\Projects\CCCheat\Trainer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,35 +89,59 @@ copy "$(TargetPath)" "$(SolutionDir)\..\bin"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AddressOffsetGroup.cpp" />
     <ClCompile Include="CodeTable.cpp" />
+    <ClCompile Include="DumpManager.cpp" />
+    <ClCompile Include="DumpScan.cpp" />
     <ClCompile Include="InfoWindow.cpp" />
     <ClCompile Include="InterfaceCCAPI.cpp" />
     <ClCompile Include="IPInput.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NumberInput.cpp" />
+    <ClCompile Include="PointerEditorWindow.cpp" />
+    <ClCompile Include="PointerScannerTable.cpp" />
+    <ClCompile Include="PointerScannerWindow.cpp" />
     <ClCompile Include="RangeTable.cpp" />
     <ClCompile Include="ResultTable.cpp" />
     <ClCompile Include="rkWindow.cpp" />
     <ClCompile Include="SearchOperationChoice.cpp" />
+    <ClCompile Include="TrainerCreator.cpp" />
+    <ClCompile Include="TrainerItemCodeTable.cpp" />
+    <ClCompile Include="TrainerItemWindow.cpp" />
+    <ClCompile Include="TrainerMakerWindow.cpp" />
+    <ClCompile Include="TrainerSrc.cpp" />
     <ClCompile Include="ui_main.cxx" />
     <ClCompile Include="ValueInput.cpp" />
+    <ClCompile Include="ValueTypeChoice.cpp" />
     <ClCompile Include="ValueViewerTable.cpp" />
     <ClCompile Include="ValueViewerWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddressOffsetGroup.h" />
     <ClInclude Include="CodeTable.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="DumpManager.h" />
+    <ClInclude Include="DumpScan.h" />
     <ClInclude Include="InfoWindow.h" />
     <ClInclude Include="InterfaceCCAPI.h" />
     <ClInclude Include="IPInput.h" />
     <ClInclude Include="NumberInput.h" />
+    <ClInclude Include="PointerEditorWindow.h" />
+    <ClInclude Include="PointerScannerTable.h" />
+    <ClInclude Include="PointerScannerWindow.h" />
     <ClInclude Include="RangeTable.h" />
     <ClInclude Include="ResultTable.h" />
     <ClInclude Include="IDeactivate.h" />
     <ClInclude Include="rkWindow.h" />
     <ClInclude Include="SearchOperationChoice.h" />
+    <ClInclude Include="TrainerCreator.h" />
+    <ClInclude Include="TrainerItemCodeTable.h" />
+    <ClInclude Include="TrainerItemWindow.h" />
+    <ClInclude Include="TrainerMakerWindow.h" />
+    <ClInclude Include="TrainerSrc.h" />
     <ClInclude Include="ui_main.h" />
     <ClInclude Include="ValueInput.h" />
+    <ClInclude Include="ValueTypeChoice.h" />
     <ClInclude Include="ValueViewerTable.h" />
     <ClInclude Include="ValueViewerWindow.h" />
   </ItemGroup>

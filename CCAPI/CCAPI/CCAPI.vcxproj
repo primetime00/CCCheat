@@ -90,18 +90,23 @@
     <ClCompile Include="CCAPI.cpp" />
     <ClCompile Include="ChunkFuzzySearch.cpp" />
     <ClCompile Include="ChunkValueSearch.cpp" />
+    <ClCompile Include="DumpMemory.cpp" />
+    <ClCompile Include="DumpTask.cpp" />
     <ClCompile Include="MemoryOperator.cpp" />
     <ClCompile Include="RangeMemory.cpp" />
     <ClCompile Include="RangeTask.cpp" />
     <ClCompile Include="SearchMemory.cpp" />
     <ClCompile Include="SearchTask.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CCAPI.h" />
     <ClInclude Include="ChunkFuzzySearch.h" />
     <ClInclude Include="ChunkValueSearch.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="DumpMemory.h" />
+    <ClInclude Include="DumpTask.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="MemoryOperator.h" />
     <ClInclude Include="RangeMemory.h" />
@@ -109,6 +114,7 @@
     <ClInclude Include="SearchMemory.h" />
     <ClInclude Include="SearchTask.h" />
     <ClInclude Include="Task.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
