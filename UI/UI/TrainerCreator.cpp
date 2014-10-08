@@ -4,7 +4,9 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-
+#if !defined(_WIN32) && !defined(WIN32)
+#include <sys/stat.h>
+#endif
 using namespace std;
 
 TrainerCreator::TrainerCreator()
@@ -82,6 +84,9 @@ void TrainerCreator::exportTrainer(bool debug)
 	ofstream outFile(fname.c_str(), ofstream::binary);
 	outFile.write((char*)trainSrc, sizeof(trainSrc));
 	outFile.close();
+#if !defined(_WIN32) && !defined(WIN32)
+	chmod(fname.c_str(),755);
+#endif
 	if (debug)
 	{
 		ofstream outDebugFile("dbg.dat", ofstream::binary);

@@ -4,6 +4,9 @@ all: ccapi ui
 #	$(MAKE) -C CCAPI
 #	$(MAKE) -C UI
 
+trainer:
+	$(MAKE) -C Trainer
+
 ui:
 	$(MAKE) -C UI
 	\mkdir -p bin
