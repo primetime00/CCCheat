@@ -1,6 +1,6 @@
 export TOP_DIR = $(shell pwd)
 include Makefile.common
-all: ccapi ui
+all: ccapi trainer ui
 #	$(MAKE) -C CCAPI
 #	$(MAKE) -C UI
 

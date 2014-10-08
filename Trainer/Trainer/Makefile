@@ -4,7 +4,8 @@ TRAIN_TARGET="Trainer"
 objects = $(src:.cpp=.o)
 src := $(wildcard *.cpp *.cxx)
 INCLUDES += -I$(UI_DIR)
-objects += $(UI_DIR)/UI/IPInput.o $(UI_DIR)/UI/NumberInput.o
+#objects += $(UI_DIR)/UI/IPInput.o $(UI_DIR)/UI/NumberInput.o
+objects += IPInput.o NumberInput.o
 
 Trainer : $(objects) ui_trainer.o
 	 $(CC) $(DEBUG) $(INCLUDES) $(CFLAGS) $(objects) -o $(TRAIN_TARGET) $(LFLAGS)
@@ -13,6 +14,12 @@ Trainer : $(objects) ui_trainer.o
 	 \sed -i 's/Trainer/trainSrc/g' dump/TrainerSrc.cpp
 
 %.o: %.cpp
+	$(CC) $(DEBUG) $(INCLUDES) $(CFLAGS)  -c $< -o $@
+
+IPInput.o: $(UI_DIR)/UI/IPInput.cpp 
+	$(CC) $(DEBUG) $(INCLUDES) $(CFLAGS)  -c $< -o $@
+	
+NumberInput.o: $(UI_DIR)/UI/NumberInput.cpp
 	$(CC) $(DEBUG) $(INCLUDES) $(CFLAGS)  -c $< -o $@
 
 ui_trainer.o: ui_trainer.cxx
