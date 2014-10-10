@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>CCCheat Manual</title>
+  <meta name="generator" content="Amaya, see http://www.w3.org/Amaya/">
+  <link href="../../../../../../../temp/design/mlpd3sign.css" rel="stylesheet"
+  type="text/css">
+  <link href="cccheat.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<h1>CCCheat</h1>
+
+<p>This documentation was created for version 1.20 of CCCheat.</p>
+
+<p>CCCheat is open source so modify it.</p>
+
+<p></p>
+
+<h1>Contents</h1>
+<ol>
+  <li><a href="#connect">Connection to the System</a></li>
+  <li><a href="#scan">Scanning For Valid Memory Ranges</a></li>
+  <li><a href="#search">Performing a Code Search</a></li>
+  <li><a href="#result">Choosing a Code from the Results</a></li>
+  <li><a href="#codetable">The Code Table</a></li>
+  <li><a href="#view">Viewing Values Around a Code</a></li>
+  <li><a href="#trainer">Trainer Creator</a></li>
+  <li><a href="#close">In Closing</a></li>
+</ol>
+
+<a name="connect"><h1 class="top">Connecting to the System</h1></a>
+
+<p>The first step to using CCCheat is to connect to you PS3. This is done by
+selecting the correct CCAPI version that is being run on the PS3, and also
+filling in the IP address assigned to your PS3.</p>
+<ul>
+  <li>IP Address &ndash; This is where you put in the IP address of your
+  PS3.</li>
+  <li>CCAPI Version &ndash; This is the version of CCAPI running on the system.
+    If you do not know the correct version, just try both. One is bound to
+    work, but if it doesn&rsquo;t, make sure you are actually running CCAPI on
+    your system.</li>
+</ul>
+
+<p>After the information is entered, press &lsquo;Connect.&rsquo; The light on
+the Connect button should change from clear to yellow when connecting, and then
+to green when connection with the PS3 is established.</p>
+
+<a name="scan"><h1 class="top">Scanning For Valid Memory Ranges</h1></a>
+
+<p>When trying to find a code for a particular game, you should first find the
+general memory range that it is located. By default, CCCheat shows a range of
+0x00000000 to 0xFFFFFFFF. You can perform a code search over this range, but it
+would take quite a long time to complete. Instead, you should scan for ranges
+to search over.</p>
+<ul>
+  <li>Find Ranges &ndash; This will search the PS3 for valid memory ranges.
+    Once finished, the range list will be updated with sets of ranges to search
+    for codes. This should only be used inside a game, and generally only needs
+    to be done once since the ranges can be saved afterwards.</li>
+  <li>Save Ranges &ndash; This saves the list of ranges into a file for future
+    use.</li>
+  <li>Load Ranges &ndash; This will load a range of memory regions to scan from
+    a file.</li>
+  <li>Clear Ranges &ndash; This clears the list of ranges back to the default
+    0x00000000 &ndash; 0xFFFFFFFF.</li>
+  <li>Delete Range &ndash; This deletes the currently selected ranges.</li>
+  <li>Add Range &ndash; You can manually add a range of memory to the list.
+    This is useful if you know where a particular code is stored and want to
+    narrow the amount of memory the searcher has to scan. The two boxes require
+    the hexadecimal start and end value for the memory range.</li>
+</ul>
+
+<p>After connecting, the next step would be to either perform a &lsquo;Find
+Ranges&rsquo; or &lsquo;Load Ranges.&rsquo; Once the ranges are found, make
+sure to save them so you do not have to find them again later on.</p>
+
+<a name="search"><h1 class="top">Performing a Code Search</h1></a>
+
+<p>A code search will scan memory ranges selected in the Range section. The
+search will find all memory locations that match your search criteria.
+Searching is done in several rounds. Generally, you will search for a value,
+have that value change in the game, perform a search on the new value, and
+repeat until the number of memory locations is narrowed down. Once the list is
+narrow enough, you can add the codes to the code table to find out if a
+successful code was found.</p>
+
+<h2>Setting Up a Search</h2>
+
+<p>To perform a search, first a memory region needs to be selected from the
+ranges list. Multiple ranges can be scanned at once.</p>
+<ul>
+  <li>Search Type &ndash; This dropdown allows you to select the how the code
+    searcher will function.</li>
+  <li style="margin-left:2em;">Exact Value &ndash; This searches for a value in
+    the game that you can see. For example, you may know the amount of ammo
+    your weapon has, or the number of HP your character has. When searching for
+    a code, this search type will match all codes that are equal to this value.
+  </li>
+  <li style="margin-left:2em;">Less Than Value &ndash; This performs a search
+    for a value that is less than the inputted value. </li>
+  <li style="margin-left:2em;">Greater Than Value - This performs a search for
+    a value that is greater than the inputted value. </li>
+  <li style="margin-left:2em;">Not Equal To Value - This performs a search for
+    a value that is greater or less than the inputted value. </li>
+  <li style="margin-left:2em;">Fuzzy &ndash; This search type allows you to
+    scan for codes that that have an unknown value. For example, your character
+    may have a health meter. These type of searches can also work with values
+    that your know, but may be represented a different way in the game. </li>
+  <li style="margin-left:2em;">Pointer &ndash; This search type will search for
+    codes that change often. You might find a code that works fine, but next
+    time the game is started the code no longer works. This will scan to find a
+    common base for the changing code and follow it so that the code works all
+    the time. </li>
+  <li>Value &ndash; This is the value that the searcher will find when
+    scanning. This can be a base 10 integer or a decimal number depending on
+    the Value Type. If the Hex box is checked, the value will transform into a
+    base 16 number. Values are not available when doing a Fuzzy Search Type.
+    This is because we do not know the value we are searching. </li>
+  <li>Value Type &ndash; Values can be stored in memory in several different
+    capacities. This drop down allows you to select how &lsquo;big&rsquo; the
+    value you are searching is. </li>
+  <li style="margin-left:2em;">1 Byte &ndash; This will store a value that is 8
+    bits in size. If the value you are searching for is between -127 to 127 or
+    0 to 255, then a 1 byte scan will work. If you anticipate that the value
+    can change to something higher than 255, use 2 or 4 byte types. </li>
+  <li style="margin-left:2em;">2 Byte - This will store a value that is 16 bits
+    in size. If the value you are searching for is between -32767 to 32767 or 0
+    to 65535, then a 2 byte scan will work. If you anticipate that the value
+    can change to something higher than 65535, use the 4 byte type. </li>
+  <li style="margin-left:2em;">4 Byte - This will store a value that is 32 bits
+    in size. This is generally the most common type of value you will search.
+    If you are searching for values that can be large, such as money. You will
+    use this value type. </li>
+  <li style="margin-left:2em;">Float - This will store a value that is also 32
+    bits in size, but interpreted as a decimal value. With Float, your value
+    can be fractional numbers. This is also a commonly used type. Use this type
+    when searching for percentages, meter bars, and money (sometimes.) </li>
+</ul>
+
+<h2>Running a Search</h2>
+
+<p>Once all the search parameters are filled in, start the search by pressing
+the &ldquo;New Search&rdquo; button. This will start the search. The progress
+the search can be seen on the progress bar at the bottom of the window. Once a
+search is complete, you can see the results under the Results section on the
+upper right side of the screen. If the number of the results are high, you
+should change the value in game (lose health or money.) After that, input the
+new value in the Search section and press &ldquo;Next Scan.&rdquo; When this
+scan completes, you should have a fewer number of results. Repeat these steps
+until you are confident that one of the results is the code that you are trying
+to find.</p>
+
+<h2>Resetting a Search</h2>
+
+<p>If you want to start a new search in the middle of a current search process
+or you find that the number of results become 0. You can reset the search
+process by clicking the &ldquo;Reset Scan&rdquo; button. This will clear all
+results so that a new search can be started.</p>
+
+<a name="result"><h1 class="top">Choosing a Code from the Results</h1></a>
+
+<p>After a search has been completed, the Results section will display the
+number of results found as well as the results themselves. The list of results
+has a limit of 200 items. If you have more than 200 results, you will only be
+shown the first 200. If you want to add a code to the code table from the
+Results section, simply highlight the result(s) and press the &ldquo;Add
+Result&rdquo; button. If you know a result from this section is not the code
+that you are looking for, you can highlight that code and press the
+&ldquo;Delete Result&rdquo; button to remove it from the list. Finally, if your
+in-game value changes and you want to see if the value from your result list
+has changed as well, press the &ldquo;Refresh&rdquo; button. This will re-read
+the values from all the items on the list and update them. This can help to
+avoid another search round.</p>
+
+<p>Once codes are added to the code table from the results section, they can be
+modified.</p>
+
+<a name="codetable"><h1 class="top">The Code Table</h1></a>
+
+<p>The code table will list all the codes that you have found for the game.
+Codes can be manually added to this list or added from the Results section.
+Once a code is added, it can be given a description, a new value, a type (1, 2,
+4 bytes, or Float) and a freeze status. Codes can also be saved and loaded from
+a file for later use. Finally, a trainer can be created from the found codes
+and distributed.</p>
+
+<h2>Adding a Code from the Results Section</h2>
+
+<p>After you have found a code from scanning and added it from the Results
+section, you will see that code on the code table. Initially the code table
+will show that the code has no description, but you can modify this as well as
+the other parameters of the code.</p>
+<ul>
+  <li>Description &ndash; Double click the description cell of a code to edit
+    the code&rsquo;s name or description. (Click outside the cell to apply this
+    description)</li>
+  <li>Address &ndash; Double click the address cell to change the code&rsquo;s
+    address. This should not be done for codes added from the Result section or
+    your code will no longer work.</li>
+  <li>Value &ndash; Double click the value cell to change the in-game value of
+    the code. Once this is applied, the value will be pushed to the
+    game&rsquo;s memory one time. You should see the change in the game if the
+    code is correct.</li>
+  <li>Type &ndash; Double click this cell for a dropdown that will modify the
+    capacity of the value. This is something that is not done very often.</li>
+  <li>Frozen &ndash; Press this checkbox to enable freezing the code. This will
+    continuously modify the in-game value while the CCCheat application is
+    connected. For example, if you want your HP in a game to remain at 9999,
+    you would input 9999 in the value cell, and make sure the frozen checkbox
+    is checked.</li>
+</ul>
+
+<h2>Manually Adding a Code</h2>
+
+<p>By pressing the &ldquo;New Code&rdquo; button, you can add your own codes to
+the code table. There are two types of codes you can add:</p>
+<ul>
+  <li>Address &ndash; This is the mode common type of code. It is just a memory
+    location of the value in the PS3&rsquo;s memory. If you know the address of
+    a certain value that you want to modify, chose this type.</li>
+  <li>Pointer &ndash; This type consist of a memory location that
+    &lsquo;points&rsquo; to one or more locations that eventually contain the
+    value to modify. Pointers are used in cases where the address that contains
+    your value constantly changes. In general, you will not add a pointer
+    manually, but instead add one by completing a search.</li>
+</ul>
+
+<p>When an address is added manually, you will have to edit the description for
+the code and also the address. The default address for a manually added code is
+0x00000000. Make sure to change this to your desired address. Once added, the
+code can be modified just as described in the previous section.</p>
+
+<h2>Editing the Code Table</h2>
+
+<p>Besides adding new codes, any selected code can be deleted by pressing the
+&ldquo;Delete Code&rdquo; button. This simply removes the code from the code
+table.</p>
+
+<p>To save codes to a file for later use, press the &ldquo;Save Codes&rdquo;
+button. This will ask you for a filename to save the codes.</p>
+
+<p>Press the &ldquo;Load Codes&rdquo; button to load a previously saved code
+file. When a file is loaded, all codes will first be cleared from the code
+table. Also, values that were frozen will have to be re-frozen. The values of
+your codes are also saved to the code file, so after loading the file, the
+values will be modified in-game to what is stored in the saved code file.</p>
+
+<h2>Creating a Trainer</h2>
+
+<p>When one or more codes are in the code table, you can press the
+&ldquo;Create Trainer&rdquo; button to create a whole new application that will
+apply the codes that you&rsquo;ve found. You can distribute this trainer. See
+the Trainer section for details.</p>
+
+<a name="view"><h1 class="top">Viewing Values Around a Code</h1></a>
+
+<p>Often you can find other codes for a game near the same address of a
+particular code that you&rsquo;ve added to the code table. You can view all
+values around a code and potentially find other codes without having to run
+another search process. For example, you found your character&rsquo;s HP code,
+but you want to modify the characters MAX HP. You can sometimes the MAX HP code
+very close to your HP code.</p>
+
+<p>To view the values around a code, right click the address cell of a code and
+select &ldquo;View Nearby.&rdquo; This will open a new window contain a list of
+addresses and values around the location of your code. The green highlighted
+item on the list is where your code is stored in memory. The value should
+correspond to the value of your code in the code table. You can browse this
+list for other values that correspond to in-game values that you are interested
+in. For example, if your HP code is located at address 0x00000400 and it is a
+4-byte type code, you might see that your MAX HP value is located at 0x00000404
+in the value viewer.</p>
+
+<p>If you find a value that you are interested in, and want to add that code to
+your code table, simply select the value and click on the &ldquo;Add
+Code&rdquo; button. This will add the new code to your code table. Make sure
+you modify the description of this new code.</p>
+
+<p>You can also change the way that the values are interpreted by click on the
+Type drop box. You can select 1, 2, 4 byte and Float. If your code you are
+searching around is an integer value, but you want to find codes that have
+decimal values nearby, you can simply change the Type to Float.</p>
+
+<p>1, 2, and 4 byte values are only integer values, but can be positive or
+negative. If the value you browsing has an in-game negative value, check the
+&ldquo;Signed&rdquo; button to display values that are potentially negative.</p>
+
+<a name="trainer"><h1 class="top">Trainer Creator</h1></a>
+
+<p>Trainers can be created from the codes in the code table. When creating a
+trainer, you want to make sure that the code from your code table will work
+reliably. The best way to check this is make sure your code works after
+quitting the game completely. Reload the game, and if your code still works,
+there is a pretty good chance it will work all the time.</p>
+
+<p>To create a trainer, click on the &ldquo;Create Trainer&rdquo; button. This
+will take you to a new window where you can enter some information about the
+trainer you are about to create.</p>
+<ul>
+  <li>Trainer Name &ndash; This is what you want the title of your trainer to
+    be. This will be the title of the window.</li>
+  <li>Author &ndash; This is your name.</li>
+  <li>Game Title &ndash; This is the name of the game you are training.</li>
+  <li>Game Region &ndash; This is the region (USA, EU, JP, etc&hellip;.) You
+    could also put in the product ID (SLUS, SLES, SLPS, etc.&hellip;)</li>
+  <li>Trainer Information &ndash; This is just any other information you want
+    to include with your trainer. It would be a good idea to include what
+    version of the game you trained. For example, codes for version 1.01 of a
+    game will probably not work in version 1.00.</li>
+  <li>Codes &ndash; This is the actual trainer codes that the user will be able
+    to enable/disable inside the trainer.</li>
+</ul>
+
+<p>Once all the information is entered, you will need to add your codes from
+your code table to the trainer. This is done by pressing the &ldquo;New&rdquo;
+button in the Codes section of the window.</p>
+
+<p>After hitting the &ldquo;New&rdquo; button, a new window will appear asking
+for some more information about the code. This consist of the following</p>
+<ul>
+  <li>Code Name &ndash; This is what you want the code to be called or
+    described in the trainer.</li>
+  <li>Conditional &ndash; This checkbox allows you to assign a code from the
+    code table to be a trigger that will enable/disable other codes. For
+    example, if you want your character&rsquo;s health to be set to 1000 only
+    when it drops lower than 100, then your health code would be a trigger. You
+    could also use joker codes as triggers. This will allow you to activate a
+    certain code whenever key combinations are pressed on the controller. The
+    condition code is completely optional. Without one, the codes set below
+    will activate whenever they are enabled in the trainer.</li>
+  <li>IF &ndash; This set of 3 inputs consist of a dropdown to select a trigger
+    code, an operation that will evaluate the trigger, and a value that will
+    cause the trigger. In our previous example, we set the trigger code to
+    Health, then the operation to Less Than (&lt;), and the value to 100. This
+    will cause the codes we set below to trigger when Health &lt; 100.</li>
+  <li>Set Codes &ndash; These dropdown/value combos allow you to select a code
+    to enable, and the value that you want the code to set. From our previous
+    example again, we would select Health in the dropdown, and set the value to
+    1000.</li>
+</ul>
+
+<p>Additional codes can be added to this by selecting the &ldquo;Add&rdquo;
+button, while you can also delete a selected code by pressing the
+&ldquo;Delete&rdquo; button. Once all codes are set to your liking, press the
+&ldquo;OK&rdquo; button.</p>
+
+<p>You will now be back to your trainer information window with a new code in
+the Codes section. This code can be edited by selecting the code and clicking
+the &lsquo;Edit&rsquo; button.</p>
+
+<p>This whole process can be repeated to add additional codes to your trainer.
+Once you are satisfied, you can press the &ldquo;Create&rdquo; button to export
+a new executable trainer. This trainer will be created in the same directory
+where CCCheat resides. The name of our trainer executable will be a combination
+of the trainer name and game title. You can run your trainer now and make sure
+it works that way that you want it.</p>
+
+<a name="close"><h1 class="top">In Closing</h1></a>
+
+<p>Thank you again for trying out CCCheat. I hope that it works the way that
+you want. I will continue to work on the program to fix bugs and implement new
+features. Remember this is an open source project so feel free take a look at
+the code and modify it in any way that you want.</p>
+
+<p><a
+href="https://github.com/primetime00/CCCheat">https://github.com/primetime00/CCCheat</a></p>
+
+<p>primetime00</p>
+
+<p></p>
+</body>
+</html>

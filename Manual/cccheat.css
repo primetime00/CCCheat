@@ -1,0 +1,20 @@
+/* MLP Design (http://www.mlpDesign.net). All Rights Reserved */
+
+/* Global Style Settings */
+
+body { background:#000; color:#ccc; text-align:left; font:normal 90% "Trebuchet MS",sans-serif; margin-left:5px;font-size: 1.0em;}
+img { border:0;}
+h1 { background:#000; color:#9c3; font-weight:bold; font-size: 3.4em; margin:0; padding-top: 6px; border-bottom:4px solid #9c3; padding-bottom:3px;}
+.top { padding-top:3em;}
+h2 { background:#000; color:#9c6; font-weight:bold; font-size:1.5em; margin:0; padding-top:4px;}
+h3 { border-bottom:#ccc 1px solid; padding-bottom:10px; font-size: 1em; font-weight: lighter; letter-spacing:.1em; clear:both;}
+a:link, a:visited, a:active { background-color:inherit; text-decoration: none; color:#9c3;}
+a:hover { background-color:inherit; text-decoration: none; color:#9f3;}
+form ul { list-style:none; margin-left:75px; padding:1px;}
+strong { background:#000; text-decoration: none; color:#9c6; font-weight:normal;}
+.button { text-align:center; padding:10px 0;}
+.spacer { height:2px; clear:both;}
+ul li{ padding-left:15px; color:inherit; text-align:left; padding-top:5px; padding-bottom:5px;}
+/* End of Global Settings */
+
+
